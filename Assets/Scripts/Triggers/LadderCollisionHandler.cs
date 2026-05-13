@@ -6,23 +6,26 @@ namespace Triggers
     public class LadderCollisionHandler : MonoBehaviour
     {
 
-        private PlayerCharacterController controller;
+        private PlayerCharacterController _controller;
+        private PlayerStateMachine _stateMachine;
 
         private void Start()
         {
-            controller = GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerCharacterController>();
+            _controller = GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerCharacterController>();
+            _stateMachine = _controller.StateMachine;
+            
         }
 
         private void OnTriggerEnter(Collider other)
         {
             if (other.gameObject.CompareTag("Player"))
             {
-                if (controller.CurrentState != CharacterState.Climbing)
+                if (_stateMachine.CurrentState != CharacterState.Climbing)
                 {
-                    Debug.Log(controller.CurrentState);
+                    Debug.Log(_stateMachine.CurrentState);
 
                     // TODO: update character rotation to match ladder climbing
-                    controller.TransitionToState(CharacterState.Climbing);
+                    _stateMachine.TransitionToState(CharacterState.Climbing);
                 }
             }
         }
@@ -31,9 +34,9 @@ namespace Triggers
         {
             if (other.gameObject.CompareTag("Player"))
             {
-                if (controller.CurrentState == CharacterState.Climbing)
+                if (_stateMachine.CurrentState == CharacterState.Climbing)
                 {
-                    controller.TransitionToState(controller.motor.GroundingStatus.IsStableOnGround ?
+                    _stateMachine.TransitionToState(_controller.IsGrounded ?
                         CharacterState.Grounded : CharacterState.Airborne);
                 }
             }

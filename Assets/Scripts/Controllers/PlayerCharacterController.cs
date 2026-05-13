@@ -6,14 +6,6 @@ using UnityEngine;
 
 namespace Controllers
 {
-    public enum CharacterState
-    {
-        Grounded,
-        Airborne,
-        Dashing,    // not yet implemented — read HandleDashVelocity for step-by-step guidance
-        Climbing,
-    }
-
     /// <summary>
     /// Implements ICharacterController so KinematicCharacterMotor calls us
     /// once per FixedUpdate with the correct callback order:
@@ -50,11 +42,11 @@ namespace Controllers
 
         [Header("Dash")]
         [SerializeField] private float dashSpeed    = 30f;
-        [SerializeField] private float dashDuration = 0.2f; // seconds
+        [SerializeField] public float dashDuration = 0.2f; // seconds
         [SerializeField] private float dashCooldown = 2f;   // seconds
-        private float   _dashDurationTimer;
-        private float   _dashCooldownTimer;
-        private Vector3 _dashDirection;
+        public float   dashDurationTimer;
+        public float   dashCooldownTimer;
+        public Vector3 dashDirection;
 
         [Header("Rotation")]
         [SerializeField] private float stepAngle        = 90f;
@@ -62,7 +54,7 @@ namespace Controllers
 
         // ── Public state (consumed by PlayerAnimationController) ─────────────────
         public event Action OnJumped;
-        public CharacterState CurrentState  { get; private set; }
+        public CharacterState CurrentState => StateMachine.CurrentState;
         public bool  IsGrounded    => motor.GroundingStatus.IsStableOnGround;
         public float ForwardSpeed  => Vector3.Dot(motor.Velocity, motor.CharacterForward);
         public float VerticalSpeed => Vector3.Dot(motor.Velocity, motor.CharacterUp);
@@ -82,12 +74,14 @@ namespace Controllers
         private float _rotationTimer;
         private float _currentYAngle;
         private float _targetYAngle;
-
+        
+        // ── Player State Machine ──────────────────────────────────────────────────────────────
+        public PlayerStateMachine StateMachine; 
         // ─────────────────────────────────────────────────────────────────────────
         private void Start()
         {
             motor.CharacterController = this;
-            TransitionToState(CharacterState.Grounded);
+            StateMachine = new PlayerStateMachine(this, CharacterState.Grounded);
             _arrowLauncher = GetComponent<ArrowLauncher>();
         }
 
@@ -106,53 +100,6 @@ namespace Controllers
             if (inputs.RotationInput != 0f) _pendingRotationInput = inputs.RotationInput;
         }
 
-        // ── State machine ─────────────────────────────────────────────────────────
-
-        public void TransitionToState(CharacterState newState)
-        {
-            OnStateExit(CurrentState, newState);
-            CurrentState = newState;
-            OnStateEnter(newState);
-        }
-
-        private void OnStateEnter(CharacterState state)
-        {
-            switch (state)
-            {
-                case CharacterState.Grounded:
-                    break;
-
-                case CharacterState.Airborne:
-                    break;
-
-                case CharacterState.Dashing:
-                    _dashDirection = ComputeMoveDirection();
-                    if (_dashDirection == Vector3.zero) _dashDirection = motor.CharacterForward;
-                    _dashDurationTimer = dashDuration;
-                    break;
-                case CharacterState.Climbing:
-                    break;
-            }
-        }
-
-        private void OnStateExit(CharacterState state, CharacterState toState)
-        {
-            switch (state)
-            {
-                case CharacterState.Grounded:
-                    break;
-
-                case CharacterState.Airborne:
-                    break;
-
-                case CharacterState.Dashing:
-                    // TODO: set character velocity to zero if entering Airborne state
-                    break;
-                case CharacterState.Climbing:
-                    break;
-            }
-        }
-
         // ── ICharacterController callbacks ────────────────────────────────────────
 
         public void BeforeCharacterUpdate(float deltaTime)
@@ -161,13 +108,13 @@ namespace Controllers
             HandleRotationInput();
 
             // ── DASH ──
-            if (_dashRequested && _dashCooldownTimer <= 0f && CurrentState != CharacterState.Dashing)
+            if (_dashRequested && dashCooldownTimer <= 0f && CurrentState != CharacterState.Dashing)
             {
-                _dashCooldownTimer = dashCooldown;
+                dashCooldownTimer = dashCooldown;
                 _dashRequested = false;
-                TransitionToState(CharacterState.Dashing);
+                StateMachine.TransitionToState(CharacterState.Dashing);
             }
-            _dashCooldownTimer = Mathf.Max(0f, _dashCooldownTimer - deltaTime);
+            dashCooldownTimer = Mathf.Max(0f, dashCooldownTimer - deltaTime);
         }
 
         public void UpdateRotation(ref Quaternion currentRotation, float deltaTime)
@@ -200,16 +147,16 @@ namespace Controllers
 
         public void PostGroundingUpdate(float deltaTime)
         {
-            switch (motor.GroundingStatus.IsStableOnGround)
+            switch (IsGrounded)
             {
                 // KCC has finished grounding detection — now is the safe moment to
                 // switch states based on whether we're on the ground or not.
                 case true when CurrentState == CharacterState.Airborne:
-                    TransitionToState(CharacterState.Grounded);
+                    StateMachine.TransitionToState(CharacterState.Grounded);
                     break;
 
                 case false when CurrentState == CharacterState.Grounded:
-                    TransitionToState(CharacterState.Airborne);
+                    StateMachine.TransitionToState(CharacterState.Airborne);
                     break;
             }
         }
@@ -270,11 +217,11 @@ namespace Controllers
         
         private void HandleDashVelocity(ref Vector3 currentVelocity, float deltaTime)
         {
-            currentVelocity  = _dashDirection * dashSpeed;
+            currentVelocity  = dashDirection * dashSpeed;
             currentVelocity.y = 0f;   // keep it horizontal
-            _dashDurationTimer -= deltaTime;
-            if (_dashDurationTimer <= 0f)
-                TransitionToState(motor.GroundingStatus.IsStableOnGround
+            dashDurationTimer -= deltaTime;
+            if (dashDurationTimer <= 0f)
+                StateMachine.TransitionToState(IsGrounded
                     ? CharacterState.Grounded
                     : CharacterState.Airborne);
         }
@@ -293,7 +240,7 @@ namespace Controllers
             {
                 if (moveInput > 0.01f || jumpInput)
                 {
-                    TransitionToState(motor.GroundingStatus.IsStableOnGround
+                    StateMachine.TransitionToState(IsGrounded
                         ? CharacterState.Grounded
                         : CharacterState.Airborne);
                 }
@@ -302,7 +249,7 @@ namespace Controllers
             {
                 if (moveInput < -0.01f || jumpInput)
                 {
-                    TransitionToState(motor.GroundingStatus.IsStableOnGround
+                    StateMachine.TransitionToState(IsGrounded
                         ? CharacterState.Grounded
                         : CharacterState.Airborne);
                 }
@@ -317,7 +264,7 @@ namespace Controllers
 
         // ── Shared helpers ────────────────────────────────────────────────────────
 
-        private Vector3 ComputeMoveDirection()
+        public Vector3 ComputeMoveDirection()
         {
             if (_inputs.MoveInput.sqrMagnitude < 0.01f) return Vector3.zero;
 
