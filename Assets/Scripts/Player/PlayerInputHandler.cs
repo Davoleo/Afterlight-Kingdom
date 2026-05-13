@@ -69,21 +69,23 @@ namespace Player
             camForward.Normalize();
             camRight.Normalize();
 
-            PlayerInputs inputs = new PlayerInputs
+            MovementInputs moveInputs = new MovementInputs
             {
-                MoveInput     = moveAction.action.ReadValue<Vector2>(),
+                MoveInput = moveAction.action.ReadValue<Vector2>(),
                 CameraForward = camForward,
-                CameraRight   = camRight,
-                JumpPressed   = jumpAction.action.triggered,
-                RotationInput = rotateLeftAction.action.triggered  ? -1f
-                    : rotateRightAction.action.triggered ? +1f : 0f,
-                DashPressed   = dashAction.action.triggered,
-                ShootPressed  = shootAction.action.WasPressedThisFrame(),
-                ClimbInput    = climbAction.action.ReadValue<Vector2>(),
-                InteractPressed = interactAction.action.triggered,
+                CameraRight = camRight,
+                ClimbInput = climbAction.action.ReadValue<Vector2>()
             };
 
-            characterController.SetInputs(ref inputs);
+            PlayerCommand commands = PlayerCommand.None;
+            commands |= rotateLeftAction.action.triggered ? PlayerCommand.RotateCameraLeft : 0;
+            commands |= rotateRightAction.action.triggered ? PlayerCommand.RotateCameraRight : 0;
+            commands |= jumpAction.action.triggered ? PlayerCommand.Jump : 0;
+            commands |= dashAction.action.triggered ? PlayerCommand.Dash : 0;
+            commands |= shootAction.action.triggered ? PlayerCommand.Shoot : 0;
+            commands |= interactAction.action.triggered ? PlayerCommand.Interact : 0;
+
+            characterController.SetInputs(moveInputs, commands);
         }
     }
 }

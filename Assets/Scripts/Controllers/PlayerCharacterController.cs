@@ -60,14 +60,10 @@ namespace Controllers
         public float VerticalSpeed => Vector3.Dot(motor.Velocity, motor.CharacterUp);
 
         // ── Input cache ───────────────────────────────────────────────────────────
-        private PlayerInputs _inputs;
-
+        private MovementInputs moveInputs;
         // Latched flags: consumed in callbacks (FixedUpdate).
         // This bridges the Update/FixedUpdate timing gap so no input is ever dropped.
-        private bool  _jumpRequested;
-        private bool  _dashRequested;
-        private bool  _shootRequested;
-        private float _pendingRotationInput;   // -1, 0, +1 — cleared after StartRotation()
+        private PlayerCommand commands;
 
         // ── Rotation ──────────────────────────────────────────────────────────────
         private bool  _isRotating;
@@ -90,14 +86,10 @@ namespace Controllers
         /// Latches one-shot inputs (jump, rotation) so they survive until the
         /// next FixedUpdate even if Update runs multiple times between physics steps.
         /// </summary>
-        public void SetInputs(ref PlayerInputs inputs)
+        public void SetInputs(MovementInputs inputs, PlayerCommand commands)
         {
-            _inputs = inputs;
-
-            if (inputs.JumpPressed)  _jumpRequested        = true;
-            if (inputs.DashPressed)  _dashRequested        = true;
-            if (inputs.ShootPressed) _shootRequested      = true;
-            if (inputs.RotationInput != 0f) _pendingRotationInput = inputs.RotationInput;
+            moveInputs = inputs;
+            this.commands |= commands;
         }
 
         // ── ICharacterController callbacks ────────────────────────────────────────
@@ -108,10 +100,10 @@ namespace Controllers
             HandleRotationInput();
 
             // ── DASH ──
-            if (_dashRequested && dashCooldownTimer <= 0f && CurrentState != CharacterState.Dashing)
+            if (CommandUtils.IsUp(commands, PlayerCommand.Dash) && dashCooldownTimer <= 0f && CurrentState != CharacterState.Dashing)
             {
                 dashCooldownTimer = dashCooldown;
-                _dashRequested = false;
+                CommandUtils.Off(ref commands, PlayerCommand.Dash);
                 StateMachine.TransitionToState(CharacterState.Dashing);
             }
             dashCooldownTimer = Mathf.Max(0f, dashCooldownTimer - deltaTime);
@@ -163,17 +155,15 @@ namespace Controllers
 
         public void AfterCharacterUpdate(float deltaTime)
         {
-
             // Clear latched flags AFTER the motor has consumed them this frame.
-            _jumpRequested  = false;
-            _dashRequested  = false;
-            if (_shootRequested)
+            CommandUtils.Off(ref commands, PlayerCommand.Jump | PlayerCommand.Dash);
+            if (CommandUtils.IsUp( commands, PlayerCommand.Shoot))
             {
                 if (_arrowLauncher != null)
                     _arrowLauncher.TryLaunch(motor.CharacterForward);
                 else
                     Debug.LogError("ArrowLauncher component missing on " + gameObject.name, this);
-                _shootRequested = false;
+                CommandUtils.Off(ref commands, PlayerCommand.Shoot);
             }
         }
 
@@ -184,7 +174,7 @@ namespace Controllers
             // Reorient current velocity to the slope normal so speed is preserved on ramps.
             currentVelocity = motor.GetDirectionTangentToSurface(currentVelocity, motor.GroundingStatus.GroundNormal) * currentVelocity.magnitude;
 
-            if (_jumpRequested)
+            if (CommandUtils.IsUp(commands, PlayerCommand.Jump))
             {
                 motor.ForceUnground();  // tells KCC to stop snapping to ground this frame
                 currentVelocity += (jumpUpSpeed * motor.CharacterUp)
@@ -204,7 +194,7 @@ namespace Controllers
         private void HandleAirborneVelocity(ref Vector3 currentVelocity, float deltaTime)
         {
             // Partial air control: player can steer but not instantly change direction.
-            if (_inputs.MoveInput.sqrMagnitude > 0.01f)
+            if (moveInputs.MoveInput.sqrMagnitude > 0.01f)
             {
                 Vector3 targetHorizontal = ComputeMoveDirection() * maxAirMoveSpeed;
                 Vector3 velocityDiff     = Vector3.ProjectOnPlane(targetHorizontal - currentVelocity, gravity.normalized);
@@ -228,10 +218,10 @@ namespace Controllers
 
         private void HandleClimbVelocity(ref Vector3 currentVelocity, float deltaTime)
         {
-            var climbInput = _inputs.ClimbInput.y;
-            var moveInput = _inputs.MoveInput.x;
+            var climbInput = moveInputs.ClimbInput.y;
+            var moveInput = moveInputs.MoveInput.x;
             // TODO: implement jump during climbing state
-            var jumpInput = _inputs.JumpPressed;
+            var jumpInput = CommandUtils.IsUp(commands, PlayerCommand.Jump);
 
             float xDirection = transform.forward.x;
             float zDirection = transform.forward.z;
@@ -266,29 +256,26 @@ namespace Controllers
 
         public Vector3 ComputeMoveDirection()
         {
-            if (_inputs.MoveInput.sqrMagnitude < 0.01f) return Vector3.zero;
+            if (moveInputs.MoveInput.sqrMagnitude < 0.01f) return Vector3.zero;
 
-            return (_inputs.CameraForward * _inputs.MoveInput.y
-                    + _inputs.CameraRight  * _inputs.MoveInput.x).normalized;
+            return (moveInputs.CameraForward * moveInputs.MoveInput.y
+                    + moveInputs.CameraRight  * moveInputs.MoveInput.x).normalized;
         }
 
         private void HandleRotationInput()
         {
-            if (_isRotating || _pendingRotationInput == 0f) return;
+            var pendingRotationInput = 0F;
+            if (CommandUtils.IsUp(commands, PlayerCommand.RotateCameraLeft))        pendingRotationInput = -1F;
+            else if (CommandUtils.IsUp(commands, PlayerCommand.RotateCameraRight))   pendingRotationInput = 1F;
 
-            Debug.Log(_pendingRotationInput);
+            if (_isRotating || pendingRotationInput == 0f) return;
 
-            _targetYAngle += (stepAngle * _pendingRotationInput); // * _pendingRotationInput is used to rotate by 180° if _pendingRotationInput = 2 is passed
+            _targetYAngle += (stepAngle * pendingRotationInput); // * _pendingRotationInput is used to rotate by 180° if _pendingRotationInput = 2 is passed
 
             _currentYAngle       = motor.TransientRotation.eulerAngles.y;
             _rotationTimer       = 0f;
             _isRotating          = true;
-            _pendingRotationInput = 0f;   // consumed
-        }
-
-        public void SetPendingRotationInput(int pendingRotation)
-        {
-            _pendingRotationInput = pendingRotation;
+            CommandUtils.Off(ref commands, PlayerCommand.RotateCameraLeft | PlayerCommand.RotateCameraRight);
         }
 
         // ── Unused required ICharacterController methods ──────────────────────────
