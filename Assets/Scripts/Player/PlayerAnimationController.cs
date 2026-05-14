@@ -6,7 +6,7 @@ namespace Player
     public class PlayerAnimationController : MonoBehaviour
     {
         [SerializeField] private PlayerCharacterController characterController;
-        private Animator animator;
+        private Animator _animator;
 
         private static readonly int SpeedHash          = Animator.StringToHash("Speed");
         private static readonly int GroundedHash       = Animator.StringToHash("Grounded");
@@ -18,33 +18,33 @@ namespace Player
 
         private void Start()
         {
-            animator = gameObject.GetComponent<Animator>();
+            _animator = gameObject.GetComponent<Animator>();
         }
 
         private void OnEnable()
         {
-            characterController.OnJumped += TriggerJump;
+            characterController.StateMachine.GroundedState.OnJumped += TriggerJump;
         }
 
         private void OnDisable()
         {
-            characterController.OnJumped -= TriggerJump;
+            characterController.StateMachine.GroundedState.OnJumped -= TriggerJump;
         }
 
         private void TriggerJump()
         {
-            animator.SetTrigger(JumpHash);
+            _animator.SetTrigger(JumpHash);
         }
 
         private void Update()
         {
             bool isGrounded = characterController.IsGrounded;
-            animator.SetFloat(SpeedHash,         characterController.ForwardSpeed);
-            animator.SetFloat(VerticalSpeedHash, characterController.VerticalSpeed);
-            animator.SetBool(GroundedHash,       isGrounded);
-            animator.SetBool(AirborneHash,       !isGrounded);
-            animator.SetBool(DashHash,           characterController.CurrentState == CharacterState.Dashing);
-            animator.SetBool(ClimbHash,          characterController.CurrentState == CharacterState.Climbing);
+            _animator.SetFloat(SpeedHash,         characterController.ForwardSpeed);
+            _animator.SetFloat(VerticalSpeedHash, characterController.VerticalSpeed);
+            _animator.SetBool(GroundedHash,       isGrounded);
+            _animator.SetBool(AirborneHash,       !isGrounded);
+            _animator.SetBool(DashHash,           characterController.StateMachine.CurrentState == characterController.StateMachine.DashingState);
+            _animator.SetBool(ClimbHash,          characterController.StateMachine.CurrentState == characterController.StateMachine.ClimbingState);
         }
     }
 }

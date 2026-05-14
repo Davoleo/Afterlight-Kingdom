@@ -1,6 +1,6 @@
-using System;
 using KinematicCharacterController;
 using Player;
+using Player.State;
 using Projectiles;
 using UnityEngine;
 
@@ -28,42 +28,28 @@ namespace Controllers
         [Header("References")]
         public KinematicCharacterMotor motor;
 
-        [Header("Ground Movement")]
-        [SerializeField] private float maxMoveSpeed       = 5f;
-        [SerializeField] private float movementSharpness  = 15f;    // higher = snappier acceleration
-
-        [Header("Air Movement")] 
-        [SerializeField] private float maxAirMoveSpeed  = 5f;
-        [SerializeField] private float airAcceleration  = 5f;
-        [SerializeField] private Vector3 gravity        = new Vector3(0f, -20f, 0f);
-
         [Header("Jump")]
-        [SerializeField] private float jumpUpSpeed = 5f;
+        [SerializeField] public float jumpUpSpeed = 5f;
 
         [Header("Dash")]
-        [SerializeField] private float dashSpeed    = 30f;
-        [SerializeField] public float dashDuration = 0.2f; // seconds
         [SerializeField] private float dashCooldown = 2f;   // seconds
-        public float   dashDurationTimer;
         public float   dashCooldownTimer;
-        public Vector3 dashDirection;
 
         [Header("Rotation")]
         [SerializeField] private float stepAngle        = 90f;
         [SerializeField] private float rotationDuration = 0.3f;
 
         // ── Public state (consumed by PlayerAnimationController) ─────────────────
-        public event Action OnJumped;
-        public CharacterState CurrentState => StateMachine.CurrentState;
+        public PlayerState CurrentState => StateMachine.CurrentState;
         public bool  IsGrounded    => motor.GroundingStatus.IsStableOnGround;
         public float ForwardSpeed  => Vector3.Dot(motor.Velocity, motor.CharacterForward);
         public float VerticalSpeed => Vector3.Dot(motor.Velocity, motor.CharacterUp);
 
         // ── Input cache ───────────────────────────────────────────────────────────
-        private MovementInputs moveInputs;
+        public MovementInputs MoveInputs;
         // Latched flags: consumed in callbacks (FixedUpdate).
         // This bridges the Update/FixedUpdate timing gap so no input is ever dropped.
-        private PlayerCommand commands;
+        public PlayerCommand commands;
 
         // ── Rotation ──────────────────────────────────────────────────────────────
         private bool  _isRotating;
@@ -76,9 +62,13 @@ namespace Controllers
         // ─────────────────────────────────────────────────────────────────────────
         private void Start()
         {
-            motor.CharacterController = this;
-            StateMachine = new PlayerStateMachine(this, CharacterState.Grounded);
             _arrowLauncher = GetComponent<ArrowLauncher>();
+        }
+
+        private void Awake()
+        {
+            StateMachine = new PlayerStateMachine(this);
+            motor.CharacterController = this;
         }
 
         /// <summary>
@@ -86,13 +76,15 @@ namespace Controllers
         /// Latches one-shot inputs (jump, rotation) so they survive until the
         /// next FixedUpdate even if Update runs multiple times between physics steps.
         /// </summary>
-        public void SetInputs(MovementInputs inputs, PlayerCommand commands)
+        public void SetInputs(MovementInputs inputs, PlayerCommand pcommands)
         {
-            moveInputs = inputs;
-            this.commands |= commands;
+            MoveInputs = inputs;
+            commands |= pcommands;
         }
 
         // ── ICharacterController callbacks ────────────────────────────────────────
+
+        public void UpdateVelocity(ref Vector3 currentVelocity, float deltaTime) => CurrentState.UpdateVelocity(ref currentVelocity, deltaTime);
 
         public void BeforeCharacterUpdate(float deltaTime)
         {
@@ -100,11 +92,11 @@ namespace Controllers
             HandleRotationInput();
 
             // ── DASH ──
-            if (CommandUtils.IsUp(commands, PlayerCommand.Dash) && dashCooldownTimer <= 0f && CurrentState != CharacterState.Dashing)
+            if (CommandUtils.IsUp(commands, PlayerCommand.Dash) && dashCooldownTimer <= 0f && CurrentState != StateMachine.DashingState)
             {
                 dashCooldownTimer = dashCooldown;
                 CommandUtils.Off(ref commands, PlayerCommand.Dash);
-                StateMachine.TransitionToState(CharacterState.Dashing);
+                StateMachine.TransitionToState(StateMachine.DashingState);
             }
             dashCooldownTimer = Mathf.Max(0f, dashCooldownTimer - deltaTime);
         }
@@ -126,29 +118,18 @@ namespace Controllers
             _targetYAngle  = Mathf.Round(_targetYAngle / stepAngle) * stepAngle;
         }
 
-        public void UpdateVelocity(ref Vector3 currentVelocity, float deltaTime)
-        {
-            switch (CurrentState)
-            {
-                case CharacterState.Grounded: HandleGroundedVelocity(ref currentVelocity, deltaTime); break;
-                case CharacterState.Airborne: HandleAirborneVelocity(ref currentVelocity, deltaTime); break;
-                case CharacterState.Dashing:  HandleDashVelocity(ref currentVelocity, deltaTime);     break;
-                case CharacterState.Climbing: HandleClimbVelocity(ref currentVelocity, deltaTime);    break;
-            }
-        }
-
         public void PostGroundingUpdate(float deltaTime)
         {
             switch (IsGrounded)
             {
                 // KCC has finished grounding detection — now is the safe moment to
                 // switch states based on whether we're on the ground or not.
-                case true when CurrentState == CharacterState.Airborne:
-                    StateMachine.TransitionToState(CharacterState.Grounded);
+                case true when CurrentState == StateMachine.AirborneState:
+                    StateMachine.TransitionToState(StateMachine.GroundedState);
                     break;
 
-                case false when CurrentState == CharacterState.Grounded:
-                    StateMachine.TransitionToState(CharacterState.Airborne);
+                case false when CurrentState == StateMachine.GroundedState:
+                    StateMachine.TransitionToState(StateMachine.AirborneState);
                     break;
             }
         }
@@ -166,100 +147,15 @@ namespace Controllers
                 CommandUtils.Off(ref commands, PlayerCommand.Shoot);
             }
         }
-
-        // ── Velocity handlers ─────────────────────────────────────────────────────
-
-        private void HandleGroundedVelocity(ref Vector3 currentVelocity, float deltaTime)
-        {
-            // Reorient current velocity to the slope normal so speed is preserved on ramps.
-            currentVelocity = motor.GetDirectionTangentToSurface(currentVelocity, motor.GroundingStatus.GroundNormal) * currentVelocity.magnitude;
-
-            if (CommandUtils.IsUp(commands, PlayerCommand.Jump))
-            {
-                motor.ForceUnground();  // tells KCC to stop snapping to ground this frame
-                currentVelocity += (jumpUpSpeed * motor.CharacterUp)
-                                   - Vector3.Project(currentVelocity, motor.CharacterUp);
-                OnJumped?.Invoke();
-                // State transition to Airborne happens in PostGroundingUpdate automatically.
-                return;
-            }
-
-            Vector3 targetVelocity = ComputeMoveDirection() * maxMoveSpeed;
-
-            // Exponential smoothing — frame-rate independent, same feel as Lerp but stable.
-            currentVelocity = Vector3.Lerp(currentVelocity, targetVelocity,
-                1f - Mathf.Exp(-movementSharpness * deltaTime));
-        }
-
-        private void HandleAirborneVelocity(ref Vector3 currentVelocity, float deltaTime)
-        {
-            // Partial air control: player can steer but not instantly change direction.
-            if (moveInputs.MoveInput.sqrMagnitude > 0.01f)
-            {
-                Vector3 targetHorizontal = ComputeMoveDirection() * maxAirMoveSpeed;
-                Vector3 velocityDiff     = Vector3.ProjectOnPlane(targetHorizontal - currentVelocity, gravity.normalized);
-                currentVelocity += deltaTime * airAcceleration * velocityDiff;
-            }
-
-            currentVelocity += gravity * deltaTime;
-        }
-
         
-        private void HandleDashVelocity(ref Vector3 currentVelocity, float deltaTime)
-        {
-            currentVelocity  = dashDirection * dashSpeed;
-            currentVelocity.y = 0f;   // keep it horizontal
-            dashDurationTimer -= deltaTime;
-            if (dashDurationTimer <= 0f)
-                StateMachine.TransitionToState(IsGrounded
-                    ? CharacterState.Grounded
-                    : CharacterState.Airborne);
-        }
-
-        private void HandleClimbVelocity(ref Vector3 currentVelocity, float deltaTime)
-        {
-            var climbInput = moveInputs.ClimbInput.y;
-            var moveInput = moveInputs.MoveInput.x;
-            // TODO: implement jump during climbing state
-            var jumpInput = CommandUtils.IsUp(commands, PlayerCommand.Jump);
-
-            float xDirection = transform.forward.x;
-            float zDirection = transform.forward.z;
-
-            if (zDirection > 0f || xDirection > 0f)
-            {
-                if (moveInput > 0.01f || jumpInput)
-                {
-                    StateMachine.TransitionToState(IsGrounded
-                        ? CharacterState.Grounded
-                        : CharacterState.Airborne);
-                }
-            }
-            else if (zDirection < 0f || xDirection < 0f)
-            {
-                if (moveInput < -0.01f || jumpInput)
-                {
-                    StateMachine.TransitionToState(IsGrounded
-                        ? CharacterState.Grounded
-                        : CharacterState.Airborne);
-                }
-            }
-                
-            //transform.Rotate(Vector3.up, transform.rotation.y - );
-            //motor.RotateCharacter();
-            currentVelocity.y = climbInput;
-
-
-        }
-
         // ── Shared helpers ────────────────────────────────────────────────────────
 
         public Vector3 ComputeMoveDirection()
         {
-            if (moveInputs.MoveInput.sqrMagnitude < 0.01f) return Vector3.zero;
+            if (MoveInputs.MoveInput.sqrMagnitude < 0.01f) return Vector3.zero;
 
-            return (moveInputs.CameraForward * moveInputs.MoveInput.y
-                    + moveInputs.CameraRight  * moveInputs.MoveInput.x).normalized;
+            return (MoveInputs.CameraForward * MoveInputs.MoveInput.y
+                    + MoveInputs.CameraRight  * MoveInputs.MoveInput.x).normalized;
         }
 
         private void HandleRotationInput()

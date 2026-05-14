@@ -1,4 +1,5 @@
 using Controllers;
+using Player.State;
 using UnityEngine;
 
 namespace Triggers
@@ -20,12 +21,12 @@ namespace Triggers
         {
             if (other.gameObject.CompareTag("Player"))
             {
-                if (_stateMachine.CurrentState != CharacterState.Climbing)
+                if (_stateMachine.CurrentState != _stateMachine.ClimbingState)
                 {
                     Debug.Log(_stateMachine.CurrentState);
 
                     // TODO: update character rotation to match ladder climbing
-                    _stateMachine.TransitionToState(CharacterState.Climbing);
+                    _stateMachine.TransitionToState(_stateMachine.ClimbingState);
                 }
             }
         }
@@ -34,10 +35,10 @@ namespace Triggers
         {
             if (other.gameObject.CompareTag("Player"))
             {
-                if (_stateMachine.CurrentState == CharacterState.Climbing)
+                if (_stateMachine.CurrentState == _stateMachine.ClimbingState)
                 {
                     _stateMachine.TransitionToState(_controller.IsGrounded ?
-                        CharacterState.Grounded : CharacterState.Airborne);
+                        _stateMachine.GroundedState : _stateMachine.AirborneState);
                 }
             }
         }
