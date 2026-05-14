@@ -56,7 +56,10 @@ namespace Controllers
         private float _rotationTimer;
         private float _currentYAngle;
         private float _targetYAngle;
-        
+
+        // ── Context Variables ──────────────────────────────────────────────────────────────
+        private Vector3 currentGroundObjectPos;
+
         // ── Player State Machine ──────────────────────────────────────────────────────────────
         public PlayerStateMachine StateMachine; 
         // ─────────────────────────────────────────────────────────────────────────
@@ -112,6 +115,9 @@ namespace Controllers
             float newY = Mathf.LerpAngle(_currentYAngle, _targetYAngle, t);
             currentRotation = Quaternion.Euler(0f, newY, 0f);
 
+            if (CurrentState == StateMachine.GroundedState)
+                SnapPlayerLocation(t);
+
             if (_rotationTimer < 1f) return;
 
             _isRotating    = false;
@@ -158,6 +164,18 @@ namespace Controllers
                     + MoveInputs.CameraRight  * MoveInputs.MoveInput.x).normalized;
         }
 
+        private void SnapPlayerLocation(float t)
+        {
+            var pos = transform.position;
+            var rX = currentGroundObjectPos.x;
+            var rZ = currentGroundObjectPos.z;
+
+            var lerpX = Mathf.Lerp(pos.x, rX, t);
+            var lerpZ = Mathf.Lerp(pos.z, rZ, t);
+
+            motor.SetPosition(new Vector3(lerpX, pos.y, lerpZ));
+        }
+
         private void HandleRotationInput()
         {
             var pendingRotationInput = 0F;
@@ -177,7 +195,12 @@ namespace Controllers
         // ── Unused required ICharacterController methods ──────────────────────────
 
         public bool IsColliderValidForCollisions(Collider coll) => true;
-        public void OnGroundHit(Collider hitCollider, Vector3 hitNormal, Vector3 hitPoint, ref HitStabilityReport hitStabilityReport) { }
+
+        public void OnGroundHit(Collider hitCollider, Vector3 hitNormal, Vector3 hitPoint,
+            ref HitStabilityReport hitStabilityReport)
+        {
+            currentGroundObjectPos = hitCollider.transform.position;
+        }
         public void OnMovementHit(Collider hitCollider, Vector3 hitNormal, Vector3 hitPoint, ref HitStabilityReport hitStabilityReport) { }
         public void ProcessHitStabilityReport(Collider hitCollider, Vector3 hitNormal, Vector3 hitPoint, Vector3 atCharacterPosition, Quaternion atCharacterRotation, ref HitStabilityReport hitStabilityReport) { }
         public void OnDiscreteCollisionDetected(Collider hitCollider) { }
