@@ -42,7 +42,7 @@ namespace Player
 
         public static void On(ref PlayerCommand flags, PlayerCommand command)
         {
-            flags &= ~command;
+            flags |= command;
         }
     }
 }
