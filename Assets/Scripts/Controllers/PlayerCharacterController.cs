@@ -6,25 +6,10 @@ using UnityEngine;
 
 namespace Controllers
 {
-    /// <summary>
-    /// Implements ICharacterController so KinematicCharacterMotor calls us
-    /// once per FixedUpdate with the correct callback order:
-    ///
-    ///   BeforeCharacterUpdate  → read latched inputs, trigger state transitions
-    ///   UpdateRotation         → tell the motor where to face
-    ///   UpdateVelocity         → tell the motor how fast to move
-    ///   PostGroundingUpdate    → react to landing / leaving ground
-    ///   AfterCharacterUpdate   → consume one-shot flags
-    ///
-    /// Rule: velocity and rotation are ONLY ever set inside their respective
-    /// callbacks. Never call motor.Move() yourself.
-    ///
-    /// Public read-only properties (IsGrounded, MovementMagnitude, CurrentState)
-    /// are the interface used by a future PlayerAnimationController.
-    /// </summary>
     public class PlayerCharacterController : MonoBehaviour, ICharacterController
     {
         private ArrowLauncher _arrowLauncher;
+
         [Header("References")]
         public KinematicCharacterMotor motor;
 
@@ -32,37 +17,36 @@ namespace Controllers
         [SerializeField] public float jumpUpSpeed = 5f;
 
         [Header("Dash")]
-        [SerializeField] private float dashCooldown = 2f;   // seconds
-        public float   dashCooldownTimer;
+        [SerializeField] private float dashCooldown = 2f;
+        public float dashCooldownTimer;
 
         [Header("Rotation")]
-        [SerializeField] private float stepAngle        = 90f;
+        [SerializeField] private float stepAngle = 90f;
         [SerializeField] private float rotationDuration = 0.3f;
 
-        // ── Public state (consumed by PlayerAnimationController) ─────────────────
+        [Header("External Knockback")]
+        [SerializeField] private float knockbackDrag = 12f;
+
+        private Vector3 externalKnockbackVelocity;
+        private float externalKnockbackTimer;
+
         public PlayerState CurrentState => StateMachine.CurrentState;
-        public bool  IsGrounded    => motor.GroundingStatus.IsStableOnGround;
-        public float ForwardSpeed  => Vector3.Dot(motor.Velocity, motor.CharacterForward);
+        public bool IsGrounded => motor.GroundingStatus.IsStableOnGround;
+        public float ForwardSpeed => Vector3.Dot(motor.Velocity, motor.CharacterForward);
         public float VerticalSpeed => Vector3.Dot(motor.Velocity, motor.CharacterUp);
 
-        // ── Input cache ───────────────────────────────────────────────────────────
         public MovementInputs MoveInputs;
-        // Latched flags: consumed in callbacks (FixedUpdate).
-        // This bridges the Update/FixedUpdate timing gap so no input is ever dropped.
         public PlayerCommand commands;
 
-        // ── Rotation ──────────────────────────────────────────────────────────────
-        private bool  _isRotating;
+        private bool _isRotating;
         private float _rotationTimer;
         private float _currentYAngle;
         private float _targetYAngle;
 
-        // ── Context Variables ──────────────────────────────────────────────────────────────
         private Vector3 currentGroundObjectPos;
 
-        // ── Player State Machine ──────────────────────────────────────────────────────────────
-        public PlayerStateMachine StateMachine; 
-        // ─────────────────────────────────────────────────────────────────────────
+        public PlayerStateMachine StateMachine;
+
         private void Start()
         {
             _arrowLauncher = GetComponent<ArrowLauncher>();
@@ -71,65 +55,104 @@ namespace Controllers
         private void Awake()
         {
             StateMachine = new PlayerStateMachine(this);
+
+            if (motor == null)
+                motor = GetComponent<KinematicCharacterMotor>();
+
             motor.CharacterController = this;
         }
 
-        /// <summary>
-        /// Called every Update by PlayerInputHandler.
-        /// Latches one-shot inputs (jump, rotation) so they survive until the
-        /// next FixedUpdate even if Update runs multiple times between physics steps.
-        /// </summary>
         public void SetInputs(MovementInputs inputs, PlayerCommand pcommands)
         {
             MoveInputs = inputs;
             commands |= pcommands;
         }
 
-        // ── ICharacterController callbacks ────────────────────────────────────────
+        public void ApplyExternalKnockback(Vector3 direction, float distance, float duration)
+        {
+            direction.y = 0f;
 
-        public void UpdateVelocity(ref Vector3 currentVelocity, float deltaTime) => CurrentState.UpdateVelocity(ref currentVelocity, deltaTime);
+            if (direction.sqrMagnitude < 0.01f)
+                return;
+
+            if (duration <= 0f)
+                duration = 0.16f;
+
+            direction.Normalize();
+
+            externalKnockbackVelocity = direction * (distance / duration);
+            externalKnockbackTimer = duration;
+        }
+
+        public void StopExternalKnockback()
+        {
+            externalKnockbackVelocity = Vector3.zero;
+            externalKnockbackTimer = 0f;
+        }
+
+        public void UpdateVelocity(ref Vector3 currentVelocity, float deltaTime)
+        {
+            CurrentState.UpdateVelocity(ref currentVelocity, deltaTime);
+
+            if (externalKnockbackTimer > 0f)
+            {
+                currentVelocity += externalKnockbackVelocity;
+
+                externalKnockbackTimer -= deltaTime;
+
+                externalKnockbackVelocity = Vector3.Lerp(
+                    externalKnockbackVelocity,
+                    Vector3.zero,
+                    1f - Mathf.Exp(-knockbackDrag * deltaTime)
+                );
+
+                if (externalKnockbackTimer <= 0f)
+                    StopExternalKnockback();
+            }
+        }
 
         public void BeforeCharacterUpdate(float deltaTime)
         {
-            // ── ROTATION ──
             HandleRotationInput();
 
-            // ── DASH ──
-            if (CommandUtils.IsUp(commands, PlayerCommand.Dash) && dashCooldownTimer <= 0f && CurrentState != StateMachine.DashingState)
+            if (CommandUtils.IsUp(commands, PlayerCommand.Dash) &&
+                dashCooldownTimer <= 0f &&
+                CurrentState != StateMachine.DashingState)
             {
                 dashCooldownTimer = dashCooldown;
                 CommandUtils.Off(ref commands, PlayerCommand.Dash);
                 StateMachine.TransitionToState(StateMachine.DashingState);
             }
+
             dashCooldownTimer = Mathf.Max(0f, dashCooldownTimer - deltaTime);
         }
 
         public void UpdateRotation(ref Quaternion currentRotation, float deltaTime)
         {
-            if (!_isRotating) return;
+            if (!_isRotating)
+                return;
 
             _rotationTimer += deltaTime / rotationDuration;
-            _rotationTimer  = Mathf.Clamp01(_rotationTimer);
+            _rotationTimer = Mathf.Clamp01(_rotationTimer);
 
-            float t    = Mathf.SmoothStep(0f, 1f, _rotationTimer);
+            float t = Mathf.SmoothStep(0f, 1f, _rotationTimer);
             float newY = Mathf.LerpAngle(_currentYAngle, _targetYAngle, t);
             currentRotation = Quaternion.Euler(0f, newY, 0f);
 
             if (CurrentState == StateMachine.GroundedState)
                 SnapPlayerLocation(t);
 
-            if (_rotationTimer < 1f) return;
+            if (_rotationTimer < 1f)
+                return;
 
-            _isRotating    = false;
-            _targetYAngle  = Mathf.Round(_targetYAngle / stepAngle) * stepAngle;
+            _isRotating = false;
+            _targetYAngle = Mathf.Round(_targetYAngle / stepAngle) * stepAngle;
         }
 
         public void PostGroundingUpdate(float deltaTime)
         {
             switch (IsGrounded)
             {
-                // KCC has finished grounding detection — now is the safe moment to
-                // switch states based on whether we're on the ground or not.
                 case true when CurrentState == StateMachine.AirborneState:
                     StateMachine.TransitionToState(StateMachine.GroundedState);
                     break;
@@ -142,26 +165,26 @@ namespace Controllers
 
         public void AfterCharacterUpdate(float deltaTime)
         {
-            // Clear latched flags AFTER the motor has consumed them this frame.
             CommandUtils.Off(ref commands, PlayerCommand.Jump | PlayerCommand.Dash);
-            if (CommandUtils.IsUp( commands, PlayerCommand.Shoot))
+
+            if (CommandUtils.IsUp(commands, PlayerCommand.Shoot))
             {
                 if (_arrowLauncher != null)
                     _arrowLauncher.TryLaunch(motor.CharacterForward);
                 else
                     Debug.LogError("ArrowLauncher component missing on " + gameObject.name, this);
+
                 CommandUtils.Off(ref commands, PlayerCommand.Shoot);
             }
         }
-        
-        // ── Shared helpers ────────────────────────────────────────────────────────
 
         public Vector3 ComputeMoveDirection()
         {
-            if (MoveInputs.MoveInput.sqrMagnitude < 0.01f) return Vector3.zero;
+            if (MoveInputs.MoveInput.sqrMagnitude < 0.01f)
+                return Vector3.zero;
 
             return (MoveInputs.CameraForward * MoveInputs.MoveInput.y
-                    + MoveInputs.CameraRight  * MoveInputs.MoveInput.x).normalized;
+                    + MoveInputs.CameraRight * MoveInputs.MoveInput.x).normalized;
         }
 
         private void SnapPlayerLocation(float t)
@@ -178,31 +201,76 @@ namespace Controllers
 
         private void HandleRotationInput()
         {
-            var pendingRotationInput = 0F;
-            if (CommandUtils.IsUp(commands, PlayerCommand.RotateCameraLeft))        pendingRotationInput = -1F;
-            else if (CommandUtils.IsUp(commands, PlayerCommand.RotateCameraRight))   pendingRotationInput = 1F;
+            var pendingRotationInput = 0f;
 
-            if (_isRotating || pendingRotationInput == 0f) return;
+            if (CommandUtils.IsUp(commands, PlayerCommand.RotateCameraLeft))
+                pendingRotationInput = -1f;
+            else if (CommandUtils.IsUp(commands, PlayerCommand.RotateCameraRight))
+                pendingRotationInput = 1f;
 
-            _targetYAngle += (stepAngle * pendingRotationInput); // * _pendingRotationInput is used to rotate by 180° if _pendingRotationInput = 2 is passed
+            if (_isRotating || pendingRotationInput == 0f)
+                return;
 
-            _currentYAngle       = motor.TransientRotation.eulerAngles.y;
-            _rotationTimer       = 0f;
-            _isRotating          = true;
+            _targetYAngle += stepAngle * pendingRotationInput;
+
+            _currentYAngle = motor.TransientRotation.eulerAngles.y;
+            _rotationTimer = 0f;
+            _isRotating = true;
+
             CommandUtils.Off(ref commands, PlayerCommand.RotateCameraLeft | PlayerCommand.RotateCameraRight);
         }
 
-        // ── Unused required ICharacterController methods ──────────────────────────
-
         public bool IsColliderValidForCollisions(Collider coll) => true;
 
-        public void OnGroundHit(Collider hitCollider, Vector3 hitNormal, Vector3 hitPoint,
+        public void OnGroundHit(
+            Collider hitCollider,
+            Vector3 hitNormal,
+            Vector3 hitPoint,
             ref HitStabilityReport hitStabilityReport)
         {
             currentGroundObjectPos = hitCollider.transform.position;
         }
-        public void OnMovementHit(Collider hitCollider, Vector3 hitNormal, Vector3 hitPoint, ref HitStabilityReport hitStabilityReport) { }
-        public void ProcessHitStabilityReport(Collider hitCollider, Vector3 hitNormal, Vector3 hitPoint, Vector3 atCharacterPosition, Quaternion atCharacterRotation, ref HitStabilityReport hitStabilityReport) { }
-        public void OnDiscreteCollisionDetected(Collider hitCollider) { }
+
+        public void OnMovementHit(
+            Collider hitCollider,
+            Vector3 hitNormal,
+            Vector3 hitPoint,
+            ref HitStabilityReport hitStabilityReport)
+        {
+            if (externalKnockbackTimer <= 0f)
+                return;
+
+            Vector3 horizontalNormal = hitNormal;
+            horizontalNormal.y = 0f;
+
+            Vector3 horizontalKnockback = externalKnockbackVelocity;
+            horizontalKnockback.y = 0f;
+
+            if (horizontalNormal.sqrMagnitude < 0.01f || horizontalKnockback.sqrMagnitude < 0.01f)
+                return;
+
+            horizontalNormal.Normalize();
+            horizontalKnockback.Normalize();
+
+            float movingIntoWall = Vector3.Dot(horizontalKnockback, -horizontalNormal);
+
+            if (movingIntoWall > 0.2f)
+                StopExternalKnockback();
+        }
+
+        public void ProcessHitStabilityReport(
+            Collider hitCollider,
+            Vector3 hitNormal,
+            Vector3 hitPoint,
+            Vector3 atCharacterPosition,
+            Quaternion atCharacterRotation,
+            ref HitStabilityReport hitStabilityReport)
+        { }
+
+        public void OnDiscreteCollisionDetected(Collider hitCollider)
+        {
+            if (externalKnockbackTimer > 0f)
+                StopExternalKnockback();
+        }
     }
 }

@@ -23,8 +23,8 @@ namespace Enemies
 
         [Header("Activation")]
         [SerializeField] private bool startsActive = true;
-        [SerializeField] private float detectionRange = 8f;
-        [SerializeField] private float losePlayerRange = 10f;
+        [SerializeField] private float detectionRange = 10f;
+        [SerializeField] private float losePlayerRange = 13f;
 
         [Header("Movement")]
         [SerializeField] private float patrolSpeed = 2f;
@@ -32,18 +32,23 @@ namespace Enemies
         [SerializeField] private float patrolPointTolerance = 0.25f;
 
         [Header("Shooting")]
-        [SerializeField] private float shootCooldown = 1.5f;
-        [SerializeField] private float shootWindup = 0.3f;
+        [SerializeField] private float shootCooldown = 1.2f;
+        [SerializeField] private float shootWindup = 0.25f;
 
         [Header("Gravity")]
         [SerializeField] private float gravity = 20f;
 
         private EnemyState currentState;
-        private Transform currentPatrolTarget;
 
         private Vector3 spawnPosition;
         private Vector3 movementDirection;
         private Vector3 lookDirection;
+
+        private Vector3 leftPatrolPosition;
+        private Vector3 rightPatrolPosition;
+        private Vector3 currentPatrolPosition;
+
+        private bool hasValidPatrolPoints;
 
         private bool isPreparingShot;
         private float shotStartTime;
@@ -60,8 +65,9 @@ namespace Enemies
         private void Start()
         {
             spawnPosition = transform.position;
+            CachePatrolPositions();
+
             currentState = startsActive ? EnemyState.Patrolling : EnemyState.Sleeping;
-            currentPatrolTarget = rightPatrolPoint;
 
             if (player == null)
             {
@@ -81,10 +87,21 @@ namespace Enemies
             UpdateShot();
         }
 
-        public void Activate()
+        private void CachePatrolPositions()
         {
-            if (currentState == EnemyState.Sleeping)
-                currentState = EnemyState.Patrolling;
+            hasValidPatrolPoints = leftPatrolPoint != null && rightPatrolPoint != null;
+
+            if (!hasValidPatrolPoints)
+            {
+                leftPatrolPosition = transform.position;
+                rightPatrolPosition = transform.position;
+                currentPatrolPosition = transform.position;
+                return;
+            }
+
+            leftPatrolPosition = leftPatrolPoint.position;
+            rightPatrolPosition = rightPatrolPoint.position;
+            currentPatrolPosition = rightPatrolPosition;
         }
 
         private void CheckPlayerDeathOrFall()
@@ -107,13 +124,14 @@ namespace Enemies
             else
                 transform.position = spawnPosition;
 
-            currentState = startsActive ? EnemyState.Patrolling : EnemyState.Sleeping;
-            currentPatrolTarget = rightPatrolPoint;
+            currentPatrolPosition = rightPatrolPosition;
 
             movementDirection = Vector3.zero;
             lookDirection = Vector3.zero;
 
             lastShotTime = Time.time;
+
+            currentState = startsActive ? EnemyState.Patrolling : EnemyState.Sleeping;
         }
 
         private void UpdateState()
@@ -181,36 +199,24 @@ namespace Enemies
 
         private void Shoot()
         {
-            if (shootPoint == null)
+            if (shootPoint == null || projectilePrefab == null || player == null)
             {
-                Debug.LogWarning("Ranged enemy: ShootPoint mancante.");
-                return;
-            }
-
-            if (projectilePrefab == null)
-            {
-                Debug.LogWarning("Ranged enemy: Projectile Prefab mancante.");
-                return;
-            }
-
-            if (player == null)
-            {
-                Debug.LogWarning("Ranged enemy: Player mancante.");
+                Debug.LogWarning("Ranged enemy: riferimenti mancanti.");
                 return;
             }
 
             Vector3 targetPosition = player.position + Vector3.up * 1f;
-            Vector3 direction = targetPosition - shootPoint.position;
+            Vector3 shootDirection = targetPosition - shootPoint.position;
 
-            if (direction.sqrMagnitude < 0.01f)
+            if (shootDirection.sqrMagnitude < 0.01f)
                 return;
 
-            direction.Normalize();
+            shootDirection.Normalize();
 
             GameObject projectile = Instantiate(
                 projectilePrefab,
                 shootPoint.position,
-                Quaternion.LookRotation(direction)
+                Quaternion.LookRotation(shootDirection)
             );
 
             EnemyProjectile enemyProjectile = projectile.GetComponent<EnemyProjectile>();
@@ -221,10 +227,11 @@ namespace Enemies
                 return;
             }
 
-            enemyProjectile.Launch(direction);
+            enemyProjectile.Launch(shootDirection);
 
-            Debug.Log("Ranged enemy shot toward player.");
+            Debug.Log("Ranged enemy shot.");
         }
+
         private void UpdateMovementDirection()
         {
             movementDirection = Vector3.zero;
@@ -249,11 +256,10 @@ namespace Enemies
 
         private Vector3 GetPatrolDirection()
         {
-            if (leftPatrolPoint == null || rightPatrolPoint == null)
+            if (!hasValidPatrolPoints)
                 return Vector3.zero;
 
-            Vector3 targetPosition = currentPatrolTarget.position;
-            Vector3 directionToTarget = targetPosition - transform.position;
+            Vector3 directionToTarget = currentPatrolPosition - transform.position;
             directionToTarget.y = 0f;
 
             if (directionToTarget.magnitude <= patrolPointTolerance)
@@ -264,9 +270,12 @@ namespace Enemies
 
         private void SwitchPatrolTarget()
         {
-            currentPatrolTarget = currentPatrolTarget == rightPatrolPoint
-                ? leftPatrolPoint
-                : rightPatrolPoint;
+            float distanceToRight = Vector3.Distance(currentPatrolPosition, rightPatrolPosition);
+
+            if (distanceToRight <= 0.01f)
+                currentPatrolPosition = leftPatrolPosition;
+            else
+                currentPatrolPosition = rightPatrolPosition;
         }
 
         private Vector3 GetPlayerDirection()
@@ -315,9 +324,7 @@ namespace Enemies
         }
 
         public void BeforeCharacterUpdate(float deltaTime) { }
-
         public void PostGroundingUpdate(float deltaTime) { }
-
         public void AfterCharacterUpdate(float deltaTime) { }
 
         public bool IsColliderValidForCollisions(Collider coll) => true;
@@ -359,11 +366,13 @@ namespace Enemies
             {
                 Gizmos.color = Color.cyan;
                 Gizmos.DrawLine(leftPatrolPoint.position, rightPatrolPoint.position);
+                Gizmos.DrawSphere(leftPatrolPoint.position, 0.15f);
+                Gizmos.DrawSphere(rightPatrolPoint.position, 0.15f);
             }
 
             if (shootPoint != null)
             {
-                Gizmos.color = Color.blue;
+                Gizmos.color = Color.magenta;
                 Gizmos.DrawWireSphere(shootPoint.position, 0.2f);
             }
         }

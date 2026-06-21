@@ -4,14 +4,15 @@ using UnityEngine;
 
 namespace Enemies
 {
-    public class EnemyController : MonoBehaviour, ICharacterController
+    public class ChargingEnemyController : MonoBehaviour, ICharacterController
     {
         private enum EnemyState
         {
             Sleeping,
             Patrolling,
-            Chasing,
-            Attacking
+            PreparingCharge,
+            Charging,
+            Cooldown
         }
 
         [Header("References")]
@@ -19,28 +20,31 @@ namespace Enemies
         [SerializeField] private Transform player;
         [SerializeField] private Transform leftPatrolPoint;
         [SerializeField] private Transform rightPatrolPoint;
+        [SerializeField] private Transform chargeHitPoint;
 
         [Header("Activation")]
         [SerializeField] private bool startsActive = true;
-        [SerializeField] private float detectionRange = 6f;
-        [SerializeField] private float losePlayerRange = 8f;
+        [SerializeField] private float detectionRange = 7f;
+        [SerializeField] private float losePlayerRange = 10f;
 
         [Header("Movement")]
         [SerializeField] private float patrolSpeed = 2f;
-        [SerializeField] private float chaseSpeed = 4f;
-        [SerializeField] private float acceleration = 15f;
+        [SerializeField] private float chargeSpeed = 9f;
+        [SerializeField] private float acceleration = 20f;
         [SerializeField] private float patrolPointTolerance = 0.25f;
 
-        [Header("Melee")]
-        [SerializeField] private float attackRange = 1.5f;
-        [SerializeField] private float attackCooldown = 1.2f;
-        [SerializeField] private float attackWindup = 0.5f;
-
-        [Header("Melee Hitbox")]
-        [SerializeField] private Transform attackPoint;
-        [SerializeField] private float attackRadius = 0.8f;
-        [SerializeField] private int attackDamage = 1;
+        [Header("Charge")]
+        [SerializeField] private float chargeWindup = 0.45f;
+        [SerializeField] private float chargeDuration = 0.75f;
+        [SerializeField] private float chargeCooldown = 1.2f;
+        [SerializeField] private float chargeHitRadius = 1.1f;
+        [SerializeField] private int chargeDamage = 1;
+        [SerializeField] private float chargeKnockbackDistance = 4f;
         [SerializeField] private LayerMask playerLayer;
+
+        [Header("Obstacle Detection")]
+        [SerializeField] private LayerMask obstacleLayer;
+        [SerializeField] private float obstacleCheckDistance = 0.25f;
 
         [Header("Gravity")]
         [SerializeField] private float gravity = 20f;
@@ -50,16 +54,15 @@ namespace Enemies
         private Vector3 spawnPosition;
         private Vector3 movementDirection;
         private Vector3 lookDirection;
+        private Vector3 chargeDirection;
 
         private Vector3 leftPatrolPosition;
         private Vector3 rightPatrolPosition;
         private Vector3 currentPatrolPosition;
 
         private bool hasValidPatrolPoints;
-
-        private bool isPreparingAttack;
-        private float attackStartTime;
-        private float lastAttackTime;
+        private bool hasHitPlayerDuringCharge;
+        private float stateStartTime;
 
         private void Awake()
         {
@@ -72,7 +75,6 @@ namespace Enemies
         private void Start()
         {
             spawnPosition = transform.position;
-
             CachePatrolPositions();
 
             currentState = startsActive ? EnemyState.Patrolling : EnemyState.Sleeping;
@@ -89,16 +91,14 @@ namespace Enemies
         private void Update()
         {
             CheckPlayerDeathOrFall();
-
             UpdateState();
             UpdateMovementDirection();
-            UpdateAttack();
         }
 
         public void Activate()
         {
             if (currentState == EnemyState.Sleeping)
-                currentState = EnemyState.Patrolling;
+                ChangeState(EnemyState.Patrolling);
         }
 
         private void CachePatrolPositions()
@@ -131,8 +131,6 @@ namespace Enemies
 
         private void ResetToSpawn()
         {
-            isPreparingAttack = false;
-
             if (motor != null)
                 motor.SetPosition(spawnPosition);
             else
@@ -142,12 +140,11 @@ namespace Enemies
 
             movementDirection = Vector3.zero;
             lookDirection = Vector3.zero;
+            chargeDirection = Vector3.zero;
 
-            lastAttackTime = Time.time;
+            hasHitPlayerDuringCharge = false;
 
-            currentState = startsActive ? EnemyState.Patrolling : EnemyState.Sleeping;
-
-            Debug.Log("Enemy reset to spawn.");
+            ChangeState(startsActive ? EnemyState.Patrolling : EnemyState.Sleeping);
         }
 
         private void UpdateState()
@@ -165,87 +162,139 @@ namespace Enemies
 
             float distanceFromPlayer = Vector3.Distance(transform.position, player.position);
 
-            if (distanceFromPlayer <= attackRange)
+            switch (currentState)
             {
-                currentState = EnemyState.Attacking;
-                TryAttack();
-                return;
-            }
+                case EnemyState.Patrolling:
+                    if (distanceFromPlayer <= detectionRange)
+                        PrepareCharge();
+                    break;
 
-            if (currentState == EnemyState.Attacking && distanceFromPlayer > attackRange)
-            {
-                currentState = EnemyState.Chasing;
-                isPreparingAttack = false;
-                return;
-            }
+                case EnemyState.PreparingCharge:
+                    if (distanceFromPlayer >= losePlayerRange)
+                    {
+                        ChangeState(EnemyState.Patrolling);
+                        return;
+                    }
 
-            if (distanceFromPlayer <= detectionRange)
-            {
-                currentState = EnemyState.Chasing;
-                return;
-            }
+                    if (Time.time >= stateStartTime + chargeWindup)
+                        StartCharge();
 
-            if (currentState == EnemyState.Chasing && distanceFromPlayer >= losePlayerRange)
-            {
-                currentState = EnemyState.Patrolling;
+                    break;
+
+                case EnemyState.Charging:
+                    CheckChargeHit();
+
+                    if (IsObstacleInChargeDirection())
+                    {
+                        StopChargeAgainstObstacle();
+                        return;
+                    }
+
+                    if (Time.time >= stateStartTime + chargeDuration)
+                        ChangeState(EnemyState.Cooldown);
+
+                    break;
+
+                case EnemyState.Cooldown:
+                    if (Time.time >= stateStartTime + chargeCooldown)
+                    {
+                        if (distanceFromPlayer <= detectionRange)
+                            PrepareCharge();
+                        else
+                            ChangeState(EnemyState.Patrolling);
+                    }
+
+                    break;
             }
         }
 
-        private void TryAttack()
+        private void PrepareCharge()
         {
-            if (isPreparingAttack)
+            chargeDirection = GetPlayerDirection();
+
+            if (chargeDirection.sqrMagnitude < 0.01f)
                 return;
 
-            if (Time.time < lastAttackTime + attackCooldown)
-                return;
+            movementDirection = Vector3.zero;
+            lookDirection = chargeDirection;
+            hasHitPlayerDuringCharge = false;
 
-            isPreparingAttack = true;
-            attackStartTime = Time.time;
+            ChangeState(EnemyState.PreparingCharge);
 
-            Debug.Log("Preparing attack...");
+            Debug.Log("Charging enemy preparing charge.");
         }
 
-        private void UpdateAttack()
+        private void StartCharge()
         {
-            if (!isPreparingAttack)
-                return;
+            chargeDirection = GetPlayerDirection();
 
-            if (currentState != EnemyState.Attacking)
+            if (chargeDirection.sqrMagnitude < 0.01f)
             {
-                isPreparingAttack = false;
+                ChangeState(EnemyState.Patrolling);
                 return;
             }
 
-            if (Time.time < attackStartTime + attackWindup)
-                return;
-
-            isPreparingAttack = false;
-            lastAttackTime = Time.time;
-
-            PerformAttack();
-        }
-
-        private void PerformAttack()
-        {
-            Debug.Log("ATTACK!");
-
-            if (attackPoint == null)
+            if (IsObstacleInChargeDirection())
             {
-                Debug.LogWarning("AttackPoint non assegnato nell'EnemyController.");
+                StopChargeAgainstObstacle();
                 return;
             }
+
+            movementDirection = chargeDirection;
+            lookDirection = chargeDirection;
+            hasHitPlayerDuringCharge = false;
+
+            ChangeState(EnemyState.Charging);
+
+            Debug.Log("Charging enemy started charge.");
+        }
+
+        private bool IsObstacleInChargeDirection()
+        {
+            if (chargeDirection.sqrMagnitude < 0.01f)
+                return false;
+
+            Vector3 origin = motor != null
+                ? motor.TransientPosition + Vector3.up * 0.6f
+                : transform.position + Vector3.up * 0.6f;
+
+            float radius = motor != null ? motor.Capsule.radius * 0.95f : 0.35f;
+
+            return Physics.SphereCast(
+                origin,
+                radius,
+                chargeDirection.normalized,
+                out RaycastHit hit,
+                obstacleCheckDistance,
+                obstacleLayer,
+                QueryTriggerInteraction.Ignore
+            );
+        }
+
+        private void StopChargeAgainstObstacle()
+        {
+            movementDirection = Vector3.zero;
+            chargeDirection = Vector3.zero;
+
+            ChangeState(EnemyState.Cooldown);
+
+            Debug.Log("Charging enemy stopped against obstacle.");
+        }
+
+        private void CheckChargeHit()
+        {
+            if (hasHitPlayerDuringCharge)
+                return;
+
+            Vector3 hitPosition = chargeHitPoint != null
+                ? chargeHitPoint.position
+                : transform.position + chargeDirection * 0.9f + Vector3.up * 0.7f;
 
             Collider[] hitColliders = Physics.OverlapSphere(
-                attackPoint.position,
-                attackRadius,
+                hitPosition,
+                chargeHitRadius,
                 playerLayer
             );
-
-            if (hitColliders.Length == 0)
-            {
-                Debug.Log("Attack eseguito, ma nessun collider Player trovato nella hitbox.");
-                return;
-            }
 
             foreach (Collider hitCollider in hitColliders)
             {
@@ -254,32 +303,45 @@ namespace Enemies
 
                 if (damageFeedback != null)
                 {
-                    Vector3 knockbackDirection =
-                        hitCollider.transform.position - transform.position;
-
-                    bool damageApplied =
-                        damageFeedback.TryTakeDamage(attackDamage, knockbackDirection, true);
+                    bool damageApplied = damageFeedback.TryTakeDamage(
+                        chargeDamage,
+                        chargeDirection,
+                        true,
+                        chargeKnockbackDistance
+                    );
 
                     if (damageApplied)
-                        Debug.Log("Player hit by melee enemy!");
+                    {
+                        hasHitPlayerDuringCharge = true;
+                        Debug.Log("Charging enemy hit player.");
+                    }
                     else
-                        Debug.Log("Melee hit ignored: player invincible.");
+                    {
+                        Debug.Log("Charging hit ignored: player invincible.");
+                    }
 
-                    continue;
+                    return;
                 }
 
                 HealthManager healthManager =
                     hitCollider.GetComponentInParent<HealthManager>();
 
-                if (healthManager == null)
+                if (healthManager != null)
                 {
-                    Debug.Log("Collider trovato, ma HealthManager non trovato nel parent.");
-                    continue;
-                }
+                    healthManager.TakeDamage(chargeDamage);
+                    hasHitPlayerDuringCharge = true;
 
-                healthManager.TakeDamage(attackDamage);
-                Debug.LogWarning("PlayerDamageFeedback non trovato, usato HealthManager diretto.");
+                    Debug.LogWarning("PlayerDamageFeedback non trovato, usato HealthManager diretto.");
+
+                    return;
+                }
             }
+        }
+
+        private void ChangeState(EnemyState newState)
+        {
+            currentState = newState;
+            stateStartTime = Time.time;
         }
 
         private void UpdateMovementDirection()
@@ -297,14 +359,21 @@ namespace Enemies
                     lookDirection = movementDirection;
                     break;
 
-                case EnemyState.Chasing:
-                    movementDirection = GetChaseDirection();
-                    lookDirection = movementDirection;
+                case EnemyState.PreparingCharge:
+                    movementDirection = Vector3.zero;
+                    lookDirection = chargeDirection.sqrMagnitude > 0.01f
+                        ? chargeDirection
+                        : GetPlayerDirection();
                     break;
 
-                case EnemyState.Attacking:
+                case EnemyState.Charging:
+                    movementDirection = chargeDirection;
+                    lookDirection = chargeDirection;
+                    break;
+
+                case EnemyState.Cooldown:
                     movementDirection = Vector3.zero;
-                    lookDirection = GetChaseDirection();
+                    lookDirection = GetPlayerDirection();
                     break;
             }
         }
@@ -333,7 +402,7 @@ namespace Enemies
                 currentPatrolPosition = rightPatrolPosition;
         }
 
-        private Vector3 GetChaseDirection()
+        private Vector3 GetPlayerDirection()
         {
             if (player == null)
                 return Vector3.zero;
@@ -346,8 +415,15 @@ namespace Enemies
 
         public void UpdateVelocity(ref Vector3 currentVelocity, float deltaTime)
         {
-            float targetSpeed = currentState == EnemyState.Chasing ? chaseSpeed : patrolSpeed;
-            Vector3 targetVelocity = movementDirection * targetSpeed;
+            float speed = currentState == EnemyState.Charging ? chargeSpeed : patrolSpeed;
+            Vector3 targetVelocity = movementDirection * speed;
+
+            if (currentState == EnemyState.Charging && IsObstacleInChargeDirection())
+            {
+                currentVelocity = Vector3.zero;
+                StopChargeAgainstObstacle();
+                return;
+            }
 
             if (motor.GroundingStatus.IsStableOnGround)
             {
@@ -380,7 +456,9 @@ namespace Enemies
         }
 
         public void BeforeCharacterUpdate(float deltaTime) { }
+
         public void PostGroundingUpdate(float deltaTime) { }
+
         public void AfterCharacterUpdate(float deltaTime) { }
 
         public bool IsColliderValidForCollisions(Collider coll) => true;
@@ -397,7 +475,15 @@ namespace Enemies
             Vector3 hitNormal,
             Vector3 hitPoint,
             ref HitStabilityReport hitStabilityReport)
-        { }
+        {
+            if (currentState != EnemyState.Charging)
+                return;
+
+            if (((1 << hitCollider.gameObject.layer) & obstacleLayer) == 0)
+                return;
+
+            StopChargeAgainstObstacle();
+        }
 
         public void ProcessHitStabilityReport(
             Collider hitCollider,
@@ -408,7 +494,16 @@ namespace Enemies
             ref HitStabilityReport hitStabilityReport)
         { }
 
-        public void OnDiscreteCollisionDetected(Collider hitCollider) { }
+        public void OnDiscreteCollisionDetected(Collider hitCollider)
+        {
+            if (currentState != EnemyState.Charging)
+                return;
+
+            if (((1 << hitCollider.gameObject.layer) & obstacleLayer) == 0)
+                return;
+
+            StopChargeAgainstObstacle();
+        }
 
         private void OnDrawGizmosSelected()
         {
@@ -422,16 +517,16 @@ namespace Enemies
             {
                 Gizmos.color = Color.cyan;
                 Gizmos.DrawLine(leftPatrolPoint.position, rightPatrolPoint.position);
-
                 Gizmos.DrawSphere(leftPatrolPoint.position, 0.15f);
                 Gizmos.DrawSphere(rightPatrolPoint.position, 0.15f);
             }
 
-            if (attackPoint != null)
-            {
-                Gizmos.color = Color.magenta;
-                Gizmos.DrawWireSphere(attackPoint.position, attackRadius);
-            }
+            Vector3 hitPosition = chargeHitPoint != null
+                ? chargeHitPoint.position
+                : transform.position + transform.forward * 0.9f + Vector3.up * 0.7f;
+
+            Gizmos.color = Color.green;
+            Gizmos.DrawWireSphere(hitPosition, chargeHitRadius);
         }
     }
 }

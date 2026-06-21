@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 2315393537638018490}
   - component: {fileID: 7144859749707272943}
   - component: {fileID: 8193456464388325124}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: FREE Arrow Long Color 3
   m_TagString: Untagged
   m_Icon: {fileID: 0}

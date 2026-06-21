@@ -1,4 +1,5 @@
 using System.Collections;
+using Controllers;
 using KinematicCharacterController;
 using UnityEngine;
 using UnityEngine.UI;
@@ -10,6 +11,7 @@ namespace Player
         [Header("References")]
         [SerializeField] private KinematicCharacterMotor motor;
         [SerializeField] private HealthManager healthManager;
+        [SerializeField] private PlayerCharacterController playerController;
         [SerializeField] private Image damageOverlay;
         [SerializeField] private Renderer[] characterRenderers;
 
@@ -24,7 +26,8 @@ namespace Player
         [SerializeField] private float maxAlpha = 0.65f;
 
         [Header("Knockback")]
-        [SerializeField] private float knockbackDistance = 1.2f;
+        [SerializeField] private float defaultKnockbackDistance = 1.2f;
+        [SerializeField] private float knockbackDuration = 0.16f;
 
         private bool isInvincible;
         private Coroutine overlayCoroutine;
@@ -38,11 +41,23 @@ namespace Player
             if (healthManager == null)
                 healthManager = GetComponent<HealthManager>();
 
-            HideOverlay();
-            SetRenderersVisible(true);
+            if (playerController == null)
+                playerController = GetComponent<PlayerCharacterController>();
+
+            StopAllDamageFeedback();
         }
 
-        public bool TryTakeDamage(int damage, Vector3 knockbackDirection, bool applyKnockback)
+        private void Update()
+        {
+            if (healthManager != null && healthManager.Health <= 0)
+                StopAllDamageFeedback();
+        }
+
+        public bool TryTakeDamage(
+            int damage,
+            Vector3 knockbackDirection,
+            bool applyKnockback,
+            float customKnockbackDistance = -1f)
         {
             if (isInvincible)
                 return false;
@@ -50,13 +65,57 @@ namespace Player
             if (healthManager != null)
                 healthManager.TakeDamage(damage);
 
+            if (healthManager != null && healthManager.Health <= 0)
+            {
+                StopAllDamageFeedback();
+                return true;
+            }
+
             if (applyKnockback)
-                ApplyKnockback(knockbackDirection);
+            {
+                float finalDistance = customKnockbackDistance > 0f
+                    ? customKnockbackDistance
+                    : defaultKnockbackDistance;
+
+                ApplyKnockback(knockbackDirection, finalDistance);
+            }
 
             PlayDamageOverlay();
             StartInvincibility();
 
             return true;
+        }
+
+        public void StopAllDamageFeedback()
+        {
+            if (overlayCoroutine != null)
+                StopCoroutine(overlayCoroutine);
+
+            if (invincibilityCoroutine != null)
+                StopCoroutine(invincibilityCoroutine);
+
+            overlayCoroutine = null;
+            invincibilityCoroutine = null;
+
+            isInvincible = false;
+            SetRenderersVisible(true);
+            HideOverlay();
+
+            if (playerController != null)
+                playerController.StopExternalKnockback();
+        }
+
+        private void ApplyKnockback(Vector3 direction, float distance)
+        {
+            direction.y = 0f;
+
+            if (direction.sqrMagnitude < 0.01f)
+                return;
+
+            direction.Normalize();
+
+            if (playerController != null)
+                playerController.ApplyExternalKnockback(direction, distance, knockbackDuration);
         }
 
         private void StartInvincibility()
@@ -111,38 +170,6 @@ namespace Player
             overlayCoroutine = StartCoroutine(DamageOverlayRoutine());
         }
 
-        public void ApplyKnockback(Vector3 direction)
-        {
-            direction.y = 0f;
-
-            if (direction.sqrMagnitude < 0.01f)
-                return;
-
-            direction.Normalize();
-
-            StartCoroutine(KnockbackRoutine(direction));
-        }
-
-        private IEnumerator KnockbackRoutine(Vector3 direction)
-        {
-            float duration = 0.18f;
-            float elapsed = 0f;
-            float speed = knockbackDistance / duration;
-
-            while (elapsed < duration)
-            {
-                elapsed += Time.deltaTime;
-
-                Vector3 displacement = direction * speed * Time.deltaTime;
-
-                if (motor != null)
-                    motor.SetPosition(transform.position + displacement);
-                else
-                    transform.position += displacement;
-
-                yield return null;
-            }
-        }
         private IEnumerator DamageOverlayRoutine()
         {
             damageOverlay.gameObject.SetActive(true);
@@ -162,6 +189,7 @@ namespace Player
             while (elapsed < duration)
             {
                 elapsed += Time.deltaTime;
+
                 float t = Mathf.Clamp01(elapsed / duration);
                 SetOverlayAlpha(Mathf.Lerp(fromAlpha, toAlpha, t));
 
