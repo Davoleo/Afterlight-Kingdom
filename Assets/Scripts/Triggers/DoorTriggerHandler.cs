@@ -1,4 +1,5 @@
-﻿using Gameplay;
+using Controllers;
+using Gameplay;
 using Player;
 using UnityEngine;
 
@@ -6,50 +7,37 @@ namespace Triggers
 {
     public class DoorTriggerHandler : MonoBehaviour
     {
-        private CollectiblesManager manager;
-        private PlayerInputHandler inputHandler = null;
+        private CollectiblesManager _manager;
+        private PlayerCharacterController _controller;
 
-        private bool isClose;
+        private bool _isClose;
 
         private void Start()
         {
-            manager = GameObject.FindGameObjectWithTag("GameManager").GetComponent<CollectiblesManager>();
+            _manager = GameObject.FindGameObjectWithTag("GameManager").GetComponent<CollectiblesManager>();
+            _controller = GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerCharacterController>();
         }
 
         private void Update()
         {
-            if (isClose)
-            {
-                Debug.Log(inputHandler.interactAction.action.triggered);
-                if (inputHandler.interactAction.action.triggered && manager.UseKey())
-                {
-                    gameObject.SetActive(false);
-                }
-            }
+            if (!_isClose) return;
+            if (!CommandUtils.IsUp(_controller.commands, PlayerCommand.Interact)) return;
+
+            CommandUtils.Off(ref _controller.commands, PlayerCommand.Interact);
+            if (_manager.UseKey())
+                gameObject.SetActive(false);
         }
 
         private void OnTriggerExit(Collider other)
         {
             if (other.gameObject.CompareTag("Player"))
-            {
-                if (inputHandler == null)
-                    inputHandler = other.gameObject.GetComponent<PlayerInputHandler>();
-
-                Debug.Log("Exit");
-                isClose = false;
-            }
+                _isClose = false;
         }
 
         private void OnTriggerEnter(Collider other)
         {
             if (other.gameObject.CompareTag("Player"))
-            {
-                if (inputHandler == null)
-                    inputHandler = other.gameObject.GetComponent<PlayerInputHandler>();
-
-                Debug.Log("Enter");
-                isClose = true;
-            }
+                _isClose = true;
         }
     }
 }
