@@ -3,7 +3,7 @@ using Gameplay;
 using TMPro;
 using UnityEngine;
 
-namespace UI
+namespace HUD
 {
     public class CollectiblesHUD : MonoBehaviour
     {

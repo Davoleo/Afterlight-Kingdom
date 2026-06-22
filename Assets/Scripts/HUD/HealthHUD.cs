@@ -3,7 +3,7 @@ using Player;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace UI
+namespace HUD
 {
     public class HealthHUD : MonoBehaviour
     {
