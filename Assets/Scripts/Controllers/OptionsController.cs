@@ -11,7 +11,7 @@ namespace Controllers
         [SerializeField] private Toggle fullscreenToggle;
         [SerializeField] private GameSettings settings;
         
-        private bool _isInitializing;
+        private bool _isInitializing; // prevent Toggles from calling OnAnyChange()
         
         private void Start()
         {

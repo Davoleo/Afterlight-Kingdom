@@ -1,12 +1,12 @@
 using System;
-using Gameplay;
+using Controllers;
 using UnityEngine;
 
 namespace Player
 {
     public class HealthManager : MonoBehaviour
     {
-        private CheckpointManager cpManager;
+        private DeathScreenController _deathScreenController;
         private int _health;
         public const int MaxHealth = 6;
 
@@ -23,7 +23,7 @@ namespace Player
         private void Start()
         {
             Health = MaxHealth;
-            cpManager = GameObject.FindGameObjectWithTag("GameManager").GetComponent<CheckpointManager>();
+            _deathScreenController = GameObject.FindGameObjectWithTag("DeathScreen").GetComponent<DeathScreenController>();
         }
 
         public void TakeDamage(int damage)
@@ -36,6 +36,6 @@ namespace Player
             Health = Math.Min(Health + heal, MaxHealth);
         }
 
-        private void HandleDeath() => cpManager.Respawn();
+        private void HandleDeath() => _deathScreenController.ShowDeathScreen();
     }
 }

@@ -8,6 +8,7 @@ TagManager:
   - GameManager
   - Coins
   - Keys
+  - DeathScreen
   layers:
   - Default
   - TransparentFX
