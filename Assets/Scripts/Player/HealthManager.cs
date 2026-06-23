@@ -6,7 +6,7 @@ namespace Player
 {
     public class HealthManager : MonoBehaviour
     {
-        private DeathScreenController _deathScreenController;
+        private MenuManager _menuManager;
         private int _health;
         public const int MaxHealth = 6;
 
@@ -23,19 +23,13 @@ namespace Player
         private void Start()
         {
             Health = MaxHealth;
-            _deathScreenController = GameObject.FindGameObjectWithTag("DeathScreen").GetComponent<DeathScreenController>();
+            _menuManager = GameObject.FindGameObjectWithTag("GameManager").GetComponent<MenuManager>();
         }
 
-        public void TakeDamage(int damage)
-        {
-            Health = Math.Max(Health - damage, 0);
-        }
+        public void TakeDamage(int damage) => Health = Math.Max(Health - damage, 0);
 
-        public void Heal(int heal)
-        {
-            Health = Math.Min(Health + heal, MaxHealth);
-        }
+        public void Heal(int heal) => Health = Math.Min(Health + heal, MaxHealth);
 
-        private void HandleDeath() => _deathScreenController.ShowDeathScreen();
+        private void HandleDeath() => _menuManager.ShowDeathScreen();
     }
 }
