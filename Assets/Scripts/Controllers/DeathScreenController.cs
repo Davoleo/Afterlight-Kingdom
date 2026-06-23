@@ -1,13 +1,22 @@
 using Core;
 using Gameplay;
 using UnityEngine;
+using UnityEngine.Serialization;
+using UnityEngine.UI;
 
 namespace Controllers
 {
     public class DeathScreenController :MonoBehaviour
     {
+        [SerializeField] private Button firstSelected;
         private GameObject _deathPanel;
         private CheckpointManager _cpManager;
+
+        private void OnEnable()
+        {
+            // Make the selected button on hover to quickly press it after death
+            firstSelected.Select();
+        }
 
         private void Start()
         {
