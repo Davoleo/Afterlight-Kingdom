@@ -1,4 +1,5 @@
-﻿using Gameplay;
+﻿using Core;
+using Gameplay;
 using Player;
 using UnityEngine;
 
@@ -6,21 +7,27 @@ namespace Triggers
 {
     public class CheckpointTriggerHandler : MonoBehaviour
     {
-        private HealthManager healthManager;
-        private CheckpointManager cpManager;
+        private HealthManager _healthManager;
+        private CheckpointManager _cpManager;
+        private CollectiblesManager _collectiblesManager;
 
         private void Start()
         {
             var player = GameObject.FindGameObjectWithTag("Player");
-            healthManager = player.GetComponent<HealthManager>();
-            cpManager = GameObject.FindGameObjectWithTag("GameManager").GetComponent<CheckpointManager>();
+            _healthManager = player.GetComponent<HealthManager>();
+            var gm = GameObject.FindGameObjectWithTag("GameManager");
+            _cpManager = gm.GetComponent<CheckpointManager>();
+            _collectiblesManager = gm.GetComponent<CollectiblesManager>();
         }
 
         private void OnTriggerEnter(Collider other)
         {
-            healthManager.Heal(HealthManager.MaxHealth);
+            if (!other.gameObject.CompareTag("Player")) return;
+            _healthManager.Heal(HealthManager.MaxHealth);
             var offsetPos = new Vector3(transform.position.x, transform.position.y + 2, transform.position.z);
-            cpManager.lastCheckPoint = offsetPos;
+            _cpManager.lastCheckPoint = offsetPos;
+            // Save progress -> new checkpoint position and Collectibles
+            SaveManager.Save(offsetPos, _collectiblesManager.collectedIds, _collectiblesManager.coins, _collectiblesManager.keys);
         }
     }
 }

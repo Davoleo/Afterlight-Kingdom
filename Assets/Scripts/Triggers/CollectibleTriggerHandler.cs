@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Gameplay;
 using UnityEngine;
 
@@ -6,27 +6,29 @@ namespace Triggers
 {
     public class CollectibleTriggerHandler : MonoBehaviour
     {
-        private CollectiblesManager manager;
+        public string Id =>
+            $"{transform.position.x}_{transform.position.y}_{transform.position.z}";
+
+        private CollectiblesManager _manager;
 
         private void Start()
         {
-            manager = GameObject.FindGameObjectWithTag("GameManager").GetComponent<CollectiblesManager>();
+            _manager = GameObject.FindGameObjectWithTag("GameManager").GetComponent<CollectiblesManager>();
         }
 
         private void OnTriggerEnter(Collider other)
         {
-            if (other.gameObject.CompareTag("Player"))
-            {
-                gameObject.SetActive(false);
+            if (!other.gameObject.CompareTag("Player")) return;
 
-                CollectibleType type = gameObject.tag switch
-                {
-                    "Coins" => CollectibleType.Coin,
-                    "Keys" => CollectibleType.Key,
-                    _ => throw new ArgumentOutOfRangeException()
-                };
-                manager.Collect(type, gameObject);
-            }
+            gameObject.SetActive(false);
+
+            CollectibleType type = gameObject.tag switch
+            {
+                "Coins" => CollectibleType.Coin,
+                "Keys" => CollectibleType.Key,
+                _ => throw new ArgumentOutOfRangeException()
+            };
+            _manager.Collect(type, Id);
         }
     }
 }

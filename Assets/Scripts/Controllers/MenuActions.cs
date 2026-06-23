@@ -30,7 +30,14 @@ namespace Controllers
             SceneLoader.LoadScene(0);
         }
 
-        public void Play() => SceneLoader.LoadScene("MainScene");
+        // Delete game files and start a new game
+        public void NewGame()
+        {
+            SaveManager.Delete();
+            SceneLoader.LoadScene("MainScene");
+        }
+        
+        public void Continue() => SceneLoader.LoadScene("MainScene");
 
         public void QuitGame() => SceneLoader.QuitGame();
     }

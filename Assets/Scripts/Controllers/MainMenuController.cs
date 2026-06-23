@@ -1,3 +1,4 @@
+using Core;
 using UnityEngine;
 
 namespace Controllers
@@ -6,13 +7,19 @@ namespace Controllers
     {
         [SerializeField] private GameObject mainPanel;
         [SerializeField] private GameObject optionsPanel;
+        private GameObject _continueButton;
 
-        void Start() => ShowMainPanel();
+        private void Start()
+        {
+            ShowMainPanel();
+            _continueButton = GameObject.Find("ContinueButton");
+            _continueButton.SetActive(SaveManager.HasSave);
+        }
 
         public void OnOptionsPressed() => ShowOptionsPanel();
-        public void OnBackPressed()    => ShowMainPanel();
+        public void OnBackPressed() => ShowMainPanel();
 
-        private void ShowMainPanel()    { mainPanel.SetActive(true);    optionsPanel.SetActive(false); }
-        private void ShowOptionsPanel() { optionsPanel.SetActive(true); mainPanel.SetActive(false);    }
+        private void ShowMainPanel() { mainPanel.SetActive(true); optionsPanel.SetActive(false); }
+        private void ShowOptionsPanel() { optionsPanel.SetActive(true); mainPanel.SetActive(false); }
     }
 }

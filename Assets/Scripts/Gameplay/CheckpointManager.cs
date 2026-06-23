@@ -1,25 +1,30 @@
 ﻿using Controllers;
+using Core;
 using UnityEngine;
 
 namespace Gameplay
 {
     public class CheckpointManager : MonoBehaviour
     {
-
-        private GameObject player;
         public Vector3 lastCheckPoint = new Vector3(0, 2, 0);
-        private PlayerCharacterController playerController;
+
+        private GameObject _player;
+        private PlayerCharacterController _playerController;
 
         private void Start()
         {
-            player = GameObject.FindGameObjectWithTag("Player");
-            playerController = player.GetComponent<PlayerCharacterController>();
+            _player = GameObject.FindGameObjectWithTag("Player");
+            _playerController = _player.GetComponent<PlayerCharacterController>();
+
+            var save = SaveManager.Load();
+            if (save == null) return;
+            lastCheckPoint = new Vector3(save.checkpointX, save.checkpointY, save.checkpointZ);
+            Respawn();
         }
 
         public void Respawn()
         {
-            playerController.motor.SetPosition(lastCheckPoint);
+            _playerController.motor.SetPosition(lastCheckPoint);
         }
-
     }
 }
