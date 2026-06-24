@@ -8,6 +8,8 @@ namespace Player
     {
         private MenuManager _menuManager;
         private int _health;
+        private bool _isDead;
+
         public const int MaxHealth = 6;
 
         public int Health
@@ -16,20 +18,44 @@ namespace Player
             private set
             {
                 _health = value;
-                if (_health <= 0) HandleDeath();
+
+                if (_health <= 0 && !_isDead)
+                    HandleDeath();
             }
         }
 
         private void Start()
         {
             Health = MaxHealth;
-            _menuManager = GameObject.FindGameObjectWithTag("GameManager").GetComponent<MenuManager>();
+
+            GameObject gameManager = GameObject.FindGameObjectWithTag("GameManager");
+
+            if (gameManager != null)
+                _menuManager = gameManager.GetComponent<MenuManager>();
         }
 
-        public void TakeDamage(int damage) => Health = Math.Max(Health - damage, 0);
+        public void TakeDamage(int damage)
+        {
+            if (_isDead)
+                return;
 
-        public void Heal(int heal) => Health = Math.Min(Health + heal, MaxHealth);
+            Health = Math.Max(Health - damage, 0);
+        }
 
-        private void HandleDeath() => _menuManager.ShowDeathScreen();
+        public void Heal(int heal)
+        {
+            if (_isDead)
+                return;
+
+            Health = Math.Min(Health + heal, MaxHealth);
+        }
+
+        private void HandleDeath()
+        {
+            _isDead = true;
+
+            if (_menuManager != null)
+                _menuManager.ShowDeathScreen();
+        }
     }
 }

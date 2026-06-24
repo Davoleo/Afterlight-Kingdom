@@ -19,44 +19,85 @@ namespace Controllers
 
         private void Start()
         {
-            deathPanel.SetActive(false);
-            pausePanel.SetActive(false);
+            Time.timeScale = 1f;
+
+            if (deathPanel != null)
+                deathPanel.SetActive(false);
+
+            if (pausePanel != null)
+                pausePanel.SetActive(false);
         }
 
-        private void OnEnable()  => pauseAction.action.performed += OnPausePressed;
-        private void OnDisable() => pauseAction.action.performed -= OnPausePressed;
+        private void OnEnable()
+        {
+            if (pauseAction != null)
+                pauseAction.action.performed += OnPausePressed;
+        }
+
+        private void OnDisable()
+        {
+            if (pauseAction != null)
+                pauseAction.action.performed -= OnPausePressed;
+        }
 
         private void OnPausePressed(InputAction.CallbackContext _)
         {
-            if (deathPanel.activeSelf) return; // Can't open pause if player is dead
-            if (_isPaused) HidePauseMenu(); else ShowPauseMenu();
+            if (deathPanel != null && deathPanel.activeSelf)
+                return;
+
+            if (_isPaused)
+                HidePauseMenu();
+            else
+                ShowPauseMenu();
         }
 
         public void ShowDeathScreen()
         {
-            deathPanel.SetActive(true);
+            if (deathPanel != null)
+                deathPanel.SetActive(true);
+
+            if (pausePanel != null)
+                pausePanel.SetActive(false);
+
+            _isPaused = false;
             Time.timeScale = 0f;
-            deathFirstSelected.Select();
+
+            if (deathFirstSelected != null)
+                deathFirstSelected.Select();
         }
-        
+
         public void CloseAllMenus()
         {
-            deathPanel.SetActive(false);
-            pausePanel.SetActive(false);
+            if (deathPanel != null)
+                deathPanel.SetActive(false);
+
+            if (pausePanel != null)
+                pausePanel.SetActive(false);
+
+            _isPaused = false;
+            Time.timeScale = 1f;
         }
 
         private void ShowPauseMenu()
         {
             _isPaused = true;
-            pausePanel.SetActive(true);
+
+            if (pausePanel != null)
+                pausePanel.SetActive(true);
+
             Time.timeScale = 0f;
-            pauseFirstSelected.Select();
+
+            if (pauseFirstSelected != null)
+                pauseFirstSelected.Select();
         }
 
         private void HidePauseMenu()
         {
             _isPaused = false;
-            pausePanel.SetActive(false);
+
+            if (pausePanel != null)
+                pausePanel.SetActive(false);
+
             Time.timeScale = 1f;
         }
     }

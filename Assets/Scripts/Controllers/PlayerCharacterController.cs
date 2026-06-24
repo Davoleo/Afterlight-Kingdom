@@ -1,3 +1,4 @@
+using Gameplay;
 using KinematicCharacterController;
 using Player;
 using Player.State;
@@ -9,6 +10,7 @@ namespace Controllers
     public class PlayerCharacterController : MonoBehaviour, ICharacterController
     {
         private ArrowLauncher _arrowLauncher;
+        private AbilityManager _abilityManager;
 
         [Header("References")]
         public KinematicCharacterMotor motor;
@@ -47,11 +49,6 @@ namespace Controllers
 
         public PlayerStateMachine StateMachine;
 
-        private void Start()
-        {
-            _arrowLauncher = GetComponent<ArrowLauncher>();
-        }
-
         private void Awake()
         {
             StateMachine = new PlayerStateMachine(this);
@@ -60,6 +57,15 @@ namespace Controllers
                 motor = GetComponent<KinematicCharacterMotor>();
 
             motor.CharacterController = this;
+        }
+
+        private void Start()
+        {
+            _arrowLauncher = GetComponent<ArrowLauncher>();
+            _abilityManager = GetComponent<AbilityManager>();
+
+            if (_abilityManager == null)
+                Debug.LogError("AbilityManager component missing on " + gameObject.name, this);
         }
 
         public void SetInputs(MovementInputs inputs, PlayerCommand pcommands)
@@ -114,17 +120,37 @@ namespace Controllers
         public void BeforeCharacterUpdate(float deltaTime)
         {
             HandleRotationInput();
-
-            if (CommandUtils.IsUp(commands, PlayerCommand.Dash) &&
-                dashCooldownTimer <= 0f &&
-                CurrentState != StateMachine.DashingState)
-            {
-                dashCooldownTimer = dashCooldown;
-                CommandUtils.Off(ref commands, PlayerCommand.Dash);
-                StateMachine.TransitionToState(StateMachine.DashingState);
-            }
+            HandleDashInput();
 
             dashCooldownTimer = Mathf.Max(0f, dashCooldownTimer - deltaTime);
+        }
+
+        private void HandleDashInput()
+        {
+            if (!CommandUtils.IsUp(commands, PlayerCommand.Dash))
+                return;
+
+            if (_abilityManager == null || !_abilityManager.HasAbility(AbilityType.Dash))
+            {
+                CommandUtils.Off(ref commands, PlayerCommand.Dash);
+                return;
+            }
+
+            if (dashCooldownTimer > 0f)
+            {
+                CommandUtils.Off(ref commands, PlayerCommand.Dash);
+                return;
+            }
+
+            if (CurrentState == StateMachine.DashingState)
+            {
+                CommandUtils.Off(ref commands, PlayerCommand.Dash);
+                return;
+            }
+
+            dashCooldownTimer = dashCooldown;
+            CommandUtils.Off(ref commands, PlayerCommand.Dash);
+            StateMachine.TransitionToState(StateMachine.DashingState);
         }
 
         public void UpdateRotation(ref Quaternion currentRotation, float deltaTime)
@@ -167,15 +193,26 @@ namespace Controllers
         {
             CommandUtils.Off(ref commands, PlayerCommand.Jump | PlayerCommand.Dash);
 
-            if (CommandUtils.IsUp(commands, PlayerCommand.Shoot))
-            {
-                if (_arrowLauncher != null)
-                    _arrowLauncher.TryLaunch(motor.CharacterForward);
-                else
-                    Debug.LogError("ArrowLauncher component missing on " + gameObject.name, this);
+            HandleShootInput();
+        }
 
+        private void HandleShootInput()
+        {
+            if (!CommandUtils.IsUp(commands, PlayerCommand.Shoot))
+                return;
+
+            if (_abilityManager == null || !_abilityManager.HasAbility(AbilityType.Bow))
+            {
                 CommandUtils.Off(ref commands, PlayerCommand.Shoot);
+                return;
             }
+
+            if (_arrowLauncher != null)
+                _arrowLauncher.TryLaunch(motor.CharacterForward);
+            else
+                Debug.LogError("ArrowLauncher component missing on " + gameObject.name, this);
+
+            CommandUtils.Off(ref commands, PlayerCommand.Shoot);
         }
 
         public Vector3 ComputeMoveDirection()

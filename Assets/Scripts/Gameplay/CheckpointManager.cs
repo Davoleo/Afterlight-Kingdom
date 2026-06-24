@@ -8,46 +8,68 @@ namespace Gameplay
 {
     public class CheckpointManager : MonoBehaviour
     {
-        public Vector3 lastCheckPoint = new Vector3(0, 2, 0);
+        public Vector3 lastCheckPoint = new Vector3(0f, 2f, 0f);
+
+        [SerializeField] private TextMeshProUGUI savedMessage;
 
         private GameObject _player;
         private PlayerCharacterController _playerController;
-        [SerializeField] private TextMeshProUGUI savedMessage;
 
         private void Start()
         {
             _player = GameObject.FindGameObjectWithTag("Player");
-            _playerController = _player.GetComponent<PlayerCharacterController>();
 
-            var save = SaveManager.Load();
-            if (save == null) return;
-            lastCheckPoint = new Vector3(save.checkpointX, save.checkpointY, save.checkpointZ);
-            Respawn();
+            if (_player != null)
+                _playerController = _player.GetComponent<PlayerCharacterController>();
+
+            SaveData save = SaveManager.Load();
+
+            if (save == null)
+                return;
+
+            lastCheckPoint = new Vector3(
+                save.checkpointX,
+                save.checkpointY,
+                save.checkpointZ
+            );
+
+            MovePlayerToCheckpoint();
         }
 
-        public void Respawn()
+        private void MovePlayerToCheckpoint()
         {
-            _playerController.motor.SetPosition(lastCheckPoint);
+            if (_playerController == null)
+                return;
+
+            _playerController.StopExternalKnockback();
+
+            if (_playerController.motor != null)
+                _playerController.motor.SetPosition(lastCheckPoint);
+            else
+                _player.transform.position = lastCheckPoint;
         }
-        
-        public void ShowSavedMessage() => StartCoroutine(FadeSavedMessage());
-        
+
+        public void ShowSavedMessage()
+        {
+            if (savedMessage != null)
+                StartCoroutine(FadeSavedMessage());
+        }
+
         private IEnumerator FadeSavedMessage()
         {
-            // Fade In
-            var t = 0f;
+            float t = 0f;
+
             while (t < 1f)
             {
                 t += Time.deltaTime / 0.3f;
                 savedMessage.alpha = Mathf.Clamp01(t);
                 yield return null;
             }
-            
-            // Hold
+
             yield return new WaitForSeconds(1.5f);
-            
-            // Fade Out
+
             t = 1f;
+
             while (t > 0f)
             {
                 t -= Time.deltaTime / 0.5f;

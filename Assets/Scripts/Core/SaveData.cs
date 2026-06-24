@@ -9,8 +9,12 @@ namespace Core
         public float checkpointX;
         public float checkpointY;
         public float checkpointZ;
+
         public List<string> collectedIds;
+
         public int coins;
         public int keys;
+
+        public List<string> unlockedAbilities;
     }
 }

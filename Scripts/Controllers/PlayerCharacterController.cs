@@ -1,0 +1,276 @@
+using KinematicCharacterController;
+using Player;
+using Player.State;
+using Projectiles;
+using UnityEngine;
+
+namespace Controllers
+{
+    public class PlayerCharacterController : MonoBehaviour, ICharacterController
+    {
+        private ArrowLauncher _arrowLauncher;
+
+        [Header("References")]
+        public KinematicCharacterMotor motor;
+
+        [Header("Jump")]
+        [SerializeField] public float jumpUpSpeed = 5f;
+
+        [Header("Dash")]
+        [SerializeField] private float dashCooldown = 2f;
+        public float dashCooldownTimer;
+
+        [Header("Rotation")]
+        [SerializeField] private float stepAngle = 90f;
+        [SerializeField] private float rotationDuration = 0.3f;
+
+        [Header("External Knockback")]
+        [SerializeField] private float knockbackDrag = 12f;
+
+        private Vector3 externalKnockbackVelocity;
+        private float externalKnockbackTimer;
+
+        public PlayerState CurrentState => StateMachine.CurrentState;
+        public bool IsGrounded => motor.GroundingStatus.IsStableOnGround;
+        public float ForwardSpeed => Vector3.Dot(motor.Velocity, motor.CharacterForward);
+        public float VerticalSpeed => Vector3.Dot(motor.Velocity, motor.CharacterUp);
+
+        public MovementInputs MoveInputs;
+        public PlayerCommand commands;
+
+        private bool _isRotating;
+        private float _rotationTimer;
+        private float _currentYAngle;
+        private float _targetYAngle;
+
+        private Vector3 currentGroundObjectPos;
+
+        public PlayerStateMachine StateMachine;
+
+        private void Start()
+        {
+            _arrowLauncher = GetComponent<ArrowLauncher>();
+        }
+
+        private void Awake()
+        {
+            StateMachine = new PlayerStateMachine(this);
+
+            if (motor == null)
+                motor = GetComponent<KinematicCharacterMotor>();
+
+            motor.CharacterController = this;
+        }
+
+        public void SetInputs(MovementInputs inputs, PlayerCommand pcommands)
+        {
+            MoveInputs = inputs;
+            commands |= pcommands;
+        }
+
+        public void ApplyExternalKnockback(Vector3 direction, float distance, float duration)
+        {
+            direction.y = 0f;
+
+            if (direction.sqrMagnitude < 0.01f)
+                return;
+
+            if (duration <= 0f)
+                duration = 0.16f;
+
+            direction.Normalize();
+
+            externalKnockbackVelocity = direction * (distance / duration);
+            externalKnockbackTimer = duration;
+        }
+
+        public void StopExternalKnockback()
+        {
+            externalKnockbackVelocity = Vector3.zero;
+            externalKnockbackTimer = 0f;
+        }
+
+        public void UpdateVelocity(ref Vector3 currentVelocity, float deltaTime)
+        {
+            CurrentState.UpdateVelocity(ref currentVelocity, deltaTime);
+
+            if (externalKnockbackTimer > 0f)
+            {
+                currentVelocity += externalKnockbackVelocity;
+
+                externalKnockbackTimer -= deltaTime;
+
+                externalKnockbackVelocity = Vector3.Lerp(
+                    externalKnockbackVelocity,
+                    Vector3.zero,
+                    1f - Mathf.Exp(-knockbackDrag * deltaTime)
+                );
+
+                if (externalKnockbackTimer <= 0f)
+                    StopExternalKnockback();
+            }
+        }
+
+        public void BeforeCharacterUpdate(float deltaTime)
+        {
+            HandleRotationInput();
+
+            if (CommandUtils.IsUp(commands, PlayerCommand.Dash) &&
+                dashCooldownTimer <= 0f &&
+                CurrentState != StateMachine.DashingState)
+            {
+                dashCooldownTimer = dashCooldown;
+                CommandUtils.Off(ref commands, PlayerCommand.Dash);
+                StateMachine.TransitionToState(StateMachine.DashingState);
+            }
+
+            dashCooldownTimer = Mathf.Max(0f, dashCooldownTimer - deltaTime);
+        }
+
+        public void UpdateRotation(ref Quaternion currentRotation, float deltaTime)
+        {
+            if (!_isRotating)
+                return;
+
+            _rotationTimer += deltaTime / rotationDuration;
+            _rotationTimer = Mathf.Clamp01(_rotationTimer);
+
+            float t = Mathf.SmoothStep(0f, 1f, _rotationTimer);
+            float newY = Mathf.LerpAngle(_currentYAngle, _targetYAngle, t);
+            currentRotation = Quaternion.Euler(0f, newY, 0f);
+
+            if (CurrentState == StateMachine.GroundedState)
+                SnapPlayerLocation(t);
+
+            if (_rotationTimer < 1f)
+                return;
+
+            _isRotating = false;
+            _targetYAngle = Mathf.Round(_targetYAngle / stepAngle) * stepAngle;
+        }
+
+        public void PostGroundingUpdate(float deltaTime)
+        {
+            switch (IsGrounded)
+            {
+                case true when CurrentState == StateMachine.AirborneState:
+                    StateMachine.TransitionToState(StateMachine.GroundedState);
+                    break;
+
+                case false when CurrentState == StateMachine.GroundedState:
+                    StateMachine.TransitionToState(StateMachine.AirborneState);
+                    break;
+            }
+        }
+
+        public void AfterCharacterUpdate(float deltaTime)
+        {
+            CommandUtils.Off(ref commands, PlayerCommand.Jump | PlayerCommand.Dash);
+
+            if (CommandUtils.IsUp(commands, PlayerCommand.Shoot))
+            {
+                if (_arrowLauncher != null)
+                    _arrowLauncher.TryLaunch(motor.CharacterForward);
+                else
+                    Debug.LogError("ArrowLauncher component missing on " + gameObject.name, this);
+
+                CommandUtils.Off(ref commands, PlayerCommand.Shoot);
+            }
+        }
+
+        public Vector3 ComputeMoveDirection()
+        {
+            if (MoveInputs.MoveInput.sqrMagnitude < 0.01f)
+                return Vector3.zero;
+
+            return (MoveInputs.CameraForward * MoveInputs.MoveInput.y
+                    + MoveInputs.CameraRight * MoveInputs.MoveInput.x).normalized;
+        }
+
+        private void SnapPlayerLocation(float t)
+        {
+            var pos = transform.position;
+            var rX = currentGroundObjectPos.x;
+            var rZ = currentGroundObjectPos.z;
+
+            var lerpX = Mathf.Lerp(pos.x, rX, t);
+            var lerpZ = Mathf.Lerp(pos.z, rZ, t);
+
+            motor.SetPosition(new Vector3(lerpX, pos.y, lerpZ));
+        }
+
+        private void HandleRotationInput()
+        {
+            var pendingRotationInput = 0f;
+
+            if (CommandUtils.IsUp(commands, PlayerCommand.RotateCameraLeft))
+                pendingRotationInput = -1f;
+            else if (CommandUtils.IsUp(commands, PlayerCommand.RotateCameraRight))
+                pendingRotationInput = 1f;
+
+            if (_isRotating || pendingRotationInput == 0f)
+                return;
+
+            _targetYAngle += stepAngle * pendingRotationInput;
+
+            _currentYAngle = motor.TransientRotation.eulerAngles.y;
+            _rotationTimer = 0f;
+            _isRotating = true;
+
+            CommandUtils.Off(ref commands, PlayerCommand.RotateCameraLeft | PlayerCommand.RotateCameraRight);
+        }
+
+        public bool IsColliderValidForCollisions(Collider coll) => true;
+
+        public void OnGroundHit(
+            Collider hitCollider,
+            Vector3 hitNormal,
+            Vector3 hitPoint,
+            ref HitStabilityReport hitStabilityReport)
+        {
+            currentGroundObjectPos = hitCollider.transform.position;
+        }
+
+        public void OnMovementHit(
+            Collider hitCollider,
+            Vector3 hitNormal,
+            Vector3 hitPoint,
+            ref HitStabilityReport hitStabilityReport)
+        {
+            if (externalKnockbackTimer <= 0f)
+                return;
+
+            Vector3 horizontalNormal = hitNormal;
+            horizontalNormal.y = 0f;
+
+            Vector3 horizontalKnockback = externalKnockbackVelocity;
+            horizontalKnockback.y = 0f;
+
+            if (horizontalNormal.sqrMagnitude < 0.01f || horizontalKnockback.sqrMagnitude < 0.01f)
+                return;
+
+            horizontalNormal.Normalize();
+            horizontalKnockback.Normalize();
+
+            float movingIntoWall = Vector3.Dot(horizontalKnockback, -horizontalNormal);
+
+            if (movingIntoWall > 0.2f)
+                StopExternalKnockback();
+        }
+
+        public void ProcessHitStabilityReport(
+            Collider hitCollider,
+            Vector3 hitNormal,
+            Vector3 hitPoint,
+            Vector3 atCharacterPosition,
+            Quaternion atCharacterRotation,
+            ref HitStabilityReport hitStabilityReport)
+        { }
+
+        public void OnDiscreteCollisionDetected(Collider hitCollider)
+        {
+            if (externalKnockbackTimer > 0f)
+                StopExternalKnockback();
+        }
+    }
+}
