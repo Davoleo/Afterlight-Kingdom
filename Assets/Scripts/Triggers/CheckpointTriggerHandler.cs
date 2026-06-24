@@ -1,5 +1,6 @@
 ﻿using Core;
 using Gameplay;
+using HUD;
 using Player;
 using UnityEngine;
 
@@ -28,6 +29,7 @@ namespace Triggers
             _cpManager.lastCheckPoint = offsetPos;
             // Save progress -> new checkpoint position and Collectibles
             SaveManager.Save(offsetPos, _collectiblesManager.collectedIds, _collectiblesManager.coins, _collectiblesManager.keys);
+            _cpManager.ShowSavedMessage();
         }
     }
 }
