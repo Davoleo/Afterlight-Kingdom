@@ -1,5 +1,7 @@
 using System.Collections;
+using Controllers;
 using Gameplay;
+using Player;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -30,21 +32,21 @@ namespace Triggers
         private bool _playerInside;
 
         private CollectiblesManager _collectiblesManager;
+        private PlayerCharacterController _characterController;
 
         private void Awake()
         {
-            if (chestAnimator == null)
-                chestAnimator = GetComponent<Animator>();
+            if (!chestAnimator) chestAnimator = GetComponent<Animator>();
         }
 
         private void Start()
         {
-            GameObject gameManager = GameObject.FindGameObjectWithTag("GameManager");
+            var gameManager = GameObject.FindGameObjectWithTag("GameManager");
 
-            if (gameManager != null)
-                _collectiblesManager = gameManager.GetComponent<CollectiblesManager>();
+            _characterController = GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerCharacterController>();
+            _collectiblesManager = gameManager.GetComponent<CollectiblesManager>();
 
-            if (_collectiblesManager != null && _collectiblesManager.IsCollected(rewardId))
+            if (_collectiblesManager.IsCollected(rewardId))
             {
                 _opened = true;
                 SetChestVisualOpen(true);
@@ -56,13 +58,11 @@ namespace Triggers
 
         private void Update()
         {
-            if (!_playerInside || _opened)
-                return;
+            if (!_playerInside || _opened) return;
 
-            if (openAutomaticallyOnPlayerEnter)
-                return;
+            if (openAutomaticallyOnPlayerEnter) return;
 
-            if (Keyboard.current != null && Keyboard.current.fKey.wasPressedThisFrame)
+            if (CommandUtils.IsUp(_characterController.commands, PlayerCommand.Interact))
                 OpenChest();
         }
 
@@ -94,7 +94,7 @@ namespace Triggers
 
             SetChestVisualOpen(true);
 
-            if (chestAnimator != null && !string.IsNullOrWhiteSpace(openTriggerName))
+            if (chestAnimator && !string.IsNullOrWhiteSpace(openTriggerName))
                 chestAnimator.SetTrigger(openTriggerName);
 
             StartCoroutine(SpawnRewardRoutine());
@@ -102,7 +102,7 @@ namespace Triggers
 
         private IEnumerator SpawnRewardRoutine()
         {
-            if (rewardPrefab == null || rewardSpawnPoint == null)
+            if (!rewardPrefab || !rewardSpawnPoint)
                 yield break;
 
             Vector3 startPosition = rewardSpawnPoint.position;
@@ -116,7 +116,7 @@ namespace Triggers
 
             AbilityRewardClaimHandler claimHandler = reward.GetComponent<AbilityRewardClaimHandler>();
 
-            if (claimHandler == null)
+            if (!claimHandler)
                 claimHandler = reward.AddComponent<AbilityRewardClaimHandler>();
 
             claimHandler.Configure(rewardId, abilityToUnlock);
@@ -140,10 +140,10 @@ namespace Triggers
 
         private void SetChestVisualOpen(bool isOpen)
         {
-            if (closedVisual != null)
+            if (closedVisual)
                 closedVisual.SetActive(!isOpen);
 
-            if (openedVisual != null)
+            if (openedVisual)
                 openedVisual.SetActive(isOpen);
         }
     }

@@ -35,9 +35,9 @@ namespace Gameplay
             Collectibles.Coins.AddRange(GameObject.FindGameObjectsWithTag("Coins"));
             Collectibles.Keys.AddRange(GameObject.FindGameObjectsWithTag("Keys"));
 
-            SaveData save = SaveManager.Load();
+            var save = SaveManager.Load();
 
-            if (save != null)
+            if (SaveManager.HasSave)
             {
                 coins = save.coins;
                 keys = save.keys;
@@ -73,8 +73,7 @@ namespace Gameplay
             if (string.IsNullOrWhiteSpace(id))
                 return false;
 
-            if (collectedIds == null)
-                collectedIds = new List<string>();
+            collectedIds ??= new List<string>();
 
             if (collectedIds.Contains(id))
                 return false;

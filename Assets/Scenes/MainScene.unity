@@ -208,7 +208,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1556688953048904978, guid: bcf46106ca4beb942ab6ef799f8830f8, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0
+      value: 1.1368684e-13
       objectReference: {fileID: 0}
     - target: {fileID: 1556688953048904978, guid: bcf46106ca4beb942ab6ef799f8830f8, type: 3}
       propertyPath: m_LocalRotation.w
@@ -27019,6 +27019,7 @@ GameObject:
   - component: {fileID: 1007707249}
   - component: {fileID: 1007707250}
   - component: {fileID: 1007707251}
+  - component: {fileID: 1007707252}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: GameManager
@@ -27054,7 +27055,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   lastCheckPoint: {x: 0, y: 2, z: 0}
-  savedMessage: {fileID: 1709939141}
 --- !u!114 &1007707248
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -27111,6 +27111,18 @@ MonoBehaviour:
   pausePanel: {fileID: 1234294519}
   pauseFirstSelected: {fileID: 745971970}
   pauseAction: {fileID: 5622814498832608624, guid: 052faaac586de48259a63d0c4782560b, type: 3}
+--- !u!114 &1007707252
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1007707245}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e6ee02d2a88304ac6817f20b106f74bc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!4 &1008727824 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 6152299014247383670, guid: 57b32168a216646469b2daa667456376, type: 3}
@@ -31547,6 +31559,7 @@ GameObject:
   - component: {fileID: 1179043300}
   - component: {fileID: 1179043299}
   - component: {fileID: 1179043298}
+  - component: {fileID: 1179043302}
   m_Layer: 5
   m_Name: MainUIOverlay
   m_TagString: Untagged
@@ -31640,6 +31653,19 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 0}
+--- !u!114 &1179043302
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1179043297}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eb261edc561b4103b95fbc8ab387a4e9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  savedMessage: {fileID: 1709939141}
 --- !u!1001 &1179135197
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -37101,7 +37127,6 @@ GameObject:
   - component: {fileID: 1373935570}
   - component: {fileID: 1373935571}
   - component: {fileID: 1373935573}
-  - component: {fileID: 1373935574}
   m_Layer: 6
   m_Name: Character
   m_TagString: Player
@@ -37141,7 +37166,7 @@ Transform:
   m_GameObject: {fileID: 1373935559}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0.7071068, z: 0, w: 0.7071068}
-  m_LocalPosition: {x: 0, y: 2, z: 0}
+  m_LocalPosition: {x: 3, y: 2, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 1
   m_Children:
@@ -37347,19 +37372,6 @@ MonoBehaviour:
   maxAlpha: 0.75
   defaultKnockbackDistance: 1.2
   knockbackDuration: 0.18
---- !u!114 &1373935574
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1373935559}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e6ee02d2a88304ac6817f20b106f74bc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  unlockedAbilities: []
 --- !u!1001 &1375668222
 PrefabInstance:
   m_ObjectHideFlags: 0

@@ -1,5 +1,6 @@
 ﻿using Core;
 using Gameplay;
+using HUD;
 using Player;
 using UnityEngine;
 
@@ -7,28 +8,24 @@ namespace Triggers
 {
     public class CheckpointTriggerHandler : MonoBehaviour
     {
+        private GameObject _gm;
         private HealthManager _healthManager;
         private CheckpointManager _cpManager;
-        private CollectiblesManager _collectiblesManager;
-        private AbilityManager _abilityManager;
+        private CheckPointHUD _checkPointHUD;
 
         private void Start()
         {
             GameObject player = GameObject.FindGameObjectWithTag("Player");
-
             _healthManager = player.GetComponent<HealthManager>();
-            _abilityManager = player.GetComponent<AbilityManager>();
-
-            GameObject gm = GameObject.FindGameObjectWithTag("GameManager");
-
-            _cpManager = gm.GetComponent<CheckpointManager>();
-            _collectiblesManager = gm.GetComponent<CollectiblesManager>();
+            _gm = GameObject.FindGameObjectWithTag("GameManager");
+            _cpManager = _gm.GetComponent<CheckpointManager>();
+            //TODO: Maybe FindFirstObjectByType is not the best solution
+            _checkPointHUD = FindFirstObjectByType<CheckPointHUD>();
         }
 
         private void OnTriggerEnter(Collider other)
         {
-            if (!other.CompareTag("Player"))
-                return;
+            if (!other.CompareTag("Player")) return;
 
             _healthManager.Heal(HealthManager.MaxHealth);
 
@@ -40,15 +37,9 @@ namespace Triggers
 
             _cpManager.lastCheckPoint = offsetPos;
 
-            SaveManager.Save(
-                offsetPos,
-                _collectiblesManager.collectedIds,
-                _collectiblesManager.coins,
-                _collectiblesManager.keys,
-                _abilityManager.unlockedAbilities
-            );
+            SaveManager.Save(_gm);
 
-            _cpManager.ShowSavedMessage();
+            _checkPointHUD.ShowSavedMessage();
         }
     }
 }

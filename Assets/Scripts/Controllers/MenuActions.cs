@@ -1,14 +1,25 @@
 using Core;
+using Gameplay;
 using UnityEngine;
 
 namespace Controllers
 {
     public class MenuActions : MonoBehaviour
     {
+        private CheckpointManager _cpManager;
+        private MenuManager _menuManager;
+
+        private void Start()
+        {
+            if (!gameObject.CompareTag("GameManager")) return;
+            _cpManager = gameObject.GetComponent<CheckpointManager>();
+            _menuManager = gameObject.GetComponent<MenuManager>();
+        }
+        
         public void RestartFromCheckpoint()
         {
-            Time.timeScale = 1f;
-            SceneLoader.LoadScene("MainScene");
+            _cpManager.Respawn();
+            _menuManager.CloseAllMenus();
         }
 
         public void ReturnToMenu()
