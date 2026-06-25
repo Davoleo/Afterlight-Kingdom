@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 5005529597039977520}
   - component: {fileID: 8636967674070207378}
   - component: {fileID: -5262092490464293359}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: FREE Arrow Short Color 3
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -124,10 +124,10 @@ MonoBehaviour:
   speed: 25
   maxRange: 40
   tipOffset: 0.45
+  castRadius: 0.25
   collisionMask:
     serializedVersion: 2
-    m_Bits: 4294967295
+    m_Bits: 471
   damage: 1
-  destroyOnEnemyHit: 1
   stuckLifetime: 15
   standingCollider: {fileID: 8636967674070207378}
