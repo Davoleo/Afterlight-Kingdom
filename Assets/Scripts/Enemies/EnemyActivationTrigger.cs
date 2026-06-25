@@ -11,6 +11,12 @@ namespace Enemies
             if (!other.CompareTag("Player"))
                 return;
 
+            if (enemy == null)
+            {
+                Debug.LogWarning("EnemyActivationTrigger: enemy non assegnato.");
+                return;
+            }
+
             enemy.Activate();
         }
     }
