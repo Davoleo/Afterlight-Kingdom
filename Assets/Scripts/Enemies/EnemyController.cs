@@ -5,6 +5,8 @@ namespace Enemies
 {
     public abstract class EnemyController : MonoBehaviour, ICharacterController
     {
+        private bool hasResetAfterPlayerDeath;
+
         [Header("Base References")]
         [SerializeField] protected KinematicCharacterMotor motor;
 
@@ -85,27 +87,29 @@ namespace Enemies
 
             SetStateAfterReset();
         }
-
-        protected void CheckPlayerDeathOrFall()
+        //manage enemies respawn
+        protected bool CheckPlayerDeathOrFall()
         {
             if (!target.IsPlayerDead())
             {
                 hasResetAfterPlayerDeath = false;
-                return;
+                return false;
             }
 
             if (hasResetAfterPlayerDeath)
-                return;
+                return true;
 
             hasResetAfterPlayerDeath = true;
             ResetToSpawn();
+
+            return true;
         }
 
         protected bool IsPlayerDead()
         {
             return target.IsPlayerDead();
         }
-
+        //classe che gestisce la
         protected float DistanceFromPlayer()
         {
             return target.DistanceFrom(transform.position);
@@ -130,7 +134,7 @@ namespace Enemies
         {
             return patrol.GetDirection(transform.position);
         }
-
+        //modify speed parameters when switch from patrol to attack mode
         public virtual void UpdateVelocity(ref Vector3 currentVelocity, float deltaTime)
         {
             Vector3 targetVelocity = MovementDirection * GetCurrentSpeed();
