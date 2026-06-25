@@ -5,7 +5,6 @@ namespace Enemies
 {
     public abstract class EnemyController : MonoBehaviour, ICharacterController
     {
-        private bool hasResetAfterPlayerDeath;
 
         [Header("Base References")]
         [SerializeField] protected KinematicCharacterMotor motor;
@@ -29,6 +28,7 @@ namespace Enemies
         protected Vector3 SpawnPosition;
         protected Vector3 MovementDirection;
         protected Vector3 LookDirection;
+        private bool hasResetAfterPlayerDeath;
 
         protected virtual void Awake()
         {

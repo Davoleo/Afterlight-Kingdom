@@ -28,7 +28,7 @@ namespace Player
         RotateCameraRight = 1 << 5,
     }
 
-    class CommandUtils
+    static class CommandUtils
     {
         public static bool IsUp(PlayerCommand flags, PlayerCommand command)
         {

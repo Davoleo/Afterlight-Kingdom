@@ -25,7 +25,7 @@ namespace Controllers
         {
             mainPanel.SetActive(true); 
             optionsPanel.SetActive(false);
-            // Select the first button in the panel                                                                                                                                   
+            // Select the first button in the panel                                                                                                                      
             EventSystem.current.SetSelectedGameObject(mainPanel.GetComponentInChildren<Button>().gameObject);
         }
 
@@ -33,7 +33,7 @@ namespace Controllers
         {
             optionsPanel.SetActive(true);
             mainPanel.SetActive(false);
-            // Select the first button in the panel                                                                                                                                   
+            // Select the first button in the panel                                                                                                                         
             EventSystem.current.SetSelectedGameObject(mainPanel.GetComponentInChildren<Button>().gameObject);
         }
     }

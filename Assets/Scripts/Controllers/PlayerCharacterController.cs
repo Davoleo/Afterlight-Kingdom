@@ -45,7 +45,7 @@ namespace Controllers
         private float _currentYAngle;
         private float _targetYAngle;
 
-        private Vector3 currentGroundObjectPos;
+        private Vector3 _currentGroundObjectPos;
 
         public PlayerStateMachine StateMachine;
 
@@ -62,10 +62,13 @@ namespace Controllers
         private void Start()
         {
             _arrowLauncher = GetComponent<ArrowLauncher>();
-            _abilityManager = GetComponent<AbilityManager>();
+            if (_arrowLauncher == null)
+                Debug.LogError("ArrowLauncher component missing on " + gameObject.name, this);
+            
+            _abilityManager = GameObject.FindGameObjectWithTag("GameManager").GetComponent<AbilityManager>();
 
             if (_abilityManager == null)
-                Debug.LogError("AbilityManager component missing on " + gameObject.name, this);
+                Debug.LogError("AbilityManager component missing on GameManager", this);
         }
 
         public void SetInputs(MovementInputs inputs, PlayerCommand pcommands)
@@ -130,7 +133,7 @@ namespace Controllers
             if (!CommandUtils.IsUp(commands, PlayerCommand.Dash))
                 return;
 
-            if (_abilityManager == null || !_abilityManager.HasAbility(AbilityType.Dash))
+            if (!_abilityManager.HasAbility(AbilityType.Dash))
             {
                 CommandUtils.Off(ref commands, PlayerCommand.Dash);
                 return;
@@ -201,16 +204,13 @@ namespace Controllers
             if (!CommandUtils.IsUp(commands, PlayerCommand.Shoot))
                 return;
 
-            if (_abilityManager == null || !_abilityManager.HasAbility(AbilityType.Bow))
+            if (!_abilityManager.HasAbility(AbilityType.Bow))
             {
                 CommandUtils.Off(ref commands, PlayerCommand.Shoot);
                 return;
             }
-
-            if (_arrowLauncher != null)
-                _arrowLauncher.TryLaunch(motor.CharacterForward);
-            else
-                Debug.LogError("ArrowLauncher component missing on " + gameObject.name, this);
+            
+            _arrowLauncher.TryLaunch(motor.CharacterForward);
 
             CommandUtils.Off(ref commands, PlayerCommand.Shoot);
         }
@@ -227,8 +227,8 @@ namespace Controllers
         private void SnapPlayerLocation(float t)
         {
             var pos = transform.position;
-            var rX = currentGroundObjectPos.x;
-            var rZ = currentGroundObjectPos.z;
+            var rX = _currentGroundObjectPos.x;
+            var rZ = _currentGroundObjectPos.z;
 
             var lerpX = Mathf.Lerp(pos.x, rX, t);
             var lerpZ = Mathf.Lerp(pos.z, rZ, t);
@@ -265,7 +265,7 @@ namespace Controllers
             Vector3 hitPoint,
             ref HitStabilityReport hitStabilityReport)
         {
-            currentGroundObjectPos = hitCollider.transform.position;
+            _currentGroundObjectPos = hitCollider.transform.position;
         }
 
         public void OnMovementHit(

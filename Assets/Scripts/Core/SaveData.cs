@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Gameplay;
 
 namespace Core
 {
@@ -15,6 +16,6 @@ namespace Core
         public int coins;
         public int keys;
 
-        public List<string> unlockedAbilities;
+        public List<AbilityType> unlockedAbilities;
     }
 }
