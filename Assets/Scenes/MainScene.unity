@@ -26,7 +26,7 @@ RenderSettings:
   m_AmbientIntensity: 1
   m_AmbientMode: 0
   m_SubtractiveShadowColor: {r: 0.42, g: 0.478, b: 0.627, a: 1}
-  m_SkyboxMaterial: {fileID: 10304, guid: 0000000000000000f000000000000000, type: 0}
+  m_SkyboxMaterial: {fileID: 2100000, guid: 0f1401d983cde1c49a7f687a57e62c5a, type: 2}
   m_HaloStrength: 0.5
   m_FlareStrength: 1
   m_FlareFadeSpeed: 3
@@ -1141,6 +1141,62 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 6152299014247383670, guid: 57b32168a216646469b2daa667456376, type: 3}
   m_PrefabInstance: {fileID: 2098202008}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &50809042
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 50809044}
+  - component: {fileID: 50809043}
+  m_Layer: 0
+  m_Name: Decal Projector
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &50809043
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 50809042}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0777d029ed3dffa4692f417d4aba19ca, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Material: {fileID: 2100000, guid: 31d0dcc6f2dd4e4408d18036a2c93862, type: 2}
+  m_DrawDistance: 1000
+  m_FadeScale: 0.9
+  m_StartAngleFade: 180
+  m_EndAngleFade: 180
+  m_UVScale: {x: 1, y: 1}
+  m_UVBias: {x: 0, y: 0}
+  m_DecalLayerMask: 1
+  m_ScaleMode: 0
+  m_Offset: {x: 0, y: 0, z: 0.5}
+  m_Size: {x: 1, y: 1, z: 1}
+  m_FadeFactor: 1
+--- !u!4 &50809044
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 50809042}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0.7071068, y: -0, z: -0, w: 0.7071068}
+  m_LocalPosition: {x: 719.6464, y: -531.8772, z: 911.4926}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &50919265 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 982667284609586249, guid: 67c35b8bcfe5c664ba81a4d9d9706c0f, type: 3}
@@ -13196,16 +13252,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   motor: {fileID: 498565420}
-  player: {fileID: 1373935564}
-  leftPatrolPoint: {fileID: 1572821794}
-  rightPatrolPoint: {fileID: 1590094358}
+  target:
+    player: {fileID: 0}
+    detectionRange: 6
+    losePlayerRange: 8
+  patrol:
+    leftPoint: {fileID: 0}
+    rightPoint: {fileID: 0}
+    pointTolerance: 0.25
   startsActive: 1
-  detectionRange: 4
-  losePlayerRange: 8
   patrolSpeed: 2
-  chaseSpeed: 3
   acceleration: 15
-  patrolPointTolerance: 0.25
+  gravity: 20
+  chaseSpeed: 3
   attackRange: 1.5
   attackCooldown: 0.6
   attackWindup: 0.2
@@ -13215,7 +13274,6 @@ MonoBehaviour:
   playerLayer:
     serializedVersion: 2
     m_Bits: 64
-  gravity: 20
 --- !u!136 &498565416
 CapsuleCollider:
   m_ObjectHideFlags: 8
@@ -21618,6 +21676,99 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 57b32168a216646469b2daa667456376, type: 3}
+--- !u!1 &801275616
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 801275619}
+  - component: {fileID: 801275618}
+  - component: {fileID: 801275617}
+  m_Layer: 0
+  m_Name: Terrain
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 2147483647
+  m_IsActive: 1
+--- !u!154 &801275617
+TerrainCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 801275616}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_TerrainData: {fileID: 15600000, guid: b53a31f388f5153a1ad0ab1548ecfc50, type: 2}
+  m_EnableTreeColliders: 1
+--- !u!218 &801275618
+Terrain:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 801275616}
+  m_Enabled: 1
+  serializedVersion: 6
+  m_TerrainData: {fileID: 15600000, guid: b53a31f388f5153a1ad0ab1548ecfc50, type: 2}
+  m_TreeDistance: 5000
+  m_TreeBillboardDistance: 50
+  m_TreeCrossFadeLength: 5
+  m_TreeMaximumFullLODCount: 50
+  m_DetailObjectDistance: 80
+  m_DetailObjectDensity: 1
+  m_HeightmapPixelError: 5
+  m_SplatMapDistance: 1000
+  m_HeightmapMinimumLODSimplification: 0
+  m_HeightmapMaximumLOD: 0
+  m_ShadowCastingMode: 2
+  m_DrawHeightmap: 1
+  m_DrawInstanced: 0
+  m_DrawTreesAndFoliage: 1
+  m_StaticShadowCaster: 0
+  m_IgnoreQualitySettings: 0
+  m_ReflectionProbeUsage: 1
+  m_MaterialTemplate: {fileID: 2100000, guid: 594ea882c5a793440b60ff72d896021e, type: 2}
+  m_BakeLightProbesForTrees: 1
+  m_PreserveTreePrototypeLayers: 0
+  m_DeringLightProbesForTrees: 1
+  m_ReceiveGI: 1
+  m_ScaleInLightmap: 0.0256
+  m_LightmapParameters: {fileID: 15203, guid: 0000000000000000f000000000000000, type: 0}
+  m_GroupingID: 0
+  m_RenderingLayerMask: 1
+  m_AllowAutoConnect: 1
+  m_EnableHeightmapRayTracing: 1
+  m_EnableTreesAndDetailsRayTracing: 0
+  m_TreeMotionVectorModeOverride: 3
+--- !u!4 &801275619
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 801275616}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -392, y: 0, z: -505}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &802046625 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 6152299014247383670, guid: 57b32168a216646469b2daa667456376, type: 3}
@@ -39213,20 +39364,22 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   motor: {fileID: 0}
-  player: {fileID: 0}
-  leftPatrolPoint: {fileID: 0}
-  rightPatrolPoint: {fileID: 0}
-  shootPoint: {fileID: 1996479670}
-  projectilePrefab: {fileID: 4554121061870604082, guid: 727889a4fbb2f40559f799567472b0f9, type: 3}
+  target:
+    player: {fileID: 0}
+    detectionRange: 6
+    losePlayerRange: 8
+  patrol:
+    leftPoint: {fileID: 0}
+    rightPoint: {fileID: 0}
+    pointTolerance: 0.25
   startsActive: 1
-  detectionRange: 8
-  losePlayerRange: 10
   patrolSpeed: 2
   acceleration: 15
-  patrolPointTolerance: 0.25
+  gravity: 20
+  shootPoint: {fileID: 1996479670}
+  projectilePrefab: {fileID: 4554121061870604082, guid: 727889a4fbb2f40559f799567472b0f9, type: 3}
   shootCooldown: 1.5
   shootWindup: 0.3
-  gravity: 20
 --- !u!114 &1435560539
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -40019,17 +40172,20 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   motor: {fileID: 0}
-  player: {fileID: 0}
-  leftPatrolPoint: {fileID: 0}
-  rightPatrolPoint: {fileID: 0}
-  chargeHitPoint: {fileID: 0}
+  target:
+    player: {fileID: 0}
+    detectionRange: 6
+    losePlayerRange: 8
+  patrol:
+    leftPoint: {fileID: 0}
+    rightPoint: {fileID: 0}
+    pointTolerance: 0.25
   startsActive: 1
-  detectionRange: 7
-  losePlayerRange: 10
   patrolSpeed: 2
-  chargeSpeed: 9
   acceleration: 20
-  patrolPointTolerance: 0.25
+  gravity: 20
+  chargeHitPoint: {fileID: 0}
+  chargeSpeed: 9
   chargeWindup: 0.45
   chargeDuration: 0.75
   chargeCooldown: 1.2
@@ -40043,7 +40199,6 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 0
   obstacleCheckDistance: 0.25
-  gravity: 20
 --- !u!114 &1461659733
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -60614,3 +60769,5 @@ SceneRoots:
   - {fileID: 1977091959}
   - {fileID: 562309904}
   - {fileID: 1427533539}
+  - {fileID: 801275619}
+  - {fileID: 50809044}
