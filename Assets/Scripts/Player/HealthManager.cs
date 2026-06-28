@@ -36,8 +36,7 @@ namespace Player
 
         public void TakeDamage(int damage)
         {
-            if (_isDead)
-                return;
+            if (_isDead) return;
 
             Health = Math.Max(Health - damage, 0);
         }
