@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.IO;
 using Gameplay;
 using UnityEngine;
+using Controllers;
 
 namespace Core
 { 
@@ -26,12 +27,21 @@ namespace Core
             var cpManager = gm.GetComponent<CheckpointManager>();
             var collManager = gm.GetComponent<CollectiblesManager>();
             var abilityManager = gm.GetComponent<AbilityManager>();
-            
+            var player = GameObject.FindGameObjectWithTag("Player");
+            Vector3 playerRotation = player.transform.eulerAngles;
+            var playerController = GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerCharacterController>();
             var data = new SaveData
             {
                 checkpointX = cpManager.lastCheckPoint.x,
                 checkpointY = cpManager.lastCheckPoint.y,
                 checkpointZ = cpManager.lastCheckPoint.z,
+
+                playerRotationX = playerRotation.x,
+                playerRotationY = playerController.GetSavedRotationY(),
+                playerRotationZ = playerRotation.z,
+
+
+
 
                 collectedIds = collManager.collectedIds ?? new List<string>(),
                 coins = collManager.coins,

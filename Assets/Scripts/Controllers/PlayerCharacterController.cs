@@ -309,5 +309,23 @@ namespace Controllers
             if (externalKnockbackTimer > 0f)
                 StopExternalKnockback();
         }
+
+        //track and restore rotation after respawn
+
+        public float GetSavedRotationY()
+        {
+            return Mathf.Round(_targetYAngle / stepAngle) * stepAngle;
+        }
+
+        public void RestoreRotationY(float yAngle)
+        {
+            _isRotating = false;
+            _rotationTimer = 0f;
+            _currentYAngle = yAngle;
+            _targetYAngle = yAngle;
+            commands = default;
+
+            motor.SetRotation(Quaternion.Euler(0f, yAngle, 0f));
+}
     }
 }

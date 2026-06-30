@@ -10,6 +10,11 @@ namespace Core
         public float checkpointX;
         public float checkpointY;
         public float checkpointZ;
+        
+        //original player view rotation
+        public float playerRotationX;
+        public float playerRotationY;
+        public float playerRotationZ;
 
         public List<string> collectedIds;
 
