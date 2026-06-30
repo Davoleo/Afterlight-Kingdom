@@ -15,6 +15,12 @@ namespace Gameplay
             var player = GameObject.FindGameObjectWithTag("Player");
             _playerController = player.GetComponent<PlayerCharacterController>();
 
+            Respawn();
+        }
+
+        public void Respawn()
+        {
+            // MODIFICA: carica l'ultimo checkpoint salvato, se esiste.
             SaveData save = SaveManager.Load();
 
             if (SaveManager.HasSave)
@@ -26,11 +32,6 @@ namespace Gameplay
                 );
             }
 
-            Respawn();
-        }
-
-        public void Respawn()
-        {
             _playerController.StopExternalKnockback();
             _playerController.motor.SetPosition(lastCheckPoint);
         }

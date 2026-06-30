@@ -12,7 +12,7 @@ namespace Gameplay
     }
 
     /// Trapdoor platform that creates its hinge automatically on the selected side.
-    public class BreakablePlatform : MonoBehaviour
+    public class TrapdoorPlatform : MonoBehaviour
     {
         [Header("References")]
         [SerializeField] private Transform platformPart;
@@ -191,9 +191,9 @@ namespace Gameplay
 
     public class TrapdoorCollisionRelay : MonoBehaviour
     {
-        private BreakablePlatform _trapdoor;
+        private TrapdoorPlatform _trapdoor;
 
-        public void Initialize(BreakablePlatform trapdoor)
+        public void Initialize(TrapdoorPlatform trapdoor)
         {
             _trapdoor = trapdoor;
         }
