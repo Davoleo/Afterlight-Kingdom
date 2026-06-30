@@ -48,8 +48,7 @@ namespace Player
 
             Health = Math.Min(Health + heal, MaxHealth);
         }
-
-        // MODIFICA: ripristina la vita e riattiva il player dopo il respawn.
+        // reset all params after death
         public void ResetAfterRespawn()
         {
             _isDead = false;

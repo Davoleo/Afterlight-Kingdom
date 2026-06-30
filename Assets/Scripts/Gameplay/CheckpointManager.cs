@@ -20,7 +20,6 @@ namespace Gameplay
 
         public void Respawn()
         {
-            // MODIFICA: carica l'ultimo checkpoint salvato, se esiste.
             SaveData save = SaveManager.Load();
 
             if (SaveManager.HasSave)

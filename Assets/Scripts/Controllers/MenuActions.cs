@@ -26,8 +26,7 @@ namespace Controllers
             Time.timeScale = 1f; //resume play after reload checkpoint
             _cpManager.Respawn();
 
-            if (_healthManager != null)
-                _healthManager.ResetAfterRespawn();
+            _healthManager.ResetAfterRespawn();
 
             _menuManager.CloseAllMenus();
         }
