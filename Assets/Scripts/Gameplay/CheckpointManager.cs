@@ -36,20 +36,21 @@ namespace Gameplay
                     save.playerRotationY,
                     save.playerRotationZ
                 );
+
                 //restore rotation state
                 _playerController.RestoreRotationY(save.playerRotationY);
-
+                
+                //restore enemies
+                EnemySaveManager.RestoreEnemyStates(save.enemyStates);
             }
 
             _playerController.StopExternalKnockback();
-
 
             //restore player location
             _playerController.motor.SetPositionAndRotation(
                 lastCheckPoint,
                 Quaternion.Euler(lastPlayerRotation)
             );
-
         }
     }
 }

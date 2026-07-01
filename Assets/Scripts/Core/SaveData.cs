@@ -4,6 +4,12 @@ using Gameplay;
 
 namespace Core
 {
+    [System.Serializable]
+    public class EnemySaveData
+    {
+        public string id;
+        public bool isAlive;
+    }
     [Serializable]
     public class SaveData
     {
@@ -20,6 +26,7 @@ namespace Core
 
         public int coins;
         public int keys;
+        public List<EnemySaveData> enemyStates = new List<EnemySaveData>();
 
         public List<AbilityType> unlockedAbilities;
     }

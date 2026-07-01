@@ -46,6 +46,7 @@ GameObject:
   - component: {fileID: 5599308586127566356}
   - component: {fileID: 6561443613268239703}
   - component: {fileID: 3327297795530109280}
+  - component: {fileID: 7022476504449931981}
   m_Layer: 8
   m_Name: RangedEnemy
   m_TagString: Untagged
@@ -213,17 +214,32 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   motor: {fileID: 0}
-  player: {fileID: 0}
-  leftPatrolPoint: {fileID: 0}
-  rightPatrolPoint: {fileID: 0}
-  shootPoint: {fileID: 2369133556651652903}
-  projectilePrefab: {fileID: 4554121061870604082, guid: 727889a4fbb2f40559f799567472b0f9, type: 3}
+  target:
+    player: {fileID: 0}
+    detectionRange: 6
+    losePlayerRange: 8
+  patrol:
+    leftPoint: {fileID: 0}
+    rightPoint: {fileID: 0}
+    pointTolerance: 0.25
   startsActive: 1
-  detectionRange: 8
-  losePlayerRange: 10
   patrolSpeed: 2
   acceleration: 15
-  patrolPointTolerance: 0.25
+  gravity: 20
+  shootPoint: {fileID: 2369133556651652903}
+  projectilePrefab: {fileID: 4554121061870604082, guid: 727889a4fbb2f40559f799567472b0f9, type: 3}
   shootCooldown: 1.5
   shootWindup: 0.3
-  gravity: 20
+--- !u!114 &7022476504449931981
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8757712320787616610}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1b74ef322fdfa455486f44357186f1b4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  enemyId: Enemy_005

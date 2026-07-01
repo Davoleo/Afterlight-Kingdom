@@ -77,6 +77,7 @@ GameObject:
   - component: {fileID: 5540314328372059516}
   - component: {fileID: 5423685742893788}
   - component: {fileID: 7752617487149093108}
+  - component: {fileID: 3996788696878199830}
   m_Layer: 8
   m_Name: MeleeEnemy
   m_TagString: Untagged
@@ -191,16 +192,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   motor: {fileID: 5423685742893788}
-  player: {fileID: 0}
-  leftPatrolPoint: {fileID: 1613782112228949754}
-  rightPatrolPoint: {fileID: 6109558983030655243}
+  target:
+    player: {fileID: 0}
+    detectionRange: 6
+    losePlayerRange: 8
+  patrol:
+    leftPoint: {fileID: 0}
+    rightPoint: {fileID: 0}
+    pointTolerance: 0.25
   startsActive: 1
-  detectionRange: 4
-  losePlayerRange: 8
   patrolSpeed: 2
-  chaseSpeed: 3
   acceleration: 15
-  patrolPointTolerance: 0.25
+  gravity: 20
+  chaseSpeed: 3
   attackRange: 1.5
   attackCooldown: 0.6
   attackWindup: 0.2
@@ -210,7 +214,6 @@ MonoBehaviour:
   playerLayer:
     serializedVersion: 2
     m_Bits: 64
-  gravity: 20
 --- !u!114 &5423685742893788
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -266,6 +269,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   maxHealth: 3
+--- !u!114 &3996788696878199830
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6595118272833061148}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1b74ef322fdfa455486f44357186f1b4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  enemyId: 
 --- !u!1 &6935543438647689131
 GameObject:
   m_ObjectHideFlags: 0

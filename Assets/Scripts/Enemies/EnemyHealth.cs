@@ -28,7 +28,12 @@ namespace Enemies
         private void Die()
         {
             Debug.Log("Enemy died.");
-            Destroy(gameObject);
+            gameObject.SetActive(false);
+        }
+
+        public void ResetEnemy()
+        {
+            currentHealth = maxHealth;
         }
     }
 }

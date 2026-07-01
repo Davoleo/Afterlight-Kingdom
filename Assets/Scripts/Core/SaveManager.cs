@@ -27,27 +27,26 @@ namespace Core
             var cpManager = gm.GetComponent<CheckpointManager>();
             var collManager = gm.GetComponent<CollectiblesManager>();
             var abilityManager = gm.GetComponent<AbilityManager>();
-            var player = GameObject.FindGameObjectWithTag("Player");
-            Vector3 playerRotation = player.transform.eulerAngles;
             var playerController = GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerCharacterController>();
+                    
             var data = new SaveData
             {
                 checkpointX = cpManager.lastCheckPoint.x,
                 checkpointY = cpManager.lastCheckPoint.y,
                 checkpointZ = cpManager.lastCheckPoint.z,
 
-                playerRotationX = playerRotation.x,
+                playerRotationX = playerController.transform.eulerAngles.x,
                 playerRotationY = playerController.GetSavedRotationY(),
-                playerRotationZ = playerRotation.z,
-
-
-
+                playerRotationZ = playerController.transform.eulerAngles.z,
 
                 collectedIds = collManager.collectedIds ?? new List<string>(),
                 coins = collManager.coins,
                 keys = collManager.keys,
 
-                unlockedAbilities = new List<AbilityType>(abilityManager.UnlockedAbilities ?? new HashSet<AbilityType>())
+                unlockedAbilities = new List<AbilityType>(abilityManager.UnlockedAbilities ?? new HashSet<AbilityType>()),
+
+                // MODIFICA: salva lo stato dei nemici senza usare un GameObject manager.
+                enemyStates = EnemySaveManager.GetEnemyStates()
             };
 
             File.WriteAllText(SavePath, JsonUtility.ToJson(data));
