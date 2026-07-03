@@ -35,9 +35,7 @@ namespace Core
                 checkpointY = cpManager.lastCheckPoint.y,
                 checkpointZ = cpManager.lastCheckPoint.z,
 
-                playerRotationX = playerController.transform.eulerAngles.x,
                 playerRotationY = playerController.GetSavedRotationY(),
-                playerRotationZ = playerController.transform.eulerAngles.z,
 
                 collectedIds = collManager.collectedIds ?? new List<string>(),
                 coins = collManager.coins,
@@ -45,7 +43,6 @@ namespace Core
 
                 unlockedAbilities = new List<AbilityType>(abilityManager.UnlockedAbilities ?? new HashSet<AbilityType>()),
 
-                // MODIFICA: salva lo stato dei nemici senza usare un GameObject manager.
                 enemyStates = EnemySaveManager.GetEnemyStates()
             };
 

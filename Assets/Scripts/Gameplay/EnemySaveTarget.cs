@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Core;
 using Projectiles;
 using UnityEngine;
@@ -7,6 +8,8 @@ namespace Gameplay
 {
     public class EnemySaveTarget : MonoBehaviour
     {
+        private static readonly List<EnemySaveTarget> RegisteredEnemies = new List<EnemySaveTarget>(); // MODIFICA: lista dei nemici registrati senza usare FindObjectsOfType.
+
         [SerializeField] private string enemyId;
 
         //enemies params to use for respawn and motor to move them
@@ -17,12 +20,28 @@ namespace Gameplay
         public string EnemyId => enemyId;
         public bool IsAlive => gameObject.activeSelf;
 
+        public static IReadOnlyList<EnemySaveTarget> Enemies => RegisteredEnemies; // MODIFICA: permette all'EnemySaveManager di leggere i nemici registrati.
+
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+        private static void ClearRegisteredEnemies()
+        {
+            RegisteredEnemies.Clear(); // MODIFICA: pulisce la lista quando viene ricaricato il gioco/la scena.
+        }
+
         private void Awake()
         {
             //original enemies position
             _spawnPosition = transform.position;
             _spawnRotation = transform.rotation;
             _motor = GetComponent<KinematicCharacterMotor>();
+
+            if (gameObject.CompareTag("Enemy") && !RegisteredEnemies.Contains(this))
+                RegisteredEnemies.Add(this);
+        }
+
+        private void OnDestroy()
+        {
+            RegisteredEnemies.Remove(this); 
         }
 
         public void SetAlive(bool isAlive)

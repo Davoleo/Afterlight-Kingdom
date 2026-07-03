@@ -6,8 +6,8 @@ namespace Gameplay
 {
     public class CheckpointManager : MonoBehaviour
     {
-        public Vector3 lastCheckPoint = new Vector3(36f, 29f, 32f);
-        public Vector3 lastPlayerRotation = new Vector3(0f, 0f, 0f);
+        [SerializeField] public Vector3 lastCheckPoint = new Vector3(0f, 2f, 0f); 
+        [SerializeField] public float lastPlayerRotation = 90f;
 
         private PlayerCharacterController _playerController;
 
@@ -31,25 +31,21 @@ namespace Gameplay
                     save.checkpointZ
                 );
 
-                lastPlayerRotation = new Vector3(
-                    save.playerRotationX,
-                    save.playerRotationY,
-                    save.playerRotationZ
-                );
+                lastPlayerRotation = save.playerRotationY;
 
-                //restore rotation state
-                _playerController.RestoreRotationY(save.playerRotationY);
-                
                 //restore enemies
                 EnemySaveManager.RestoreEnemyStates(save.enemyStates);
             }
 
             _playerController.StopExternalKnockback();
 
+            // MODIFICA: restore rotation state anche quando non esiste un salvataggio.
+            _playerController.RestoreRotationY(lastPlayerRotation);
+
             //restore player location
             _playerController.motor.SetPositionAndRotation(
                 lastCheckPoint,
-                Quaternion.Euler(lastPlayerRotation)
+                Quaternion.Euler(0f, lastPlayerRotation, 0f)
             );
         }
     }

@@ -18,9 +18,7 @@ namespace Core
         public float checkpointZ;
         
         //original player view rotation
-        public float playerRotationX;
         public float playerRotationY;
-        public float playerRotationZ;
 
         public List<string> collectedIds;
 
