@@ -3,7 +3,6 @@ using Controllers;
 using Gameplay;
 using Player;
 using UnityEngine;
-using UnityEngine.InputSystem;
 
 namespace Triggers
 {

@@ -1,13 +1,13 @@
-﻿using Controllers;
-using Core;
+﻿using Core;
+using Player;
 using UnityEngine;
 
 namespace Gameplay
 {
     public class CheckpointManager : MonoBehaviour
     {
-        [SerializeField] public Vector3 lastCheckPoint = new Vector3(0f, 2f, 0f); 
-        [SerializeField] public float lastPlayerRotation = 90f;
+        public Vector3 lastCheckPoint = new Vector3(0f, 2f, 0f);
+        public float lastPlayerRotation = 90f;
 
         private PlayerCharacterController _playerController;
 
@@ -39,7 +39,7 @@ namespace Gameplay
 
             _playerController.StopExternalKnockback();
 
-            _playerController.RestoreRotationY(lastPlayerRotation);
+            //_playerController.RestoreRotationY(lastPlayerRotation);
 
             //restore player location
             _playerController.motor.SetPositionAndRotation(
