@@ -27,26 +27,9 @@ namespace Gameplay
 
         public List<string> collectedIds = new List<string>();
 
-        private void Start()
+        private void Awake()
         {
-            Collectibles.Coins = new List<GameObject>();
-            Collectibles.Keys = new List<GameObject>();
-
-            Collectibles.Coins.AddRange(GameObject.FindGameObjectsWithTag("Coins"));
-            Collectibles.Keys.AddRange(GameObject.FindGameObjectsWithTag("Keys"));
-
-            var save = SaveManager.Load();
-
-            if (SaveManager.HasSave)
-            {
-                coins = save.coins;
-                keys = save.keys;
-
-                if (save.collectedIds != null)
-                    collectedIds = new List<string>(save.collectedIds);
-            }
-
-            RestoreCollectedState();
+            InitializeCollectiblesLists();
         }
 
         public void Collect(CollectibleType type, string id)
@@ -106,20 +89,43 @@ namespace Gameplay
             return true;
         }
 
-        private void RestoreCollectedState()
+        public void RestoreFromSave(SaveData save)
         {
-            DeactivateMatching(Collectibles.Coins);
-            DeactivateMatching(Collectibles.Keys);
+            coins = save.coins;
+            keys = save.keys;
+            collectedIds = save.collectedIds != null ? new List<string>(save.collectedIds) : new List<string>();
+
+            RestoreCollectedState();
         }
 
-        private void DeactivateMatching(List<GameObject> objects)
+        private void InitializeCollectiblesLists()
+        {
+            if (Collectibles.Coins == null)
+            {
+                Collectibles.Coins = new List<GameObject>();
+                Collectibles.Coins.AddRange(GameObject.FindGameObjectsWithTag("Coins"));
+            }
+
+            if (Collectibles.Keys == null)
+            {
+                Collectibles.Keys = new List<GameObject>();
+                Collectibles.Keys.AddRange(GameObject.FindGameObjectsWithTag("Keys"));
+            }
+        }
+
+        private void RestoreCollectedState()
+        {
+            RestoreMatching(Collectibles.Coins);
+            RestoreMatching(Collectibles.Keys);
+        }
+
+        //Despawn/respawn collectibles
+        private void RestoreMatching(List<GameObject> objects)
         {
             foreach (GameObject go in objects)
             {
                 CollectibleTriggerHandler handler = go.GetComponent<CollectibleTriggerHandler>();
-
-                if (handler != null && IsCollected(handler.Id))
-                    go.SetActive(false);
+                go.SetActive(!IsCollected(handler.Id));
             }
         }
     }
