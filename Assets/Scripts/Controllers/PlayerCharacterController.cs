@@ -326,6 +326,6 @@ namespace Controllers
             commands = default;
 
             motor.SetRotation(Quaternion.Euler(0f, yAngle, 0f));
-}
+        }
     }
 }

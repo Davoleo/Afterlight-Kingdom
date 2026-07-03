@@ -39,7 +39,6 @@ namespace Gameplay
 
             _playerController.StopExternalKnockback();
 
-            // MODIFICA: restore rotation state anche quando non esiste un salvataggio.
             _playerController.RestoreRotationY(lastPlayerRotation);
 
             //restore player location
