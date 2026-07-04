@@ -91,7 +91,13 @@ namespace Player
 
         public void UpdateRotation(ref Quaternion currentRotation, float deltaTime)
         {
-
+            //Rotate player depending on the movement direction
+            var moveDirection = ComputeMoveDirection();
+            if (moveDirection.magnitude > 0.01f)
+            {
+                var newRot = Quaternion.LookRotation(moveDirection);
+                currentRotation = Quaternion.Slerp(currentRotation, newRot, deltaTime * 14);
+            }
         }
 
         public void UpdateVelocity(ref Vector3 currentVelocity, float deltaTime)
