@@ -79,7 +79,8 @@ namespace Player
         /// </summary>
         private void LateUpdate()
         {
-            var playerT = _player.gameObject.transform;
+            //link camera holder position to player
+            transform.position = _player.gameObject.transform.position;
 
             if (!_isRotating)
             {
