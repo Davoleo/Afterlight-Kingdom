@@ -33,19 +33,23 @@ namespace Gameplay
 
                 lastPlayerRotation = save.playerRotationY;
 
+                //restore collectibles
+                GetComponent<CollectiblesManager>().RestoreFromSave(save);
+
                 //restore enemies
                 EnemySaveManager.RestoreEnemyStates(save.enemyStates);
             }
 
             _playerController.StopExternalKnockback();
 
-            //_playerController.RestoreRotationY(lastPlayerRotation);
-
             //restore player location
             _playerController.motor.SetPositionAndRotation(
                 lastCheckPoint,
                 Quaternion.Euler(0f, lastPlayerRotation, 0f)
             );
+
+            //restore rotation state
+            _playerController.RestoreRotationY(lastPlayerRotation);
         }
     }
 }

@@ -9,6 +9,7 @@ TagManager:
   - Coins
   - Keys
   - DeathScreen
+  - Enemy
   layers:
   - Default
   - TransparentFX
