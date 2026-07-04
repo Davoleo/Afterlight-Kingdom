@@ -58,17 +58,19 @@ namespace Player
                 return;
 
             _targetYAngle += stepAngle * pendingRotationInput;
+            _targetYAngle %= 360;
 
             //Set new cardinal direction for camera
             var newRot = (_currentDirection + pendingRotationInput) % 4;
             _currentDirection = newRot < 0 ? newRot + 4 : newRot;
 
-            _currentYAngle = _player.motor.TransientRotation.eulerAngles.y;
+            _currentYAngle = transform.rotation.eulerAngles.y;
+            Debug.Log($"target: {_targetYAngle} - current: {_currentYAngle}");
+
             _rotationTimer = 0f;
             _isRotating = true;
 
             CommandUtils.Off(ref _player.commands, PlayerCommand.RotateCameraLeft | PlayerCommand.RotateCameraRight);
-            Debug.Log(_targetYAngle);
         }
 
         /// <summary>
@@ -98,7 +100,8 @@ namespace Player
             if (_rotationTimer >= 1f)
             {
                 _isRotating = false;
-                _targetYAngle = Mathf.Round(_targetYAngle / stepAngle) * stepAngle;
+                //TODO @Moeasy64: check if this is still needed
+                //_targetYAngle = Mathf.Round(_targetYAngle / stepAngle) * stepAngle;
             }
         }
 
