@@ -18411,7 +18411,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -0.0025634766, y: -0.00036621094}
+  m_AnchoredPosition: {x: -0.0024414062, y: -0.00036621094}
   m_SizeDelta: {x: 2450.4, y: 1338}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &692558689
@@ -26930,7 +26930,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   lastCheckPoint: {x: 0, y: 2, z: 0}
-  lastPlayerRotation: {x: 0, y: 0, z: 0}
+  lastPlayerRotation: 90
 --- !u!114 &1007707248
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -37209,7 +37209,7 @@ CapsuleCollider:
   m_Enabled: 1
   serializedVersion: 2
   m_Radius: 0.2
-  m_Height: 1.9
+  m_Height: 1.8
   m_Direction: 1
   m_Center: {x: 0, y: -0.1, z: 0}
 --- !u!4 &1373935564
@@ -37280,7 +37280,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Capsule: {fileID: 1373935561}
   CapsuleRadius: 0.2
-  CapsuleHeight: 1.9
+  CapsuleHeight: 1.8
   CapsuleYOffset: -0.1
   CapsulePhysicsMaterial: {fileID: 0}
   GroundDetectionExtraDistance: 0
