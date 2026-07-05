@@ -4,27 +4,26 @@ using Gameplay;
 
 namespace Core
 {
-    [System.Serializable]
+    [Serializable]
     public class EnemySaveData
     {
         public string id;
         public bool isAlive;
     }
+
     [Serializable]
     public class SaveData
     {
         public float checkpointX;
         public float checkpointY;
         public float checkpointZ;
-        
-        //original player view rotation
-        public float playerRotationY;
+        public float cameraRotation;
 
         public List<string> collectedIds;
 
         public int coins;
         public int keys;
-        public List<EnemySaveData> enemyStates = new List<EnemySaveData>();
+        public List<EnemySaveData> enemyStates = new();
 
         public List<AbilityType> unlockedAbilities;
     }

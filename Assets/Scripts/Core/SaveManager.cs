@@ -3,6 +3,7 @@ using System.IO;
 using Gameplay;
 using UnityEngine;
 using Controllers;
+using Player;
 
 namespace Core
 { 
@@ -27,15 +28,14 @@ namespace Core
             var cpManager = gm.GetComponent<CheckpointManager>();
             var collManager = gm.GetComponent<CollectiblesManager>();
             var abilityManager = gm.GetComponent<AbilityManager>();
-            var playerController = GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerCharacterController>();
+            //var playerController = GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerCharacterController>();
                     
             var data = new SaveData
             {
-                checkpointX = cpManager.lastCheckPoint.x,
-                checkpointY = cpManager.lastCheckPoint.y,
-                checkpointZ = cpManager.lastCheckPoint.z,
-
-                playerRotationY = playerController.GetSavedRotationY(),
+                checkpointX = cpManager.LastCheckPoint.Position.x,
+                checkpointY = cpManager.LastCheckPoint.Position.y,
+                checkpointZ = cpManager.LastCheckPoint.Position.z,
+                cameraRotation = cpManager.LastCheckPoint.Rotation,
 
                 collectedIds = collManager.collectedIds ?? new List<string>(),
                 coins = collManager.coins,

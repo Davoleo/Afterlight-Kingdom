@@ -8,6 +8,8 @@ namespace Triggers
 {
     public class CheckpointTriggerHandler : MonoBehaviour
     {
+        public float derivedCameraRotation;
+
         private GameObject _gm;
         private HealthManager _healthManager;
         private CheckpointManager _cpManager;
@@ -35,7 +37,7 @@ namespace Triggers
                 transform.position.z
             );
 
-            _cpManager.lastCheckPoint = offsetPos;
+            _cpManager.LastCheckPoint = new Checkpoint(offsetPos, derivedCameraRotation);
 
             SaveManager.Save(_gm);
 
