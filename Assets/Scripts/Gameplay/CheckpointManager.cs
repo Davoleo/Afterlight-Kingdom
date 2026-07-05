@@ -4,20 +4,30 @@ using UnityEngine;
 
 namespace Gameplay
 {
+    public struct Checkpoint
+    {
+        public Checkpoint(Vector3 position, float rotation)
+        {
+            Position = position;
+            Rotation = rotation;
+        }
+
+        public Vector3 Position { get; }
+        public float Rotation { get;  }
+    }
+
     public class CheckpointManager : MonoBehaviour
     {
-        public Vector3 lastCheckPoint = new Vector3(0f, 2f, 0f);
-        public float lastPlayerRotation = 90f;
+        public Checkpoint LastCheckPoint = new(new Vector3(0f, 2f, 0f), 0f);
 
         private PlayerCharacterController _playerController;
-        private PlayerCameraController _playerCameraController;
+        private PlayerCameraController _cameraController;
 
         private void Start()
         {
             var player = GameObject.FindGameObjectWithTag("Player");
             _playerController = player.GetComponent<PlayerCharacterController>();
-            var mainCamera =  GameObject.FindGameObjectWithTag("MainCamera");
-            _playerCameraController =  mainCamera.GetComponentInParent<PlayerCameraController>();
+            _cameraController = GameObject.FindWithTag("MainCamera").GetComponent<PlayerCameraController>();
 
             Respawn();
         }
@@ -28,16 +38,7 @@ namespace Gameplay
             {
                 SaveData save = SaveManager.Load();
 
-                lastCheckPoint = new Vector3(
-                    save.checkpointX,
-                    save.checkpointY,
-                    save.checkpointZ
-                );
-
-                lastPlayerRotation = save.playerRotationY;
-
-                //restore collectibles
-                GetComponent<CollectiblesManager>().RestoreFromSave(save);
+                LastCheckPoint = new Checkpoint(new Vector3(save.checkpointX, save.checkpointY, save.checkpointZ), save.cameraRotation);
 
                 //restore enemies
                 EnemySaveManager.RestoreEnemyStates(save.enemyStates);
@@ -46,13 +47,8 @@ namespace Gameplay
             _playerController.StopExternalKnockback();
 
             //restore player location
-            _playerController.motor.SetPositionAndRotation(
-                lastCheckPoint,
-                Quaternion.Euler(0f, lastPlayerRotation, 0f)
-            );
-
-            //restore rotation state
-            _playerCameraController.RestoreRotationY(lastPlayerRotation);
+            _playerController.motor.SetPosition(LastCheckPoint.Position);
+            _cameraController.SetRotationY(LastCheckPoint.Rotation);
         }
     }
 }

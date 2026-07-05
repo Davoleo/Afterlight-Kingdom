@@ -242,6 +242,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Checkpoint_Flag
       objectReference: {fileID: 0}
+    - target: {fileID: 5178533095648527109, guid: bcf46106ca4beb942ab6ef799f8830f8, type: 3}
+      propertyPath: derivedCameraRotation
+      value: 90
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -6546,6 +6550,10 @@ PrefabInstance:
     - target: {fileID: 2220741867714211752, guid: bcf46106ca4beb942ab6ef799f8830f8, type: 3}
       propertyPath: m_TagString
       value: Checkpoint
+      objectReference: {fileID: 0}
+    - target: {fileID: 5178533095648527109, guid: bcf46106ca4beb942ab6ef799f8830f8, type: 3}
+      propertyPath: derivedCameraRotation
+      value: 270
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -26929,8 +26937,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 17699666671e43ef93ccace0378cc070, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  lastCheckPoint: {x: 0, y: 2, z: 0}
-  lastPlayerRotation: 90
 --- !u!114 &1007707248
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -38927,6 +38933,10 @@ PrefabInstance:
     - target: {fileID: 2220741867714211752, guid: bcf46106ca4beb942ab6ef799f8830f8, type: 3}
       propertyPath: m_TagString
       value: Checkpoint
+      objectReference: {fileID: 0}
+    - target: {fileID: 5178533095648527109, guid: bcf46106ca4beb942ab6ef799f8830f8, type: 3}
+      propertyPath: derivedCameraRotation
+      value: 90
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

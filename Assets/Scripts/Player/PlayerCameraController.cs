@@ -93,7 +93,6 @@ namespace Player
             float t = Mathf.SmoothStep(0f, 1f, _rotationTimer);
             float newY = Mathf.LerpAngle(_currentYAngle, _targetYAngle, t);
             transform.rotation = Quaternion.Euler(0, newY, 0);
-            //transform.LookAt(playerT.position);
 
             if (_player.CurrentState == _player.StateMachine.GroundedState)
                 _player.SnapPlayerLocation(t);
@@ -101,17 +100,15 @@ namespace Player
             if (_rotationTimer >= 1f)
             {
                 _isRotating = false;
-                //TODO @Moeasy64: check if this is still needed
-                //_targetYAngle = Mathf.Round(_targetYAngle / stepAngle) * stepAngle;
             }
         }
 
-        public float GetSavedRotationY()
+        public float GetRotationY()
         {
             return Mathf.Round(_targetYAngle / stepAngle) * stepAngle;
         }
 
-        public void RestoreRotationY(float yAngle)
+        public void SetRotationY(float yAngle)
         {
             _isRotating = false;
             _rotationTimer = 0f;

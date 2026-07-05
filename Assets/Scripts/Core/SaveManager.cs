@@ -32,13 +32,10 @@ namespace Core
                     
             var data = new SaveData
             {
-                checkpointX = cpManager.lastCheckPoint.x,
-                checkpointY = cpManager.lastCheckPoint.y,
-                checkpointZ = cpManager.lastCheckPoint.z,
-
-                //playerRotationX = playerController.transform.eulerAngles.x,
-                //playerRotationY = playerController.GetSavedRotationY(),
-                //playerRotationZ = playerController.transform.eulerAngles.z,
+                checkpointX = cpManager.LastCheckPoint.Position.x,
+                checkpointY = cpManager.LastCheckPoint.Position.y,
+                checkpointZ = cpManager.LastCheckPoint.Position.z,
+                cameraRotation = cpManager.LastCheckPoint.Rotation,
 
                 collectedIds = collManager.collectedIds ?? new List<string>(),
                 coins = collManager.coins,
