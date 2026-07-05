@@ -10,11 +10,14 @@ namespace Gameplay
         public float lastPlayerRotation = 90f;
 
         private PlayerCharacterController _playerController;
+        private PlayerCameraController _playerCameraController;
 
         private void Start()
         {
             var player = GameObject.FindGameObjectWithTag("Player");
             _playerController = player.GetComponent<PlayerCharacterController>();
+            var mainCamera =  GameObject.FindGameObjectWithTag("MainCamera");
+            _playerCameraController =  mainCamera.GetComponentInParent<PlayerCameraController>();
 
             Respawn();
         }
@@ -49,7 +52,7 @@ namespace Gameplay
             );
 
             //restore rotation state
-            _playerController.RestoreRotationY(lastPlayerRotation);
+            _playerCameraController.RestoreRotationY(lastPlayerRotation);
         }
     }
 }
