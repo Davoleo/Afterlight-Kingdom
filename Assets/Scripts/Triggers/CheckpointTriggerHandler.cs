@@ -37,7 +37,7 @@ namespace Triggers
                 transform.position.z
             );
             //set camera position and checkpoint position, then save
-            _cpManager.SetCheckpoint(offsetPos);
+            _cpManager.SetCheckpoint(offsetPos, derivedCameraRotation);
             SaveManager.Save(_gm);
 
             _checkPointHUD.ShowSavedMessage();

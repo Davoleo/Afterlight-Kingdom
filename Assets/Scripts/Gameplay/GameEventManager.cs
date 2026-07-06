@@ -20,7 +20,7 @@ namespace Gameplay
 
         private void Update()
         {
-            if (player.transform.position.y < -80)
+            if (player.transform.position.y < -30)
             {
                 health.TakeDamage(HealthManager.MaxHealth);
             }
