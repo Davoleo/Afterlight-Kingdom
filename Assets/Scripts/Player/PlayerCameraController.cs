@@ -115,7 +115,7 @@ namespace Player
             _currentYAngle = yAngle;
             _targetYAngle = yAngle;
 
-            _player.motor.SetRotation(Quaternion.Euler(0f, yAngle, 0f));
+            transform.rotation = Quaternion.Euler(0f, yAngle, 0f);
         }
     }
 }
