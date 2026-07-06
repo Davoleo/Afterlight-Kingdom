@@ -36,6 +36,7 @@ namespace Player
         public PlayerCommand commands;
 
         private Vector3 _currentGroundObjectPos;
+        private Vector3 _digitalCharacterForward;
 
         public PlayerStateMachine StateMachine;
 
@@ -59,6 +60,8 @@ namespace Player
 
             if (_abilityManager == null)
                 Debug.LogError("AbilityManager component missing on GameManager", this);
+
+            _digitalCharacterForward = motor.CharacterForward;
         }
 
         public void SetInputs(MovementInputs inputs, PlayerCommand pcommands)
@@ -92,11 +95,16 @@ namespace Player
         public void UpdateRotation(ref Quaternion currentRotation, float deltaTime)
         {
             //Rotate player depending on the movement direction
-            var moveDirection = ComputeMoveDirection();
-            if (moveDirection.magnitude > 0.01f)
+            var movement = ComputeMoveDirection();
+            if (movement != Vector3.zero)
             {
-                var newRot = Quaternion.LookRotation(moveDirection);
-                currentRotation = Quaternion.Slerp(currentRotation, newRot, deltaTime * 14);
+                _digitalCharacterForward = movement;
+            }
+
+            var newRot = Quaternion.LookRotation(_digitalCharacterForward);
+            if (currentRotation != newRot)
+            {
+                currentRotation = Quaternion.Slerp(currentRotation, newRot, deltaTime * 16);
             }
         }
 
@@ -187,8 +195,8 @@ namespace Player
                 CommandUtils.Off(ref commands, PlayerCommand.Shoot);
                 return;
             }
-            
-            _arrowLauncher.TryLaunch(motor.CharacterForward);
+
+            _arrowLauncher.TryLaunch(_digitalCharacterForward);
 
             CommandUtils.Off(ref commands, PlayerCommand.Shoot);
         }

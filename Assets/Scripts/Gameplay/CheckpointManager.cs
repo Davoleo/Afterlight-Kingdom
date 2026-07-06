@@ -19,6 +19,7 @@ namespace Gameplay
     public class CheckpointManager : MonoBehaviour
     {
         public Checkpoint LastCheckPoint = new(new Vector3(0f, 2f, 0f), 0f);
+
         private PlayerCharacterController _playerController;
         private PlayerCameraController _cameraController;
 
@@ -26,7 +27,7 @@ namespace Gameplay
         {
             var player = GameObject.FindGameObjectWithTag("Player");
             _playerController = player.GetComponent<PlayerCharacterController>();
-            _cameraController = Camera.main.GetComponentInParent<PlayerCameraController>();
+            _cameraController = GameObject.FindWithTag("MainCamera").GetComponentInParent<PlayerCameraController>();
 
             Respawn();
         }
@@ -51,11 +52,11 @@ namespace Gameplay
         }
 
         //function to recover both checkpoint and also last camera rotation registered
-        public void SetCheckpoint(Vector3 checkpointPosition)
+        public void SetCheckpoint(Vector3 checkpointPosition, float rotation)
         {
             LastCheckPoint = new Checkpoint(
                 checkpointPosition,
-                _cameraController.GetRotationY()
+                rotation
             );
         }
 
