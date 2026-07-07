@@ -5,14 +5,19 @@ namespace Enemies
     [System.Serializable]
     public class EnemyPatrol
     {
+        [Header("Patrol Points")]
         [SerializeField] private Transform leftPoint;
         [SerializeField] private Transform rightPoint;
+
+        [Header("Patrol Settings")]
         [SerializeField] private float pointTolerance = 0.25f;
 
         private Vector3 leftPosition;
         private Vector3 rightPosition;
         private Vector3 currentTarget;
         private bool hasValidPoints;
+
+        public bool HasValidPoints => hasValidPoints;
 
         public void Initialize(Vector3 fallbackPosition)
         {
@@ -45,7 +50,15 @@ namespace Enemies
             direction.y = 0f;
 
             if (direction.magnitude <= pointTolerance)
+            {
                 SwitchTarget();
+
+                direction = currentTarget - currentPosition;
+                direction.y = 0f;
+            }
+
+            if (direction.sqrMagnitude < 0.01f)
+                return Vector3.zero;
 
             return direction.normalized;
         }

@@ -6,23 +6,44 @@ namespace Enemies
     [System.Serializable]
     public class EnemyTarget
     {
+        [Header("Target")]
         [SerializeField] private Transform player;
+
+        [Header("Detection")]
         [SerializeField] private float detectionRange = 6f;
         [SerializeField] private float losePlayerRange = 8f;
+
+        private HealthManager playerHealth;
 
         public Transform Player => player;
         public float DetectionRange => detectionRange;
         public float LosePlayerRange => losePlayerRange;
 
-        public void FindPlayer()
+        public void Initialize()
+        {
+            FindPlayerIfMissing();
+            CachePlayerHealth();
+        }
+
+        public void FindPlayerIfMissing()
         {
             if (player != null)
                 return;
 
             GameObject playerObject = GameObject.FindGameObjectWithTag("Player");
 
-            if (playerObject != null)
-                player = playerObject.transform;
+            if (playerObject == null)
+            {
+                Debug.LogWarning("EnemyTarget: nessun GameObject con tag Player trovato.");
+                return;
+            }
+
+            player = playerObject.transform;
+        }
+
+        private void CachePlayerHealth()
+        {
+            playerHealth = player.GetComponentInParent<HealthManager>();
         }
 
         public bool HasPlayer()
@@ -32,19 +53,11 @@ namespace Enemies
 
         public bool IsPlayerDead()
         {
-            if (player == null)
-                return true;
-
-            HealthManager health = player.GetComponentInParent<HealthManager>();
-
-            return health != null && health.Health <= 0;
+            return playerHealth.Health <= 0;
         }
 
         public float DistanceFrom(Vector3 enemyPosition)
         {
-            if (player == null)
-                return Mathf.Infinity;
-
             return Vector3.Distance(enemyPosition, player.position);
         }
 
@@ -60,21 +73,25 @@ namespace Enemies
 
         public Vector3 DirectionFrom(Vector3 enemyPosition)
         {
-            if (player == null)
-                return Vector3.zero;
-
             Vector3 direction = player.position - enemyPosition;
             direction.y = 0f;
+
+            if (direction.sqrMagnitude < 0.01f)
+                return Vector3.zero;
 
             return direction.normalized;
         }
 
         public Vector3 AimPosition(float verticalOffset = 1f)
         {
-            if (player == null)
-                return Vector3.zero;
-
             return player.position + Vector3.up * verticalOffset;
+        }
+
+        public bool IsPlayerCollider(Collider colliderToCheck)
+        {
+            return colliderToCheck.transform == player
+                   || colliderToCheck.transform.IsChildOf(player)
+                   || player.IsChildOf(colliderToCheck.transform);
         }
 
         public void DrawGizmos(Vector3 enemyPosition)

@@ -1,6 +1,5 @@
 using System.Collections;
 using Controllers;
-using KinematicCharacterController;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -9,9 +8,6 @@ namespace Player
     public class PlayerDamageFeedback : MonoBehaviour
     {
         [Header("References")]
-        [SerializeField] private KinematicCharacterMotor motor;
-        [SerializeField] private HealthManager healthManager;
-        [SerializeField] private PlayerCharacterController playerController;
         [SerializeField] private Image damageOverlay;
         [SerializeField] private Renderer[] characterRenderers;
 
@@ -29,27 +25,27 @@ namespace Player
         [SerializeField] private float defaultKnockbackDistance = 1.2f;
         [SerializeField] private float knockbackDuration = 0.16f;
 
+        //limit maximum knockback distance to avoid exaggerated pushes
+        [SerializeField] private float maxKnockbackDistance = 4f;
+
         private bool isInvincible;
         private Coroutine overlayCoroutine;
         private Coroutine invincibilityCoroutine;
+        private HealthManager healthManager;
+        private PlayerCharacterController playerController;
 
-        private void Awake()
+        private void Start()
         {
-            if (motor == null)
-                motor = GetComponent<KinematicCharacterMotor>();
+            healthManager = GetComponent<HealthManager>();
 
-            if (healthManager == null)
-                healthManager = GetComponent<HealthManager>();
-
-            if (playerController == null)
-                playerController = GetComponent<PlayerCharacterController>();
+            playerController = GetComponent<PlayerCharacterController>();
 
             StopAllDamageFeedback();
         }
 
         private void Update()
         {
-            if (healthManager != null && healthManager.Health <= 0)
+            if (healthManager.Health <= 0)
                 StopAllDamageFeedback();
         }
 
@@ -62,10 +58,9 @@ namespace Player
             if (isInvincible)
                 return false;
 
-            if (healthManager != null)
-                healthManager.TakeDamage(damage);
+            healthManager.TakeDamage(damage);
 
-            if (healthManager != null && healthManager.Health <= 0)
+            if (healthManager.Health <= 0)
             {
                 StopAllDamageFeedback();
                 return true;
@@ -76,6 +71,8 @@ namespace Player
                 float finalDistance = customKnockbackDistance > 0f
                     ? customKnockbackDistance
                     : defaultKnockbackDistance;
+
+                finalDistance = GetControlledKnockbackDistance(finalDistance);
 
                 ApplyKnockback(knockbackDirection, finalDistance);
             }
@@ -101,8 +98,19 @@ namespace Player
             SetRenderersVisible(true);
             HideOverlay();
 
-            if (playerController != null)
-                playerController.StopExternalKnockback();
+            playerController.StopExternalKnockback();
+        }
+
+        private float GetControlledKnockbackDistance(float requestedDistance)
+        {
+            //clamp the requested knockback, but do not force it to be always weak
+            float controlledDistance = Mathf.Clamp(
+                requestedDistance,
+                0f,
+                maxKnockbackDistance
+            );
+
+            return controlledDistance;
         }
 
         private void ApplyKnockback(Vector3 direction, float distance)
@@ -112,10 +120,20 @@ namespace Player
             if (direction.sqrMagnitude < 0.01f)
                 return;
 
+            if (distance <= 0f)
+                return;
+
             direction.Normalize();
 
-            if (playerController != null)
-                playerController.ApplyExternalKnockback(direction, distance, knockbackDuration);
+            //stop previous external knockback before applying a new one
+            //this prevents knockback stacking
+            playerController.StopExternalKnockback();
+
+            playerController.ApplyExternalKnockback(
+                direction,
+                distance,
+                knockbackDuration
+            );
         }
 
         private void StartInvincibility()
@@ -149,21 +167,14 @@ namespace Player
 
         private void SetRenderersVisible(bool visible)
         {
-            if (characterRenderers == null)
-                return;
-
             foreach (Renderer renderer in characterRenderers)
             {
-                if (renderer != null)
-                    renderer.enabled = visible;
+                renderer.enabled = visible;
             }
         }
 
         private void PlayDamageOverlay()
         {
-            if (damageOverlay == null)
-                return;
-
             if (overlayCoroutine != null)
                 StopCoroutine(overlayCoroutine);
 
@@ -201,9 +212,6 @@ namespace Player
 
         private void SetOverlayAlpha(float alpha)
         {
-            if (damageOverlay == null)
-                return;
-
             Color color = damageOverlay.color;
             color.a = alpha;
             damageOverlay.color = color;
@@ -211,9 +219,6 @@ namespace Player
 
         private void HideOverlay()
         {
-            if (damageOverlay == null)
-                return;
-
             SetOverlayAlpha(0f);
             damageOverlay.gameObject.SetActive(false);
         }

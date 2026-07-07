@@ -6,35 +6,45 @@ namespace Enemies
     public static class EnemyPlayerDamage
     {
         public static bool TryDamage(
-            Collider collider,
+            Collider hitCollider,
             int damage,
             Vector3 knockbackDirection,
             bool useKnockback,
             float knockbackDistance = 0f)
         {
+            if (hitCollider == null)
+                return false;
+
             PlayerDamageFeedback damageFeedback =
-                collider.GetComponentInParent<PlayerDamageFeedback>();
+                hitCollider.GetComponentInParent<PlayerDamageFeedback>();
 
             if (damageFeedback != null)
             {
+                if (knockbackDistance > 0f)
+                {
+                    return damageFeedback.TryTakeDamage(
+                        damage,
+                        knockbackDirection,
+                        useKnockback,
+                        knockbackDistance
+                    );
+                }
+
                 return damageFeedback.TryTakeDamage(
                     damage,
                     knockbackDirection,
-                    useKnockback,
-                    knockbackDistance
+                    useKnockback
                 );
             }
 
             HealthManager health =
-                collider.GetComponentInParent<HealthManager>();
+                hitCollider.GetComponentInParent<HealthManager>();
 
-            if (health != null)
-            {
-                health.TakeDamage(damage);
-                return true;
-            }
+            if (health == null)
+                return false;
 
-            return false;
+            health.TakeDamage(damage);
+            return true;
         }
 
         public static bool TryDamageFirstInSphere(

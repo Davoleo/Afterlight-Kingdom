@@ -5,29 +5,28 @@ namespace Enemies
     public class EnemyHealth : MonoBehaviour
     {
         [SerializeField] private int maxHealth = 3;
-
         private int currentHealth;
+        public int CurrentHealth => currentHealth;
+        public bool IsDead => currentHealth <= 0;
 
-        private void Awake()
+        private void Start()
         {
-            currentHealth = maxHealth;
+            ResetEnemy();
         }
 
         public void TakeDamage(int damage)
         {
+            if (IsDead)
+                return;
+
             currentHealth -= damage;
 
-            Debug.Log("Enemy took damage. HP: " + currentHealth);
-
             if (currentHealth <= 0)
-            {
                 Die();
-            }
         }
 
         private void Die()
         {
-            Debug.Log("Enemy died.");
             gameObject.SetActive(false);
         }
 

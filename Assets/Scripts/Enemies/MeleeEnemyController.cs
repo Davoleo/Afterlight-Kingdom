@@ -2,9 +2,9 @@ using UnityEngine;
 
 namespace Enemies
 {
-    public class MeleeEnemyController : EnemyController
+    public class MeleeEnemyController : BaseEnemyController
     {
-        private enum MeleeState
+        private enum EnemyState
         {
             Sleeping,
             Patrolling,
@@ -26,71 +26,78 @@ namespace Enemies
         [SerializeField] private int attackDamage = 1;
         [SerializeField] private LayerMask playerLayer;
 
-        private MeleeState currentState;
+        private EnemyState currentState;
         private bool isPreparingAttack;
         private float attackStartTime;
         private float lastAttackTime;
 
+        protected override void Update()
+        {
+            base.Update();
+
+            if (!HasPlayer() || IsPlayerDead())
+                return;
+
+            UpdateState();
+            UpdateMovementDirection();
+            UpdateAttack();
+
+            MoveAndRotate(Time.deltaTime);
+        }
+
         public override void Activate()
         {
-            if (currentState == MeleeState.Sleeping)
-                ChangeState(MeleeState.Patrolling);
+            if (currentState == EnemyState.Sleeping)
+                ChangeState(EnemyState.Patrolling);
         }
 
         protected override void SetInitialState()
         {
-            ChangeState(startsActive ? MeleeState.Patrolling : MeleeState.Sleeping);
+            ChangeState(startsActive ? EnemyState.Patrolling : EnemyState.Sleeping);
         }
 
-        protected override void UpdateEnemy()
-        {
-            UpdateState();
-            UpdateAttack();
-        }
-
-        protected override void ResetSpecificState()
+        protected override void OnResetToSpawn()
         {
             isPreparingAttack = false;
             lastAttackTime = Time.time;
         }
 
-        protected override void SetStateAfterReset()
+        protected override float GetCurrentSpeed()
         {
-            ChangeState(startsActive ? MeleeState.Patrolling : MeleeState.Sleeping);
+            return currentState == EnemyState.Chasing ? chaseSpeed : patrolSpeed;
         }
 
         private void UpdateState()
         {
-            if (currentState == MeleeState.Sleeping)
-                return;
+            float distanceFromPlayer = GetDistanceFromPlayer();
 
-            if (IsPlayerDead())
+            if (currentState == EnemyState.Sleeping)
                 return;
-
-            float distanceFromPlayer = DistanceFromPlayer();
 
             if (distanceFromPlayer <= attackRange)
             {
-                ChangeState(MeleeState.Attacking);
+                if (currentState != EnemyState.Attacking)
+                    ChangeState(EnemyState.Attacking);
+
                 TryAttack();
                 return;
             }
 
-            if (currentState == MeleeState.Attacking && distanceFromPlayer > attackRange)
+            if (currentState == EnemyState.Attacking && distanceFromPlayer > attackRange)
             {
+                ChangeState(EnemyState.Chasing);
                 isPreparingAttack = false;
-                ChangeState(MeleeState.Chasing);
                 return;
             }
 
-            if (distanceFromPlayer <= target.DetectionRange)
+            if (IsPlayerInsideDetection())
             {
-                ChangeState(MeleeState.Chasing);
+                ChangeState(EnemyState.Chasing);
                 return;
             }
 
-            if (currentState == MeleeState.Chasing && distanceFromPlayer >= target.LosePlayerRange)
-                ChangeState(MeleeState.Patrolling);
+            if (currentState == EnemyState.Chasing && IsPlayerOutsideLoseRange())
+                ChangeState(EnemyState.Patrolling);
         }
 
         private void TryAttack()
@@ -110,7 +117,7 @@ namespace Enemies
             if (!isPreparingAttack)
                 return;
 
-            if (currentState != MeleeState.Attacking)
+            if (currentState != EnemyState.Attacking)
             {
                 isPreparingAttack = false;
                 return;
@@ -127,67 +134,80 @@ namespace Enemies
 
         private void PerformAttack()
         {
-            if (attackPoint == null)
-                return;
-
-            Vector3 knockbackDirection = GetPlayerDirection();
-
-            EnemyPlayerDamage.TryDamageFirstInSphere(
+            Collider[] hitColliders = Physics.OverlapSphere(
                 attackPoint.position,
                 attackRadius,
-                playerLayer,
-                attackDamage,
-                knockbackDirection,
-                true
+                playerLayer
             );
+
+            if (hitColliders.Length == 0)
+            {
+                return;
+            }
+
+            foreach (Collider hitCollider in hitColliders)
+            {
+                Vector3 knockbackDirection = hitCollider.bounds.center - transform.position;
+                knockbackDirection.y = 0f;
+
+                if (knockbackDirection.sqrMagnitude < 0.01f)
+                    knockbackDirection = transform.forward;
+
+                bool damageApplied = TryDamagePlayer(
+                    hitCollider,
+                    attackDamage,
+                    knockbackDirection.normalized,
+                    true
+                );
+
+                if (!damageApplied)
+                    continue;
+
+                return;
+            }
         }
 
-        private void ChangeState(MeleeState newState)
+        private void ChangeState(EnemyState newState)
         {
             currentState = newState;
         }
 
-        protected override void UpdateMovementDirection()
+        private void UpdateMovementDirection()
         {
             MovementDirection = Vector3.zero;
             LookDirection = Vector3.zero;
 
             switch (currentState)
             {
-                case MeleeState.Sleeping:
+                case EnemyState.Sleeping:
                     break;
 
-                case MeleeState.Patrolling:
+                case EnemyState.Patrolling:
                     MovementDirection = GetPatrolDirection();
                     LookDirection = MovementDirection;
                     break;
 
-                case MeleeState.Chasing:
+                case EnemyState.Chasing:
                     MovementDirection = GetPlayerDirection();
                     LookDirection = MovementDirection;
                     break;
 
-                case MeleeState.Attacking:
+                case EnemyState.Attacking:
                     MovementDirection = Vector3.zero;
                     LookDirection = GetPlayerDirection();
                     break;
             }
         }
 
-        protected override float GetCurrentSpeed()
-        {
-            return currentState == MeleeState.Chasing ? chaseSpeed : patrolSpeed;
-        }
-
         protected override void OnDrawGizmosSelected()
         {
             base.OnDrawGizmosSelected();
 
-            if (attackPoint != null)
-            {
-                Gizmos.color = Color.magenta;
-                Gizmos.DrawWireSphere(attackPoint.position, attackRadius);
-            }
+            if (attackPoint == null)
+                return;
+
+            Gizmos.color = Color.magenta;
+            Gizmos.DrawWireSphere(attackPoint.position, attackRadius);
         }
     }
 }

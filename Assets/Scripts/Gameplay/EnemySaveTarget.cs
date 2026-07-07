@@ -2,19 +2,20 @@ using System.Collections.Generic;
 using Core;
 using Projectiles;
 using UnityEngine;
-using KinematicCharacterController;
 
 namespace Gameplay
 {
     public class EnemySaveTarget : MonoBehaviour
     {
         private static readonly List<EnemySaveTarget> RegisteredEnemies = new List<EnemySaveTarget>(); 
+        
         [SerializeField] private string enemyId;
 
-        //enemies params to use for respawn and motor to move them
+        private CharacterController _characterController;
+
+        // Enemy params to use for respawn
         private Vector3 _spawnPosition; 
         private Quaternion _spawnRotation; 
-        private KinematicCharacterMotor _motor;
 
         public string EnemyId => enemyId;
         public bool IsAlive => gameObject.activeSelf;
@@ -29,10 +30,11 @@ namespace Gameplay
 
         private void Awake()
         {
-            //original enemies position
+            // Original enemy position
             _spawnPosition = transform.position;
             _spawnRotation = transform.rotation;
-            _motor = GetComponent<KinematicCharacterMotor>();
+
+            _characterController = GetComponent<CharacterController>();
 
             if (gameObject.CompareTag("Enemy") && !RegisteredEnemies.Contains(this))
                 RegisteredEnemies.Add(this);
@@ -54,11 +56,26 @@ namespace Gameplay
 
             gameObject.SetActive(enemyState.isAlive);
 
-            _motor.SetPositionAndRotation(_spawnPosition, _spawnRotation);
+            SetPositionAndRotation(_spawnPosition, _spawnRotation);
 
-            //broadcast message to all enemies component to apply respawn whenever is necessary
+            // Broadcast message to all enemy components to apply respawn whenever necessary
             if (enemyState.isAlive)
                 BroadcastMessage("ResetEnemy", SendMessageOptions.DontRequireReceiver);
+        }
+
+        private void SetPositionAndRotation(Vector3 position, Quaternion rotation)
+        {
+            if (_characterController == null)
+            {
+                transform.SetPositionAndRotation(position, rotation);
+                return;
+            }
+
+            bool wasEnabled = _characterController.enabled;
+
+            _characterController.enabled = false;
+            transform.SetPositionAndRotation(position, rotation);
+            _characterController.enabled = wasEnabled;
         }
         
         private void ClearStuckArrows()

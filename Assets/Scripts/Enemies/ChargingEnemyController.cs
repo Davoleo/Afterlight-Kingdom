@@ -1,11 +1,10 @@
-using KinematicCharacterController;
 using UnityEngine;
 
 namespace Enemies
 {
-    public class ChargingEnemyController : EnemyController
+    public class ChargingEnemyController : BaseEnemyController
     {
-        private enum ChargeState
+        private enum EnemyState
         {
             Sleeping,
             Patrolling,
@@ -31,89 +30,97 @@ namespace Enemies
 
         [Header("Obstacle Detection")]
         [SerializeField] private LayerMask obstacleLayer;
-        [SerializeField] private float obstacleCheckDistance = 0.25f;
+        [SerializeField] private float obstacleCheckDistance = 0.35f;
 
-        private ChargeState currentState;
+        private EnemyState currentState;
         private Vector3 chargeDirection;
         private bool hasHitPlayerDuringCharge;
         private float stateStartTime;
 
+        protected override void Update()
+        {
+            base.Update();
+
+            if (!HasPlayer() || IsPlayerDead())
+                return;
+
+            UpdateState();
+            UpdateMovementDirection();
+
+            MoveAndRotate(Time.deltaTime);
+        }
+
         public override void Activate()
         {
-            if (currentState == ChargeState.Sleeping)
-                ChangeState(ChargeState.Patrolling);
+            if (currentState == EnemyState.Sleeping)
+                ChangeState(EnemyState.Patrolling);
         }
 
         protected override void SetInitialState()
         {
-            ChangeState(startsActive ? ChargeState.Patrolling : ChargeState.Sleeping);
+            ChangeState(startsActive ? EnemyState.Patrolling : EnemyState.Sleeping);
         }
 
-        protected override void UpdateEnemy()
-        {
-            UpdateState();
-        }
-
-        protected override void ResetSpecificState()
+        protected override void OnResetToSpawn()
         {
             chargeDirection = Vector3.zero;
             hasHitPlayerDuringCharge = false;
         }
 
-        protected override void SetStateAfterReset()
+        protected override float GetCurrentSpeed()
         {
-            ChangeState(startsActive ? ChargeState.Patrolling : ChargeState.Sleeping);
+            return currentState == EnemyState.Charging ? chargeSpeed : patrolSpeed;
         }
 
         private void UpdateState()
         {
-            if (currentState == ChargeState.Sleeping)
+            if (currentState == EnemyState.Sleeping)
                 return;
-
-            if (IsPlayerDead())
-                return;
-
-            float distanceFromPlayer = DistanceFromPlayer();
 
             switch (currentState)
             {
-                case ChargeState.Patrolling:
-                    if (distanceFromPlayer <= target.DetectionRange)
+                case EnemyState.Patrolling:
+                    if (IsPlayerInsideDetection())
                         PrepareCharge();
                     break;
 
-                case ChargeState.PreparingCharge:
-                    if (distanceFromPlayer >= target.LosePlayerRange)
+                case EnemyState.PreparingCharge:
+                    if (IsPlayerOutsideLoseRange())
                     {
-                        ChangeState(ChargeState.Patrolling);
+                        ChangeState(EnemyState.Patrolling);
                         return;
                     }
 
                     if (Time.time >= stateStartTime + chargeWindup)
                         StartCharge();
+
                     break;
 
-                case ChargeState.Charging:
-                    CheckChargeHit();
-
+                case EnemyState.Charging:
+                    //check obstacle before hit, otherwise the enemy could damage the player
+                    //in the same frame where it should stop against a block
                     if (IsObstacleInChargeDirection())
                     {
                         StopChargeAgainstObstacle();
                         return;
                     }
 
+                    CheckChargeHit();
+
                     if (Time.time >= stateStartTime + chargeDuration)
-                        ChangeState(ChargeState.Cooldown);
+                        ChangeState(EnemyState.Cooldown);
+
                     break;
 
-                case ChargeState.Cooldown:
-                    if (Time.time >= stateStartTime + chargeCooldown)
-                    {
-                        if (distanceFromPlayer <= target.DetectionRange)
-                            PrepareCharge();
-                        else
-                            ChangeState(ChargeState.Patrolling);
-                    }
+                case EnemyState.Cooldown:
+                    if (Time.time < stateStartTime + chargeCooldown)
+                        return;
+
+                    if (IsPlayerInsideDetection())
+                        PrepareCharge();
+                    else
+                        ChangeState(EnemyState.Patrolling);
+
                     break;
             }
         }
@@ -129,7 +136,7 @@ namespace Enemies
             LookDirection = chargeDirection;
             hasHitPlayerDuringCharge = false;
 
-            ChangeState(ChargeState.PreparingCharge);
+            ChangeState(EnemyState.PreparingCharge);
         }
 
         private void StartCharge()
@@ -138,7 +145,7 @@ namespace Enemies
 
             if (chargeDirection.sqrMagnitude < 0.01f)
             {
-                ChangeState(ChargeState.Patrolling);
+                ChangeState(EnemyState.Patrolling);
                 return;
             }
 
@@ -152,7 +159,7 @@ namespace Enemies
             LookDirection = chargeDirection;
             hasHitPlayerDuringCharge = false;
 
-            ChangeState(ChargeState.Charging);
+            ChangeState(EnemyState.Charging);
         }
 
         private bool IsObstacleInChargeDirection()
@@ -160,20 +167,19 @@ namespace Enemies
             if (chargeDirection.sqrMagnitude < 0.01f)
                 return false;
 
-            Vector3 origin = motor != null
-                ? motor.TransientPosition + Vector3.up * 0.6f
-                : transform.position + Vector3.up * 0.6f;
+            if (obstacleLayer.value == 0)
+                return false;
 
-            float radius = motor != null ? motor.Capsule.radius * 0.95f : 0.35f;
+            Vector3 direction = chargeDirection.normalized;
 
-            return Physics.SphereCast(
+            //raycast to detect obstacles between enemy and player
+            Vector3 origin = GetBodyCenter();
+
+            return HasBlockingHit(
                 origin,
-                radius,
-                chargeDirection.normalized,
-                out RaycastHit hit,
+                direction,
                 obstacleCheckDistance,
-                obstacleLayer,
-                QueryTriggerInteraction.Ignore
+                out Collider blockingCollider
             );
         }
 
@@ -182,7 +188,7 @@ namespace Enemies
             MovementDirection = Vector3.zero;
             chargeDirection = Vector3.zero;
 
-            ChangeState(ChargeState.Cooldown);
+            ChangeState(EnemyState.Cooldown);
         }
 
         private void CheckChargeHit()
@@ -194,101 +200,150 @@ namespace Enemies
                 ? chargeHitPoint.position
                 : transform.position + chargeDirection * 0.9f + Vector3.up * 0.7f;
 
-            bool damaged = EnemyPlayerDamage.TryDamageFirstInSphere(
+            Collider[] hitColliders = Physics.OverlapSphere(
                 hitPosition,
                 chargeHitRadius,
-                playerLayer,
-                chargeDamage,
-                chargeDirection,
-                true,
-                chargeKnockbackDistance
+                playerLayer
             );
 
-            if (damaged)
+            foreach (Collider hitCollider in hitColliders)
+            {
+                //before applying damage we check if an obstacle blocks the hit
+                if (IsPlayerBlockedByObstacle(hitCollider))
+                {
+                    continue;
+                }
+
+                bool damageApplied = TryDamagePlayer(
+                    hitCollider,
+                    chargeDamage,
+                    chargeDirection,
+                    true,
+                    chargeKnockbackDistance
+                );
+
                 hasHitPlayerDuringCharge = true;
+                return;
+            }
         }
 
-        private void ChangeState(ChargeState newState)
+        private bool IsPlayerBlockedByObstacle(Collider playerCollider)
+        {
+            if (obstacleLayer.value == 0)
+                return false;
+
+            Vector3 origin = GetBodyCenter();
+            Vector3 targetPosition = playerCollider.bounds.center;
+
+            Vector3 direction = targetPosition - origin;
+            float distance = direction.magnitude;
+
+            if (distance <= 0.01f)
+                return false;
+
+            direction.Normalize();
+
+            bool hasBlockingHit = HasBlockingHit(
+                origin,
+                direction,
+                distance,
+                out Collider blockingCollider
+            );
+
+            if (!hasBlockingHit)
+                return false;
+
+            return true;
+        }
+
+        private bool HasBlockingHit(
+            Vector3 origin,
+            Vector3 direction,
+            float distance,
+            out Collider blockingCollider)
+        {
+            blockingCollider = null;
+
+            RaycastHit[] hits = Physics.RaycastAll(
+                origin,
+                direction,
+                distance,
+                obstacleLayer,
+                QueryTriggerInteraction.Ignore
+            );
+
+            if (hits.Length == 0)
+                return false;
+
+            System.Array.Sort(
+                hits,
+                (firstHit, secondHit) => firstHit.distance.CompareTo(secondHit.distance)
+            );
+
+            foreach (RaycastHit hit in hits)
+            {
+                if (hit.collider == null)
+                    continue;
+
+                if (IsOwnCollider(hit.collider))
+                    continue;
+
+                if (Target.IsPlayerCollider(hit.collider))
+                    return false;
+
+                blockingCollider = hit.collider;
+                return true;
+            }
+
+            return false;
+        }
+
+        private Vector3 GetBodyCenter()
+        {
+            if (characterController == null)
+                return transform.position + Vector3.up;
+
+            return transform.TransformPoint(characterController.center);
+        }
+
+        private void ChangeState(EnemyState newState)
         {
             currentState = newState;
             stateStartTime = Time.time;
         }
 
-        protected override void UpdateMovementDirection()
+        private void UpdateMovementDirection()
         {
             MovementDirection = Vector3.zero;
             LookDirection = Vector3.zero;
 
             switch (currentState)
             {
-                case ChargeState.Sleeping:
+                case EnemyState.Sleeping:
                     break;
 
-                case ChargeState.Patrolling:
+                case EnemyState.Patrolling:
                     MovementDirection = GetPatrolDirection();
                     LookDirection = MovementDirection;
                     break;
 
-                case ChargeState.PreparingCharge:
+                case EnemyState.PreparingCharge:
                     MovementDirection = Vector3.zero;
                     LookDirection = chargeDirection.sqrMagnitude > 0.01f
                         ? chargeDirection
                         : GetPlayerDirection();
                     break;
 
-                case ChargeState.Charging:
+                case EnemyState.Charging:
                     MovementDirection = chargeDirection;
                     LookDirection = chargeDirection;
                     break;
 
-                case ChargeState.Cooldown:
+                case EnemyState.Cooldown:
                     MovementDirection = Vector3.zero;
                     LookDirection = GetPlayerDirection();
                     break;
             }
-        }
-
-        protected override float GetCurrentSpeed()
-        {
-            return currentState == ChargeState.Charging ? chargeSpeed : patrolSpeed;
-        }
-
-        public override void UpdateVelocity(ref Vector3 currentVelocity, float deltaTime)
-        {
-            if (currentState == ChargeState.Charging && IsObstacleInChargeDirection())
-            {
-                currentVelocity = Vector3.zero;
-                StopChargeAgainstObstacle();
-                return;
-            }
-
-            base.UpdateVelocity(ref currentVelocity, deltaTime);
-        }
-
-        public override void OnMovementHit(
-            Collider hitCollider,
-            Vector3 hitNormal,
-            Vector3 hitPoint,
-            ref HitStabilityReport hitStabilityReport)
-        {
-            if (currentState != ChargeState.Charging)
-                return;
-
-            if (((1 << hitCollider.gameObject.layer) & obstacleLayer) == 0)
-                return;
-
-            StopChargeAgainstObstacle();
-        }
-
-        public override void OnDiscreteCollisionDetected(Collider hitCollider)
-        {
-            if (currentState != ChargeState.Charging)
-                return;
-
-            if (((1 << hitCollider.gameObject.layer) & obstacleLayer) == 0)
-                return;
-
-            StopChargeAgainstObstacle();
         }
 
         protected override void OnDrawGizmosSelected()
@@ -301,6 +356,21 @@ namespace Enemies
 
             Gizmos.color = Color.green;
             Gizmos.DrawWireSphere(hitPosition, chargeHitRadius);
+
+            Gizmos.color = Color.red;
+
+            Vector3 debugDirection = Application.isPlaying && chargeDirection.sqrMagnitude > 0.01f
+                ? chargeDirection.normalized
+                : transform.forward;
+
+            Vector3 debugCenter = characterController != null
+                ? transform.TransformPoint(characterController.center)
+                : transform.position + Vector3.up;
+
+            Gizmos.DrawLine(
+                debugCenter,
+                debugCenter + debugDirection * obstacleCheckDistance
+            );
         }
     }
 }

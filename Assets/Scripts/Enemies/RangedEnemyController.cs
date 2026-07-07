@@ -2,9 +2,9 @@ using UnityEngine;
 
 namespace Enemies
 {
-    public class RangedEnemyController : EnemyController
+    public class RangedEnemyController : BaseEnemyController
     {
-        private enum RangedState
+        private enum EnemyState
         {
             Sleeping,
             Patrolling,
@@ -18,61 +18,62 @@ namespace Enemies
         [Header("Shooting")]
         [SerializeField] private float shootCooldown = 1.2f;
         [SerializeField] private float shootWindup = 0.25f;
+        [SerializeField] private float projectileSpawnOffset = 0.4f;
 
-        private RangedState currentState;
+        private EnemyState currentState;
         private bool isPreparingShot;
         private float shotStartTime;
         private float lastShotTime;
 
+        protected override void Update()
+        {
+            base.Update();
+
+            if (!HasPlayer() || IsPlayerDead())
+                return;
+
+            UpdateState();
+            UpdateMovementDirection();
+            UpdateShot();
+
+            MoveAndRotate(Time.deltaTime);
+        }
+
         public override void Activate()
         {
-            if (currentState == RangedState.Sleeping)
-                ChangeState(RangedState.Patrolling);
+            if (currentState == EnemyState.Sleeping)
+                ChangeState(EnemyState.Patrolling);
         }
 
         protected override void SetInitialState()
         {
-            ChangeState(startsActive ? RangedState.Patrolling : RangedState.Sleeping);
+            ChangeState(startsActive ? EnemyState.Patrolling : EnemyState.Sleeping);
         }
 
-        protected override void UpdateEnemy()
-        {
-            UpdateState();
-            UpdateShot();
-        }
-
-        protected override void ResetSpecificState()
+        protected override void OnResetToSpawn()
         {
             isPreparingShot = false;
             lastShotTime = Time.time;
         }
 
-        protected override void SetStateAfterReset()
-        {
-            ChangeState(startsActive ? RangedState.Patrolling : RangedState.Sleeping);
-        }
-
         private void UpdateState()
         {
-            if (currentState == RangedState.Sleeping)
+            if (currentState == EnemyState.Sleeping)
                 return;
 
-            if (IsPlayerDead())
-                return;
-
-            float distanceFromPlayer = DistanceFromPlayer();
-
-            if (distanceFromPlayer <= target.DetectionRange)
+            if (IsPlayerInsideDetection())
             {
-                ChangeState(RangedState.Shooting);
+                if (currentState != EnemyState.Shooting)
+                    ChangeState(EnemyState.Shooting);
+
                 TryShoot();
                 return;
             }
 
-            if (currentState == RangedState.Shooting && distanceFromPlayer >= target.LosePlayerRange)
+            if (currentState == EnemyState.Shooting && IsPlayerOutsideLoseRange())
             {
+                ChangeState(EnemyState.Patrolling);
                 isPreparingShot = false;
-                ChangeState(RangedState.Patrolling);
             }
         }
 
@@ -86,6 +87,8 @@ namespace Enemies
 
             isPreparingShot = true;
             shotStartTime = Time.time;
+
+
         }
 
         private void UpdateShot()
@@ -93,7 +96,7 @@ namespace Enemies
             if (!isPreparingShot)
                 return;
 
-            if (currentState != RangedState.Shooting)
+            if (currentState != EnemyState.Shooting)
             {
                 isPreparingShot = false;
                 return;
@@ -105,69 +108,80 @@ namespace Enemies
             isPreparingShot = false;
             lastShotTime = Time.time;
 
+           
             Shoot();
         }
 
         private void Shoot()
         {
-            if (shootPoint == null || projectilePrefab == null || PlayerTransform() == null)
-                return;
+            Vector3 targetPosition = GetPlayerAimPosition(1f);
+            Vector3 shootDirection = targetPosition - shootPoint.position;
 
-            Vector3 shootDirection = GetPlayerAimPosition(1f) - shootPoint.position;
-
+            //player troppo vicino al nemico, TODO: gestire il movimento all'indietro del nemico per sparare
             if (shootDirection.sqrMagnitude < 0.01f)
                 return;
 
             shootDirection.Normalize();
 
+            Vector3 spawnPosition = shootPoint.position + shootDirection * projectileSpawnOffset;
+
             GameObject projectile = Instantiate(
                 projectilePrefab,
-                shootPoint.position,
+                spawnPosition,
                 Quaternion.LookRotation(shootDirection)
             );
 
+            projectile.SetActive(true);
+            projectile.transform.SetParent(null);
+
             EnemyProjectile enemyProjectile = projectile.GetComponent<EnemyProjectile>();
 
-            if (enemyProjectile != null)
-                enemyProjectile.Launch(shootDirection);
+            if (enemyProjectile == null)
+            {
+                Destroy(projectile);
+                return;
+            }
+
+            enemyProjectile.Launch(shootDirection);
         }
 
-        private void ChangeState(RangedState newState)
+        private void ChangeState(EnemyState newState)
         {
             currentState = newState;
         }
 
-        protected override void UpdateMovementDirection()
+        private void UpdateMovementDirection()
         {
             MovementDirection = Vector3.zero;
             LookDirection = Vector3.zero;
 
             switch (currentState)
             {
-                case RangedState.Sleeping:
+                case EnemyState.Sleeping:
                     break;
 
-                case RangedState.Patrolling:
+                case EnemyState.Patrolling:
                     MovementDirection = GetPatrolDirection();
                     LookDirection = MovementDirection;
                     break;
 
-                case RangedState.Shooting:
+                case EnemyState.Shooting:
                     MovementDirection = Vector3.zero;
                     LookDirection = GetPlayerDirection();
                     break;
             }
         }
 
+        //draw range circles
         protected override void OnDrawGizmosSelected()
         {
             base.OnDrawGizmosSelected();
 
-            if (shootPoint != null)
-            {
-                Gizmos.color = Color.magenta;
-                Gizmos.DrawWireSphere(shootPoint.position, 0.2f);
-            }
+            Gizmos.color = Color.magenta;
+            Gizmos.DrawWireSphere(shootPoint.position, 0.2f);
+
+            Gizmos.color = Color.red;
+            Gizmos.DrawLine(shootPoint.position, shootPoint.position + shootPoint.forward * 1.5f);
         }
     }
 }
