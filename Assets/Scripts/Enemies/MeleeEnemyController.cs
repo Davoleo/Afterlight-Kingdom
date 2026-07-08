@@ -144,7 +144,6 @@ namespace Enemies
             {
                 return;
             }
-
             foreach (Collider hitCollider in hitColliders)
             {
                 Vector3 knockbackDirection = hitCollider.bounds.center - transform.position;
@@ -183,12 +182,16 @@ namespace Enemies
                     break;
 
                 case EnemyState.Patrolling:
-                    MovementDirection = GetPatrolDirection();
+                    MovementDirection = GetNavMeshPatrolDirection();
                     LookDirection = MovementDirection;
                     break;
 
                 case EnemyState.Chasing:
-                    MovementDirection = GetPlayerDirection();
+                    MovementDirection = GetNavMeshDirectionTo(Target.Player.position);
+
+                    if (MovementDirection.sqrMagnitude < 0.01f)
+                        MovementDirection = GetPlayerDirection();
+
                     LookDirection = MovementDirection;
                     break;
 

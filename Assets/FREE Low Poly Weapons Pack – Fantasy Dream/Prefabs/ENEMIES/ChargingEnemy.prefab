@@ -181,24 +181,29 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   characterController: {fileID: 0}
-  player: {fileID: 0}
-  leftPatrolPoint: {fileID: 0}
-  rightPatrolPoint: {fileID: 0}
+  navMeshAgent: {fileID: 0}
+  target:
+    player: {fileID: 0}
+    detectionRange: 6
+    losePlayerRange: 8
+  patrol:
+    leftPoint: {fileID: 0}
+    rightPoint: {fileID: 0}
+    pointTolerance: 0.25
   startsActive: 1
-  detectionRange: 7
-  losePlayerRange: 10
   patrolSpeed: 2
   acceleration: 20
   rotationSpeed: 12
-  patrolPointTolerance: 0.25
   gravity: 20
   groundedGravity: -2
+  useNavMeshPathfinding: 0
+  navMeshRepathInterval: 0.1
   chargeHitPoint: {fileID: 0}
   chargeSpeed: 9
   chargeWindup: 0.45
   chargeDuration: 0.75
   chargeCooldown: 1.2
-  chargeHitRadius: 1.1
+  chargeHitRadius: 0.6
   chargeDamage: 1
   chargeKnockbackDistance: 5
   playerLayer:

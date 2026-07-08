@@ -29,7 +29,7 @@ namespace Controllers
 
         private void OnPausePressed(InputAction.CallbackContext _)
         {
-            if (deathPanel.activeSelf) return;
+            if (deathPanel.activeSelf) return; //Can't open pause if player is dead
             if (_isPaused) HidePauseMenu(); else ShowPauseMenu();
         }
 

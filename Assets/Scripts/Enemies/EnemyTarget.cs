@@ -31,13 +31,6 @@ namespace Enemies
                 return;
 
             GameObject playerObject = GameObject.FindGameObjectWithTag("Player");
-
-            if (playerObject == null)
-            {
-                Debug.LogWarning("EnemyTarget: nessun GameObject con tag Player trovato.");
-                return;
-            }
-
             player = playerObject.transform;
         }
 
