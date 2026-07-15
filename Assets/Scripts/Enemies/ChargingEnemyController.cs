@@ -25,7 +25,10 @@ namespace Enemies
         [SerializeField] private float chargeCooldown = 1.2f;
         [SerializeField] private float chargeHitRadius = 1.1f;
         [SerializeField] private int chargeDamage = 1;
-        [SerializeField] private float chargeKnockbackDistance = 4f;
+
+        // Stronger knockback for the charging enemy
+        [SerializeField] private float chargeKnockbackDistance = 5.5f;
+
         [SerializeField] private float maxChargeHeightDifference = 0.5f;
         [SerializeField] private LayerMask playerLayer;
 
@@ -208,6 +211,14 @@ namespace Enemies
             ChangeState(EnemyState.Cooldown);
         }
 
+        private void StopChargeAfterPlayerHit()
+        {
+            MovementDirection = Vector3.zero;
+            chargeDirection = Vector3.zero;
+
+            ChangeState(EnemyState.Cooldown);
+        }
+
         private void CheckChargeHit()
         {
             if (hasHitPlayerDuringCharge)
@@ -240,6 +251,9 @@ namespace Enemies
                 );
 
                 hasHitPlayerDuringCharge = true;
+
+                StopChargeAfterPlayerHit();
+
                 return;
             }
         }
