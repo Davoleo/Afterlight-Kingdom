@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.AI;
 
 namespace Enemies
 {
@@ -7,6 +8,7 @@ namespace Enemies
     {
         [Header("Base References")]
         [SerializeField] protected CharacterController characterController;
+        [SerializeField] protected NavMeshAgent navMeshAgent;
 
         [Header("Base Components")]
         [SerializeField] protected EnemyTarget target = new EnemyTarget();
@@ -24,6 +26,10 @@ namespace Enemies
         [SerializeField] protected float gravity = 20f;
         [SerializeField] protected float groundedGravity = -2f;
 
+        [Header("Base NavMesh")]
+        [SerializeField] protected bool useNavMeshPathfinding = false;
+        [SerializeField] protected float navMeshRepathInterval = 0.1f;
+
         protected Vector3 MovementDirection;
         protected Vector3 LookDirection;
 
@@ -35,11 +41,21 @@ namespace Enemies
         private Vector3 currentHorizontalVelocity;
         private float verticalVelocity;
         private bool hasResetAfterPlayerDeath;
+        private float nextNavMeshRepathTime;
 
         protected virtual void Awake()
         {
             if (characterController == null)
                 characterController = GetComponent<CharacterController>();
+
+            if (navMeshAgent == null)
+                navMeshAgent = GetComponent<NavMeshAgent>();
+
+            if (navMeshAgent != null)
+            {
+                navMeshAgent.updatePosition = false;
+                navMeshAgent.updateRotation = false;
+            }
 
             if (target == null)
                 target = new EnemyTarget();
@@ -54,6 +70,8 @@ namespace Enemies
 
             target.Initialize();
             patrol.Initialize(SpawnPosition);
+
+            SyncNavMeshAgentPosition();
 
             SetInitialState();
         }
@@ -96,6 +114,8 @@ namespace Enemies
             finalVelocity.y = verticalVelocity;
 
             characterController.Move(finalVelocity * deltaTime);
+
+            SyncNavMeshAgentPosition();
         }
 
         private void ApplyGravity(float deltaTime)
@@ -162,9 +182,99 @@ namespace Enemies
 
             currentHorizontalVelocity = Vector3.zero;
             verticalVelocity = 0f;
+            nextNavMeshRepathTime = 0f;
+
+            ResetNavMeshAgentPath();
+            SyncNavMeshAgentPosition();
 
             OnResetToSpawn();
             SetInitialState();
+        }
+
+        protected Vector3 GetNavMeshDirectionTo(Vector3 destination)
+        {
+            if (!useNavMeshPathfinding)
+                return Vector3.zero;
+
+            if (navMeshAgent == null)
+                return Vector3.zero;
+
+            if (!navMeshAgent.enabled)
+                return Vector3.zero;
+
+            if (!navMeshAgent.isOnNavMesh)
+                return Vector3.zero;
+
+            navMeshAgent.speed = GetCurrentSpeed();
+            navMeshAgent.acceleration = acceleration;
+            navMeshAgent.nextPosition = transform.position;
+
+            if (Time.time >= nextNavMeshRepathTime)
+            {
+                bool destinationSet = navMeshAgent.SetDestination(destination);
+
+                if (!destinationSet)
+                    return Vector3.zero;
+
+                nextNavMeshRepathTime = Time.time + navMeshRepathInterval;
+            }
+
+            Vector3 desiredVelocity = navMeshAgent.desiredVelocity;
+            desiredVelocity.y = 0f;
+
+            if (desiredVelocity.sqrMagnitude >= 0.01f)
+                return desiredVelocity.normalized;
+
+            Vector3 directionToSteeringTarget = navMeshAgent.steeringTarget - transform.position;
+            directionToSteeringTarget.y = 0f;
+
+            if (directionToSteeringTarget.sqrMagnitude < 0.01f)
+                return Vector3.zero;
+
+            return directionToSteeringTarget.normalized;
+        }
+
+        protected Vector3 GetNavMeshPatrolDirection()
+        {
+            patrol.UpdateTargetIfReached(transform.position);
+
+            Vector3 destination = patrol.GetCurrentTargetPosition();
+
+            Vector3 navMeshDirection = GetNavMeshDirectionTo(destination);
+
+            if (navMeshDirection.sqrMagnitude < 0.01f)
+                return GetPatrolDirection();
+
+            return navMeshDirection;
+        }
+
+        private void SyncNavMeshAgentPosition()
+        {
+            if (navMeshAgent == null)
+                return;
+
+            if (!navMeshAgent.enabled)
+                return;
+
+            if (!navMeshAgent.isOnNavMesh)
+                return;
+
+            navMeshAgent.nextPosition = transform.position;
+        }
+
+        private void ResetNavMeshAgentPath()
+        {
+            if (navMeshAgent == null)
+                return;
+
+            if (!navMeshAgent.enabled)
+                return;
+
+            if (!navMeshAgent.isOnNavMesh)
+                return;
+
+            navMeshAgent.ResetPath();
+            navMeshAgent.nextPosition = transform.position;
         }
 
         protected bool HasPlayer()

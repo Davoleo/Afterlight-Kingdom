@@ -46,6 +46,7 @@ GameObject:
   - component: {fileID: 3327297795530109280}
   - component: {fileID: 7022476504449931981}
   - component: {fileID: 5160261840158471593}
+  - component: {fileID: 7427445254650969995}
   m_Layer: 8
   m_Name: RangedEnemy
   m_TagString: Enemy
@@ -148,20 +149,33 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   characterController: {fileID: 0}
-  player: {fileID: 0}
-  leftPatrolPoint: {fileID: 0}
-  rightPatrolPoint: {fileID: 0}
-  shootPoint: {fileID: 2369133556651652903}
-  projectilePrefab: {fileID: 4554121061870604082, guid: 727889a4fbb2f40559f799567472b0f9, type: 3}
+  navMeshAgent: {fileID: 0}
+  target:
+    player: {fileID: 0}
+    detectionRange: 6
+    losePlayerRange: 8
+  patrol:
+    leftPoint: {fileID: 0}
+    rightPoint: {fileID: 0}
+    pointTolerance: 0.25
   startsActive: 1
-  detectionRange: 10
-  losePlayerRange: 13
   patrolSpeed: 2
   acceleration: 15
-  patrolPointTolerance: 0.25
+  rotationSpeed: 12
+  gravity: 20
+  groundedGravity: -2
+  useNavMeshPathfinding: 0
+  navMeshRepathInterval: 0.1
+  shootPoint: {fileID: 2369133556651652903}
+  projectilePrefab: {fileID: 4554121061870604082, guid: 727889a4fbb2f40559f799567472b0f9, type: 3}
+  retreatSpeed: 3
+  minimumShootingDistance: 3
+  desiredShootingDistance: 5
+  retreatDistance: 2.5
+  retreatNavMeshSampleRadius: 2
   shootCooldown: 1.5
   shootWindup: 0.3
-  gravity: 20
+  projectileSpawnOffset: 0.4
 --- !u!114 &7022476504449931981
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -200,3 +214,25 @@ CharacterController:
   m_SkinWidth: 0.08
   m_MinMoveDistance: 0.001
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!195 &7427445254650969995
+NavMeshAgent:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8757712320787616610}
+  m_Enabled: 1
+  m_AgentTypeID: 0
+  m_Radius: 0.5
+  m_Speed: 3.5
+  m_Acceleration: 8
+  avoidancePriority: 50
+  m_AngularSpeed: 120
+  m_StoppingDistance: 0
+  m_AutoTraverseOffMeshLink: 1
+  m_AutoBraking: 1
+  m_AutoRepath: 1
+  m_Height: 2
+  m_BaseOffset: 1
+  m_WalkableMask: 4294967295
+  m_ObstacleAvoidanceType: 4

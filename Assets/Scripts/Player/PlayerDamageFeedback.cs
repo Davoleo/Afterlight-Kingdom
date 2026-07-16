@@ -26,7 +26,8 @@ namespace Player
         [SerializeField] private float knockbackDuration = 0.16f;
 
         //limit maximum knockback distance to avoid exaggerated pushes
-        [SerializeField] private float maxKnockbackDistance = 4f;
+        // Increased to allow the charging enemy to apply a stronger knockback
+        [SerializeField] private float maxKnockbackDistance = 6f;
 
         private bool isInvincible;
         private Coroutine overlayCoroutine;

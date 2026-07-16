@@ -25,6 +25,10 @@ namespace Player
         [SerializeField] private float knockbackDrag = 12f;
 
         private Vector3 externalKnockbackVelocity;
+
+        //avoid knockback cumulation
+        private Vector3 appliedExternalKnockbackVelocity;
+
         private float externalKnockbackTimer;
 
         public PlayerState CurrentState => StateMachine.CurrentState;
@@ -69,7 +73,6 @@ namespace Player
             MoveInputs = inputs;
             commands |= pcommands;
         }
-
         public void ApplyExternalKnockback(Vector3 direction, float distance, float duration)
         {
             direction.y = 0f;
@@ -110,11 +113,16 @@ namespace Player
 
         public void UpdateVelocity(ref Vector3 currentVelocity, float deltaTime)
         {
+            //removing previous knockback
+            RemovePreviouslyAppliedKnockback(ref currentVelocity);
+
             CurrentState.UpdateVelocity(ref currentVelocity, deltaTime);
 
             if (externalKnockbackTimer > 0f)
             {
                 currentVelocity += externalKnockbackVelocity;
+
+                appliedExternalKnockbackVelocity = externalKnockbackVelocity;
 
                 externalKnockbackTimer -= deltaTime;
 
@@ -125,8 +133,53 @@ namespace Player
                 );
 
                 if (externalKnockbackTimer <= 0f)
-                    StopExternalKnockback();
+                {
+                    externalKnockbackVelocity = Vector3.zero;
+                    externalKnockbackTimer = 0f;
+                }
             }
+        }        
+        private void RemovePreviouslyAppliedKnockback(ref Vector3 currentVelocity)
+        {
+            if (appliedExternalKnockbackVelocity.sqrMagnitude < 0.01f)
+                return;
+
+            Vector3 characterUp = motor.CharacterUp;
+
+            Vector3 currentHorizontalVelocity = Vector3.ProjectOnPlane(
+                currentVelocity,
+                characterUp
+            );
+
+            Vector3 appliedHorizontalKnockback = Vector3.ProjectOnPlane(
+                appliedExternalKnockbackVelocity,
+                characterUp
+            );
+
+            if (appliedHorizontalKnockback.sqrMagnitude < 0.01f)
+            {
+                appliedExternalKnockbackVelocity = Vector3.zero;
+                return;
+            }
+
+            Vector3 appliedDirection = appliedHorizontalKnockback.normalized;
+
+            float currentVelocityInKnockbackDirection = Vector3.Dot(
+                currentHorizontalVelocity,
+                appliedDirection
+            );
+
+            if (currentVelocityInKnockbackDirection > 0f)
+            {
+                float velocityToRemove = Mathf.Min(
+                    currentVelocityInKnockbackDirection,
+                    appliedHorizontalKnockback.magnitude
+                );
+
+                currentVelocity -= appliedDirection * velocityToRemove;
+            }
+
+            appliedExternalKnockbackVelocity = Vector3.zero;
         }
 
         public void BeforeCharacterUpdate(float deltaTime)

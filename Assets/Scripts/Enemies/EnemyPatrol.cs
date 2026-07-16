@@ -63,6 +63,23 @@ namespace Enemies
             return direction.normalized;
         }
 
+        public Vector3 GetCurrentTargetPosition()
+        {
+            return currentTarget;
+        }
+
+        public void UpdateTargetIfReached(Vector3 currentPosition)
+        {
+            if (!hasValidPoints)
+                return;
+
+            Vector3 direction = currentTarget - currentPosition;
+            direction.y = 0f;
+
+            if (direction.magnitude <= pointTolerance)
+                SwitchTarget();
+        }
+
         private void SwitchTarget()
         {
             float distanceToRight = Vector3.Distance(currentTarget, rightPosition);

@@ -25,7 +25,11 @@ namespace Enemies
         [SerializeField] private float chargeCooldown = 1.2f;
         [SerializeField] private float chargeHitRadius = 1.1f;
         [SerializeField] private int chargeDamage = 1;
-        [SerializeField] private float chargeKnockbackDistance = 4f;
+
+        // Stronger knockback for the charging enemy
+        [SerializeField] private float chargeKnockbackDistance = 5.5f;
+
+        [SerializeField] private float maxChargeHeightDifference = 0.5f;
         [SerializeField] private LayerMask playerLayer;
 
         [Header("Obstacle Detection")]
@@ -72,6 +76,16 @@ namespace Enemies
             return currentState == EnemyState.Charging ? chargeSpeed : patrolSpeed;
         }
 
+        private bool IsPlayerAtChargeHeight()
+        {
+            if (!HasPlayer())
+                return false;
+
+            float heightDifference = Mathf.Abs(Target.Player.position.y - transform.position.y);
+
+            return heightDifference <= maxChargeHeightDifference;
+        }
+
         private void UpdateState()
         {
             if (currentState == EnemyState.Sleeping)
@@ -80,12 +94,12 @@ namespace Enemies
             switch (currentState)
             {
                 case EnemyState.Patrolling:
-                    if (IsPlayerInsideDetection())
+                    if (IsPlayerInsideDetection() && IsPlayerAtChargeHeight())
                         PrepareCharge();
                     break;
 
                 case EnemyState.PreparingCharge:
-                    if (IsPlayerOutsideLoseRange())
+                    if (IsPlayerOutsideLoseRange() || !IsPlayerAtChargeHeight())
                     {
                         ChangeState(EnemyState.Patrolling);
                         return;
@@ -116,7 +130,7 @@ namespace Enemies
                     if (Time.time < stateStartTime + chargeCooldown)
                         return;
 
-                    if (IsPlayerInsideDetection())
+                    if (IsPlayerInsideDetection() && IsPlayerAtChargeHeight())
                         PrepareCharge();
                     else
                         ChangeState(EnemyState.Patrolling);
@@ -141,6 +155,12 @@ namespace Enemies
 
         private void StartCharge()
         {
+            if (!IsPlayerAtChargeHeight())
+            {
+                ChangeState(EnemyState.Patrolling);
+                return;
+            }
+
             chargeDirection = GetPlayerDirection();
 
             if (chargeDirection.sqrMagnitude < 0.01f)
@@ -191,6 +211,14 @@ namespace Enemies
             ChangeState(EnemyState.Cooldown);
         }
 
+        private void StopChargeAfterPlayerHit()
+        {
+            MovementDirection = Vector3.zero;
+            chargeDirection = Vector3.zero;
+
+            ChangeState(EnemyState.Cooldown);
+        }
+
         private void CheckChargeHit()
         {
             if (hasHitPlayerDuringCharge)
@@ -223,6 +251,9 @@ namespace Enemies
                 );
 
                 hasHitPlayerDuringCharge = true;
+
+                StopChargeAfterPlayerHit();
+
                 return;
             }
         }
@@ -323,8 +354,17 @@ namespace Enemies
                     break;
 
                 case EnemyState.Patrolling:
-                    MovementDirection = GetPatrolDirection();
-                    LookDirection = MovementDirection;
+                    if (IsPlayerInsideDetection())
+                    {
+                        MovementDirection = Vector3.zero;
+                        LookDirection = GetPlayerDirection();
+                    }
+                    else
+                    {
+                        MovementDirection = GetNavMeshPatrolDirection();
+                        LookDirection = MovementDirection;
+                    }
+
                     break;
 
                 case EnemyState.PreparingCharge:
