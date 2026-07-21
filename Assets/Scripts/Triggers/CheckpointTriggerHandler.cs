@@ -3,6 +3,7 @@ using Gameplay;
 using HUD;
 using Player;
 using UnityEngine;
+using VisualEffects;
 
 namespace Triggers
 {
@@ -14,6 +15,10 @@ namespace Triggers
         private HealthManager _healthManager;
         private CheckpointManager _cpManager;
         private CheckPointHUD _checkPointHUD;
+
+        [Header("Visual Feedback")]
+        [SerializeField]
+        private CheckpointRingEffect checkpointRingEffect;
 
         private void Start()
         {
@@ -27,8 +32,12 @@ namespace Triggers
 
         private void OnTriggerEnter(Collider other)
         {
-            if (!other.CompareTag("Player")) return;
+            if (!other.CompareTag("Player"))
+            {
+                return;
+            }
 
+            checkpointRingEffect?.Play();
             _healthManager.Heal(HealthManager.MaxHealth);
 
             Vector3 offsetPos = new Vector3(
