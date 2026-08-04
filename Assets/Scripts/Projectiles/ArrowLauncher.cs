@@ -37,5 +37,15 @@ namespace Projectiles
                 if (arrow != null) _activeArrows.Enqueue(arrow);
             }
         }
+
+        public void ClearAllArrows()
+        {
+            foreach (GameObject arrow in _activeArrows)
+            {
+                Destroy(arrow);
+            }
+
+            _activeArrows.Clear();
+        }
     }
 }

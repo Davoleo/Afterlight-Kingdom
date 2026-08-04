@@ -1,5 +1,6 @@
 using System;
 using Controllers;
+using Projectiles;
 using UnityEngine;
 
 namespace Player
@@ -11,6 +12,8 @@ namespace Player
         private bool _isDead;
 
         public const int MaxHealth = 6;
+
+        private ArrowLauncher _arrowLauncher;
 
         public int Health
         {
@@ -29,6 +32,7 @@ namespace Player
             Health = MaxHealth;
 
             GameObject gameManager = GameObject.FindGameObjectWithTag("GameManager");
+            _arrowLauncher = GetComponent<ArrowLauncher>();
 
             if (gameManager != null)
                 _menuManager = gameManager.GetComponent<MenuManager>();
@@ -48,9 +52,11 @@ namespace Player
 
             Health = Math.Min(Health + heal, MaxHealth);
         }
-        // reset all params after death
+
+        /// reset all params after death
         public void ResetAfterRespawn()
         {
+            _arrowLauncher.ClearAllArrows();
             _isDead = false;
             Health = MaxHealth;
         }
