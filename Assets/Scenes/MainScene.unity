@@ -6279,6 +6279,10 @@ PrefabInstance:
       value: 7
       objectReference: {fileID: 0}
     - target: {fileID: 6785389685494765772, guid: 57b32168a216646469b2daa667456376, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6785389685494765772, guid: 57b32168a216646469b2daa667456376, type: 3}
       propertyPath: m_StaticEditorFlags
       value: 2147483647
       objectReference: {fileID: 0}
@@ -6358,11 +6362,11 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1019491514085249060, guid: 0c1bb39e2eb004227ac71eecef1b7ebe, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 21
+      value: 30.207
       objectReference: {fileID: 0}
     - target: {fileID: 1019491514085249060, guid: 0c1bb39e2eb004227ac71eecef1b7ebe, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 1.1599998
+      value: 8.297
       objectReference: {fileID: 0}
     - target: {fileID: 1019491514085249060, guid: 0c1bb39e2eb004227ac71eecef1b7ebe, type: 3}
       propertyPath: m_LocalPosition.z
@@ -6680,6 +6684,10 @@ PrefabInstance:
     - target: {fileID: 6785389685494765772, guid: 57b32168a216646469b2daa667456376, type: 3}
       propertyPath: m_Layer
       value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 6785389685494765772, guid: 57b32168a216646469b2daa667456376, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6785389685494765772, guid: 57b32168a216646469b2daa667456376, type: 3}
       propertyPath: m_StaticEditorFlags
@@ -8487,6 +8495,10 @@ PrefabInstance:
     - target: {fileID: 2931637001545645142, guid: c0ed91e6ec403124a9a1b76e0c33eed6, type: 3}
       propertyPath: m_Layer
       value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 5641663863895998267, guid: c0ed91e6ec403124a9a1b76e0c33eed6, type: 3}
+      propertyPath: m_Enabled
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -17026,6 +17038,10 @@ PrefabInstance:
       propertyPath: m_Layer
       value: 7
       objectReference: {fileID: 0}
+    - target: {fileID: 5641663863895998267, guid: c0ed91e6ec403124a9a1b76e0c33eed6, type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -19699,6 +19715,10 @@ PrefabInstance:
     - target: {fileID: 2931637001545645142, guid: c0ed91e6ec403124a9a1b76e0c33eed6, type: 3}
       propertyPath: m_Layer
       value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 5641663863895998267, guid: c0ed91e6ec403124a9a1b76e0c33eed6, type: 3}
+      propertyPath: m_Enabled
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -31474,6 +31494,10 @@ PrefabInstance:
       value: 7
       objectReference: {fileID: 0}
     - target: {fileID: 5074268912860489390, guid: dcfe23f52a11b9b4ab751227cf68b129, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5074268912860489390, guid: dcfe23f52a11b9b4ab751227cf68b129, type: 3}
       propertyPath: m_StaticEditorFlags
       value: 2147483647
       objectReference: {fileID: 0}
@@ -35915,6 +35939,10 @@ PrefabInstance:
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
       objectReference: {fileID: 2100000, guid: 022670d7612618844aebd571d48090f7, type: 2}
+    - target: {fileID: 5641663863895998267, guid: c0ed91e6ec403124a9a1b76e0c33eed6, type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects:
@@ -37027,7 +37055,7 @@ Transform:
   m_GameObject: {fileID: 1373935559}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0.7071068, z: 0, w: 0.7071068}
-  m_LocalPosition: {x: 0.029999971, y: 2.42, z: -2.842171e-14}
+  m_LocalPosition: {x: 1, y: 2, z: -0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 1
   m_Children:
@@ -45497,6 +45525,10 @@ PrefabInstance:
     - target: {fileID: 6785389685494765772, guid: 57b32168a216646469b2daa667456376, type: 3}
       propertyPath: m_Layer
       value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 6785389685494765772, guid: 57b32168a216646469b2daa667456376, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6785389685494765772, guid: 57b32168a216646469b2daa667456376, type: 3}
       propertyPath: m_StaticEditorFlags

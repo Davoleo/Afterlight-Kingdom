@@ -6,7 +6,13 @@ namespace Player.State
     {
 
         private float _climbSpeed = 2.0f;
-        
+
+        public override void OnEnter()
+        {
+            Ctx.motor.BaseVelocity.x = 0;
+            Ctx.motor.BaseVelocity.z = 0;
+        }
+
         public override void UpdateVelocity(ref Vector3 vel, float dt)
         {
             
@@ -17,6 +23,11 @@ namespace Player.State
 
             float xDirection = Ctx.transform.forward.x;
             float zDirection = Ctx.transform.forward.z;
+
+            if (Ctx.IsGrounded && climbInput > 0)
+            {
+                Ctx.motor.ForceUnground();
+            }
 
             if (zDirection > 0f || xDirection > 0f)
             {
@@ -36,7 +47,8 @@ namespace Player.State
                         : Ctx.StateMachine.AirborneState);
                 }
             }
-            
+
+            Debug.Log(vel.y);
             vel.y = climbInput *  _climbSpeed;
         }
     }

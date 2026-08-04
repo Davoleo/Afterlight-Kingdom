@@ -1,4 +1,3 @@
-using Controllers;
 using Player;
 using Player.State;
 using UnityEngine;
@@ -24,9 +23,6 @@ namespace Triggers
             {
                 if (_stateMachine.CurrentState != _stateMachine.ClimbingState)
                 {
-                    Debug.Log(_stateMachine.CurrentState);
-
-                    // TODO: update character rotation to match ladder climbing
                     _stateMachine.TransitionToState(_stateMachine.ClimbingState);
                 }
             }
