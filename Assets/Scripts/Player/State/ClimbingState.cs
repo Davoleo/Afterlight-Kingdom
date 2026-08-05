@@ -9,6 +9,7 @@ namespace Player.State
 
         public override void OnEnter()
         {
+            //reset the player velocity to 0 to avoid
             Ctx.motor.BaseVelocity.x = 0;
             Ctx.motor.BaseVelocity.z = 0;
         }
@@ -21,34 +22,33 @@ namespace Player.State
             // TODO: implement jump during climbing state
             var jumpInput = CommandUtils.IsUp(Ctx.commands, PlayerCommand.Jump);
 
-            float xDirection = Ctx.transform.forward.x;
-            float zDirection = Ctx.transform.forward.z;
+            //Player direction
+            var direction = Ctx.transform.forward;
 
             if (Ctx.IsGrounded && climbInput > 0)
             {
                 Ctx.motor.ForceUnground();
             }
 
-            if (zDirection > 0f || xDirection > 0f)
+            //Logic to handle ladder detachment when moving in the opposite direction of the ladder
+            if (Mathf.Abs(moveInput) > 0.01f)
             {
-                if (moveInput > 0.01f || jumpInput)
-                {
-                    Ctx.StateMachine.TransitionToState(Ctx.IsGrounded
-                        ? Ctx.StateMachine.GroundedState
-                        : Ctx.StateMachine.AirborneState);
-                }
-            }
-            else if (zDirection < 0f || xDirection < 0f)
-            {
-                if (moveInput < -0.01f || jumpInput)
-                {
-                    Ctx.StateMachine.TransitionToState(Ctx.IsGrounded
-                        ? Ctx.StateMachine.GroundedState
-                        : Ctx.StateMachine.AirborneState);
-                }
-            }
+                // avoids unexpected detatches due to one of the directions not being 0 when moving in the opposite axis
+                direction.x = Mathf.Abs(direction.x) < 0.01f ? 0 : direction.x;
+                direction.z = Mathf.Abs(direction.z) < 0.01f ? 0 : direction.z;
 
-            Debug.Log(vel.y);
+                //Debug.Log("moveInput: " + moveInput);
+                //player direction and input direction should be different (on both x and z axis)
+                if (direction.z > 0f != moveInput > 0f || direction.x > 0f != moveInput > 0f)
+                {
+                    //Debug.Log("exiting climb because: z = " + direction.z + " x = " + direction.x + " moveInput =  " +  moveInput);
+                    Ctx.StateMachine.TransitionToState(Ctx.IsGrounded
+                        ? Ctx.StateMachine.GroundedState
+                        : Ctx.StateMachine.AirborneState);
+                }
+
+            }
+            //Debug.Log(vel.y);
             vel.y = climbInput *  _climbSpeed;
         }
     }
