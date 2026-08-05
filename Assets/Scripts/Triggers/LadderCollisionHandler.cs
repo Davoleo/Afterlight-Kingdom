@@ -23,6 +23,7 @@ namespace Triggers
             {
                 if (_stateMachine.CurrentState != _stateMachine.ClimbingState)
                 {
+                    _controller.CurrentLadderNormal = transform.right.normalized;
                     _stateMachine.TransitionToState(_stateMachine.ClimbingState);
                 }
             }
