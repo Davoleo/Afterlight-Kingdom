@@ -1,3 +1,4 @@
+using System;
 using Gameplay;
 using KinematicCharacterController;
 using Player.State;
@@ -16,6 +17,8 @@ namespace Player
 
         [Header("Jump")]
         [SerializeField] public float jumpUpSpeed = 5f;
+
+        [SerializeField] public float climbJumpStrength = 3f;
 
         [Header("Dash")]
         [SerializeField] private float dashCooldown = 2f;
@@ -99,6 +102,8 @@ namespace Player
 
         public void UpdateRotation(ref Quaternion currentRotation, float deltaTime)
         {
+            if (CurrentState == StateMachine.ClimbingState) return;
+
             //Rotate player depending on the movement direction
             var movement = ComputeMoveDirection();
             if (movement != Vector3.zero)
@@ -107,7 +112,7 @@ namespace Player
             }
 
             var newRot = Quaternion.LookRotation(DigitalCharacterForward);
-            if (currentRotation != newRot)
+            if (Quaternion.Angle(currentRotation, newRot) > 0.1f)
             {
                 currentRotation = Quaternion.Slerp(currentRotation, newRot, deltaTime * 16);
             }

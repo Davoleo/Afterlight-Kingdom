@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 namespace Player.State
@@ -6,10 +7,16 @@ namespace Player.State
     public abstract class PlayerState
     {
         protected PlayerCharacterController Ctx;
+        public static event Action OnJumped;
 
         public void SetContext(PlayerCharacterController ctx)
         {
             this.Ctx = ctx;
+        }
+
+        protected static void InvokeJumpEvent()
+        {
+            OnJumped?.Invoke();
         }
         
         public virtual void OnEnter() {}

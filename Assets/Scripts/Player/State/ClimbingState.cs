@@ -12,14 +12,27 @@ namespace Player.State
             //reset the player velocity to 0 to avoid going through the ladder and colliding with weird boxes
             Ctx.motor.BaseVelocity.x = 0;
             Ctx.motor.BaseVelocity.z = 0;
+
+            var charFacing = Ctx.transform.forward;
+            if (Vector3.Dot(charFacing, Ctx.CurrentLadderNormal) > -1)
+            {
+                Ctx.motor.RotateCharacter(Quaternion.LookRotation(-Ctx.CurrentLadderNormal, Vector3.up));
+            }
+
         }
 
         public override void UpdateVelocity(ref Vector3 vel, float dt)
         {
             var climbInput = Ctx.MoveInputs.ClimbInput.y;
             var moveVector = Ctx.ComputeMoveDirection();
-            // TODO: implement jump during climbing state
-            var jumpInput = CommandUtils.IsUp(Ctx.commands, PlayerCommand.Jump);
+
+            if (CommandUtils.IsUp(Ctx.commands, PlayerCommand.Jump))
+            {
+                vel += Ctx.climbJumpStrength * (Ctx.motor.CharacterUp + Ctx.CurrentLadderNormal);
+                InvokeJumpEvent();
+                ExitState();
+                return;
+            }
 
             if (Ctx.IsGrounded && climbInput > 0)
             {
@@ -30,12 +43,17 @@ namespace Player.State
             if (Vector3.Dot(moveVector, Ctx.CurrentLadderNormal) > 0f)
             {
                 //Debug.Log("exiting climb because: z = " + direction.z + " x = " + direction.x + " moveInput =  " +  moveVector);
-                Ctx.StateMachine.TransitionToState(Ctx.IsGrounded
-                    ? Ctx.StateMachine.GroundedState
-                    : Ctx.StateMachine.AirborneState);
+                ExitState();
             }
             //Debug.Log(vel.y);
             vel.y = climbInput *  _climbSpeed;
+        }
+
+        private void ExitState()
+        {
+            Ctx.StateMachine.TransitionToState(Ctx.IsGrounded
+                ? Ctx.StateMachine.GroundedState
+                : Ctx.StateMachine.AirborneState);
         }
     }
 }

@@ -1,4 +1,4 @@
-using Controllers;
+using Player.State;
 using UnityEngine;
 
 namespace Player
@@ -23,12 +23,12 @@ namespace Player
 
         private void OnEnable()
         {
-            characterController.StateMachine.GroundedState.OnJumped += TriggerJump;
+            PlayerState.OnJumped += TriggerJump;
         }
 
         private void OnDisable()
         {
-            characterController.StateMachine.GroundedState.OnJumped -= TriggerJump;
+            PlayerState.OnJumped -= TriggerJump;
         }
 
         private void TriggerJump()
