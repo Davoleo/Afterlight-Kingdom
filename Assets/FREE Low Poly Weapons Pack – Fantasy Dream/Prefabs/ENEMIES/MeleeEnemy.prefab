@@ -77,7 +77,7 @@ GameObject:
   - component: {fileID: 7752617487149093108}
   - component: {fileID: 3996788696878199830}
   - component: {fileID: -7386881669981752514}
-  - component: {fileID: 7048887917502677474}
+  - component: {fileID: 7748937033531909475}
   m_Layer: 8
   m_Name: MeleeEnemy
   m_TagString: Enemy
@@ -93,7 +93,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6595118272833061148}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 8.54, y: 2.22, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -118,7 +118,7 @@ MeshRenderer:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6595118272833061148}
-  m_Enabled: 1
+  m_Enabled: 0
   m_CastShadows: 1
   m_ReceiveShadows: 1
   m_DynamicOccludee: 1
@@ -168,7 +168,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c14767ba764684a93a80e81d8375f2f3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  characterController: {fileID: 0}
   navMeshAgent: {fileID: 0}
   target:
     player: {fileID: 0}
@@ -182,16 +181,15 @@ MonoBehaviour:
   patrolSpeed: 2
   acceleration: 15
   rotationSpeed: 12
-  gravity: 20
-  groundedGravity: -2
-  useNavMeshPathfinding: 0
   navMeshRepathInterval: 0.1
+  navMeshSampleRadius: 2
+  navMeshStoppingDistance: 0.05
   chaseSpeed: 3
   attackRange: 1
   attackCooldown: 0.6
   attackWindup: 0.2
   attackPoint: {fileID: 5808734525443025105}
-  attackRadius: 0.8
+  attackRadius: 1.2
   attackDamage: 1
   playerLayer:
     serializedVersion: 2
@@ -221,7 +219,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1b74ef322fdfa455486f44357186f1b4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  enemyId: 
+  enemyId: Enemy_003
 --- !u!143 &-7386881669981752514
 CharacterController:
   m_ObjectHideFlags: 0
@@ -247,7 +245,7 @@ CharacterController:
   m_SkinWidth: 0.08
   m_MinMoveDistance: 0.001
   m_Center: {x: 0, y: 0, z: 0}
---- !u!195 &7048887917502677474
+--- !u!195 &7748937033531909475
 NavMeshAgent:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -256,7 +254,7 @@ NavMeshAgent:
   m_GameObject: {fileID: 6595118272833061148}
   m_Enabled: 1
   m_AgentTypeID: 0
-  m_Radius: 0.5
+  m_Radius: 0.2
   m_Speed: 3.5
   m_Acceleration: 8
   avoidancePriority: 50
