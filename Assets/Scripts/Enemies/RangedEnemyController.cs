@@ -1,5 +1,4 @@
 using UnityEngine;
-using UnityEngine.AI;
 
 namespace Enemies
 {
@@ -30,6 +29,7 @@ namespace Enemies
         [SerializeField] private float projectileSpawnOffset = 0.4f;
 
         private EnemyState currentState;
+
         private bool isPreparingShot;
         private float shotStartTime;
         private float lastShotTime;
@@ -56,7 +56,11 @@ namespace Enemies
 
         protected override void SetInitialState()
         {
-            ChangeState(startsActive ? EnemyState.Patrolling : EnemyState.Sleeping);
+            ChangeState(
+                startsActive
+                    ? EnemyState.Patrolling
+                    : EnemyState.Sleeping
+            );
         }
 
         protected override void OnResetToSpawn()
@@ -67,7 +71,9 @@ namespace Enemies
 
         protected override float GetCurrentSpeed()
         {
-            return currentState == EnemyState.Retreating ? retreatSpeed : patrolSpeed;
+            return currentState == EnemyState.Retreating
+                ? retreatSpeed
+                : patrolSpeed;
         }
 
         private void UpdateState()
@@ -110,8 +116,8 @@ namespace Enemies
 
             if (currentState == EnemyState.Shooting)
             {
-                ChangeState(EnemyState.Patrolling);
                 isPreparingShot = false;
+                ChangeState(EnemyState.Patrolling);
             }
         }
 
@@ -149,15 +155,23 @@ namespace Enemies
 
         private void Shoot()
         {
-            Vector3 targetPosition = GetPlayerAimPosition(1f);
-            Vector3 shootDirection = targetPosition - shootPoint.position;
+            if (shootPoint == null || projectilePrefab == null)
+                return;
+
+            Vector3 targetPosition =
+                GetPlayerAimPosition(1f);
+
+            Vector3 shootDirection =
+                targetPosition - shootPoint.position;
 
             if (shootDirection.sqrMagnitude < 0.01f)
                 return;
 
             shootDirection.Normalize();
 
-            Vector3 spawnPosition = shootPoint.position + shootDirection * projectileSpawnOffset;
+            Vector3 spawnPosition =
+                shootPoint.position
+                + shootDirection * projectileSpawnOffset;
 
             GameObject projectile = Instantiate(
                 projectilePrefab,
@@ -168,7 +182,8 @@ namespace Enemies
             projectile.SetActive(true);
             projectile.transform.SetParent(null);
 
-            EnemyProjectile enemyProjectile = projectile.GetComponent<EnemyProjectile>();
+            EnemyProjectile enemyProjectile =
+                projectile.GetComponent<EnemyProjectile>();
 
             if (enemyProjectile == null)
             {
@@ -186,32 +201,29 @@ namespace Enemies
             if (playerDirection.sqrMagnitude < 0.01f)
                 return Vector3.zero;
 
-            Vector3 directRetreatDirection = -playerDirection;
-            Vector3 desiredRetreatPosition = transform.position + directRetreatDirection * retreatDistance;
+            Vector3 desiredRetreatPosition =
+                transform.position
+                - playerDirection * retreatDistance;
 
-            if (TryGetNearestNavMeshPosition(desiredRetreatPosition, out Vector3 navMeshRetreatPosition))
+            if (!TryGetNearestNavMeshPosition(
+                    desiredRetreatPosition,
+                    out Vector3 navMeshRetreatPosition))
             {
-                Vector3 navMeshDirection = GetNavMeshDirectionTo(navMeshRetreatPosition);
-
-                if (navMeshDirection.sqrMagnitude >= 0.01f)
-                    return navMeshDirection;
+                return Vector3.zero;
             }
 
-            return directRetreatDirection;
+            return GetNavMeshDirectionTo(navMeshRetreatPosition);
         }
 
-        private bool TryGetNearestNavMeshPosition(Vector3 desiredPosition, out Vector3 navMeshPosition)
+        private bool TryGetNearestNavMeshPosition(
+            Vector3 desiredPosition,
+            out Vector3 navMeshPosition)
         {
-            navMeshPosition = desiredPosition;
-            bool foundPosition = NavMesh.SamplePosition(
+            return TrySampleNavMeshPosition(
                 desiredPosition,
-                out NavMeshHit hit,
                 retreatNavMeshSampleRadius,
-                NavMesh.AllAreas
+                out navMeshPosition
             );
-
-            navMeshPosition = hit.position;
-            return true;
         }
 
         private void ChangeState(EnemyState newState)
@@ -230,16 +242,18 @@ namespace Enemies
                     break;
 
                 case EnemyState.Patrolling:
-                    MovementDirection = GetNavMeshPatrolDirection();
+                    MovementDirection =
+                        GetNavMeshPatrolDirection();
+
                     LookDirection = MovementDirection;
                     break;
 
                 case EnemyState.Shooting:
-                    MovementDirection = Vector3.zero;
                     LookDirection = GetPlayerDirection();
                     break;
 
                 case EnemyState.Retreating:
+                    // Retreating uses a valid destination sampled on the NavMesh.
                     MovementDirection = GetRetreatDirection();
                     LookDirection = GetPlayerDirection();
                     break;
@@ -251,17 +265,33 @@ namespace Enemies
         {
             base.OnDrawGizmosSelected();
 
+            if (shootPoint == null)
+                return;
+
             Gizmos.color = Color.magenta;
-            Gizmos.DrawWireSphere(shootPoint.position, 0.2f);
+            Gizmos.DrawWireSphere(
+                shootPoint.position,
+                0.2f
+            );
 
             Gizmos.color = Color.red;
-            Gizmos.DrawLine(shootPoint.position, shootPoint.position + shootPoint.forward * 1.5f);
+            Gizmos.DrawLine(
+                shootPoint.position,
+                shootPoint.position
+                + shootPoint.forward * 1.5f
+            );
 
             Gizmos.color = Color.blue;
-            Gizmos.DrawWireSphere(transform.position, minimumShootingDistance);
+            Gizmos.DrawWireSphere(
+                transform.position,
+                minimumShootingDistance
+            );
 
             Gizmos.color = Color.cyan;
-            Gizmos.DrawWireSphere(transform.position, desiredShootingDistance);
+            Gizmos.DrawWireSphere(
+                transform.position,
+                desiredShootingDistance
+            );
         }
     }
 }

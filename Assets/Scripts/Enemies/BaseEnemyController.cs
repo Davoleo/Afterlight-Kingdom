@@ -3,11 +3,10 @@ using UnityEngine.AI;
 
 namespace Enemies
 {
-    [RequireComponent(typeof(CharacterController))]
+    [RequireComponent(typeof(NavMeshAgent))]
     public abstract class BaseEnemyController : MonoBehaviour
     {
         [Header("Base References")]
-        [SerializeField] protected CharacterController characterController;
         [SerializeField] protected NavMeshAgent navMeshAgent;
 
         [Header("Base Components")]
@@ -22,13 +21,10 @@ namespace Enemies
         [SerializeField] protected float acceleration = 15f;
         [SerializeField] protected float rotationSpeed = 12f;
 
-        [Header("Base Gravity")]
-        [SerializeField] protected float gravity = 20f;
-        [SerializeField] protected float groundedGravity = -2f;
-
         [Header("Base NavMesh")]
-        [SerializeField] protected bool useNavMeshPathfinding = false;
         [SerializeField] protected float navMeshRepathInterval = 0.1f;
+        [SerializeField] protected float navMeshSampleRadius = 2f;
+        [SerializeField] protected float navMeshStoppingDistance = 0.05f;
 
         protected Vector3 MovementDirection;
         protected Vector3 LookDirection;
@@ -36,26 +32,24 @@ namespace Enemies
         protected Vector3 SpawnPosition { get; private set; }
 
         protected EnemyTarget Target => target;
-        protected EnemyPatrol Patrol => patrol;
 
-        private Vector3 currentHorizontalVelocity;
-        private float verticalVelocity;
         private bool hasResetAfterPlayerDeath;
+        private bool hasNavMeshDestination;
+
         private float nextNavMeshRepathTime;
+        private Vector3 currentNavMeshDestination;
 
         protected virtual void Awake()
         {
-            if (characterController == null)
-                characterController = GetComponent<CharacterController>();
-
             if (navMeshAgent == null)
                 navMeshAgent = GetComponent<NavMeshAgent>();
 
-            if (navMeshAgent != null)
-            {
-                navMeshAgent.updatePosition = false;
-                navMeshAgent.updateRotation = false;
-            }
+            // The NavMeshAgent is the only component that updates the enemy position.
+            navMeshAgent.updatePosition = true;
+
+            // Rotation is handled manually because some enemies must look at the player
+            // while remaining stationary.
+            navMeshAgent.updateRotation = false;
 
             if (target == null)
                 target = new EnemyTarget();
@@ -66,12 +60,23 @@ namespace Enemies
 
         protected virtual void Start()
         {
+            target.Initialize();
+
+            if (!TryPlaceAgentOnNavMesh(transform.position))
+            {
+                Debug.LogError(
+                    $"{name}: the enemy is not placed on a valid NavMesh.",
+                    this
+                );
+
+                enabled = false;
+                return;
+            }
+
+            // The NavMesh can slightly adjust the initial position.
             SpawnPosition = transform.position;
 
-            target.Initialize();
             patrol.Initialize(SpawnPosition);
-
-            SyncNavMeshAgentPosition();
 
             SetInitialState();
         }
@@ -94,41 +99,29 @@ namespace Enemies
 
         protected void MoveAndRotate(float deltaTime)
         {
-            RotateTowardsLookDirection(deltaTime);
             MoveCharacter(deltaTime);
+            RotateTowardsLookDirection(deltaTime);
         }
 
         private void MoveCharacter(float deltaTime)
         {
-            Vector3 targetHorizontalVelocity = MovementDirection * GetCurrentSpeed();
+            if (!IsNavMeshAgentReady())
+                return;
 
-            currentHorizontalVelocity = Vector3.Lerp(
-                currentHorizontalVelocity,
-                targetHorizontalVelocity,
-                1f - Mathf.Exp(-acceleration * deltaTime)
-            );
+            navMeshAgent.speed = GetCurrentSpeed();
+            navMeshAgent.acceleration = acceleration;
+            navMeshAgent.stoppingDistance = navMeshStoppingDistance;
 
-            ApplyGravity(deltaTime);
+            // The agent must remain active while traversing a NavMesh Link,
+            // even if its desired direction briefly becomes zero.
+            bool shouldMove =
+                navMeshAgent.isOnOffMeshLink
+                || (
+                    hasNavMeshDestination
+                    && MovementDirection.sqrMagnitude >= 0.01f
+                );
 
-            Vector3 finalVelocity = currentHorizontalVelocity;
-            finalVelocity.y = verticalVelocity;
-
-            characterController.Move(finalVelocity * deltaTime);
-
-            SyncNavMeshAgentPosition();
-        }
-
-        private void ApplyGravity(float deltaTime)
-        {
-            if (characterController.isGrounded)
-            {
-                if (verticalVelocity < 0f)
-                    verticalVelocity = groundedGravity;
-            }
-            else
-            {
-                verticalVelocity -= gravity * deltaTime;
-            }
+            navMeshAgent.isStopped = !shouldMove;
         }
 
         private void RotateTowardsLookDirection(float deltaTime)
@@ -171,21 +164,38 @@ namespace Enemies
 
         protected void ResetToSpawn()
         {
-            characterController.enabled = false;
-            transform.position = SpawnPosition;
-            characterController.enabled = true;
+            ResetNavMeshAgentPath();
+
+            if (TrySampleNavMeshPosition(
+                    SpawnPosition,
+                    out Vector3 resetPosition))
+            {
+                // Warp moves the enemy through the NavMeshAgent
+                // instead of modifying transform.position directly.
+                if (!navMeshAgent.Warp(resetPosition))
+                {
+                    Debug.LogWarning(
+                        $"{name}: the NavMeshAgent could not return to its spawn position.",
+                        this
+                    );
+                }
+            }
+            else
+            {
+                Debug.LogWarning(
+                    $"{name}: the spawn position is not close to a valid NavMesh.",
+                    this
+                );
+            }
 
             patrol.Reset();
 
             MovementDirection = Vector3.zero;
             LookDirection = Vector3.zero;
 
-            currentHorizontalVelocity = Vector3.zero;
-            verticalVelocity = 0f;
             nextNavMeshRepathTime = 0f;
 
             ResetNavMeshAgentPath();
-            SyncNavMeshAgentPosition();
 
             OnResetToSpawn();
             SetInitialState();
@@ -193,30 +203,43 @@ namespace Enemies
 
         protected Vector3 GetNavMeshDirectionTo(Vector3 destination)
         {
-            if (!useNavMeshPathfinding)
+            if (!IsNavMeshAgentReady())
                 return Vector3.zero;
 
-            if (navMeshAgent == null)
-                return Vector3.zero;
-
-            if (!navMeshAgent.enabled)
-                return Vector3.zero;
-
-            if (!navMeshAgent.isOnNavMesh)
-                return Vector3.zero;
-
-            navMeshAgent.speed = GetCurrentSpeed();
-            navMeshAgent.acceleration = acceleration;
-            navMeshAgent.nextPosition = transform.position;
-
-            if (Time.time >= nextNavMeshRepathTime)
+            if (!TrySampleNavMeshPosition(
+                    destination,
+                    out Vector3 sampledDestination))
             {
-                bool destinationSet = navMeshAgent.SetDestination(destination);
+                return Vector3.zero;
+            }
 
-                if (!destinationSet)
+            bool destinationChanged =
+                !hasNavMeshDestination
+                || Vector3.SqrMagnitude(
+                    sampledDestination - currentNavMeshDestination
+                ) > 0.0625f;
+
+            if (destinationChanged || Time.time >= nextNavMeshRepathTime)
+            {
+                if (!navMeshAgent.SetDestination(sampledDestination))
+                {
+                    hasNavMeshDestination = false;
                     return Vector3.zero;
+                }
 
-                nextNavMeshRepathTime = Time.time + navMeshRepathInterval;
+                currentNavMeshDestination = sampledDestination;
+                hasNavMeshDestination = true;
+                nextNavMeshRepathTime =
+                    Time.time + navMeshRepathInterval;
+            }
+
+            if (navMeshAgent.pathPending)
+                return GetFlatDirectionTo(sampledDestination);
+
+            if (navMeshAgent.pathStatus == NavMeshPathStatus.PathInvalid)
+            {
+                hasNavMeshDestination = false;
+                return Vector3.zero;
             }
 
             Vector3 desiredVelocity = navMeshAgent.desiredVelocity;
@@ -225,56 +248,109 @@ namespace Enemies
             if (desiredVelocity.sqrMagnitude >= 0.01f)
                 return desiredVelocity.normalized;
 
-            Vector3 directionToSteeringTarget = navMeshAgent.steeringTarget - transform.position;
-            directionToSteeringTarget.y = 0f;
+            Vector3 steeringDirection =
+                navMeshAgent.steeringTarget - transform.position;
 
-            if (directionToSteeringTarget.sqrMagnitude < 0.01f)
-                return Vector3.zero;
+            steeringDirection.y = 0f;
 
-            return directionToSteeringTarget.normalized;
+            if (steeringDirection.sqrMagnitude >= 0.01f)
+                return steeringDirection.normalized;
+
+            return GetFlatDirectionTo(sampledDestination);
         }
 
         protected Vector3 GetNavMeshPatrolDirection()
         {
             patrol.UpdateTargetIfReached(transform.position);
 
-            Vector3 destination = patrol.GetCurrentTargetPosition();
+            Vector3 destination =
+                patrol.GetCurrentTargetPosition();
 
-            Vector3 navMeshDirection = GetNavMeshDirectionTo(destination);
-
-            if (navMeshDirection.sqrMagnitude < 0.01f)
-                return GetPatrolDirection();
-
-            return navMeshDirection;
+            return GetNavMeshDirectionTo(destination);
         }
 
-        private void SyncNavMeshAgentPosition()
+        protected bool TrySampleNavMeshPosition(
+            Vector3 desiredPosition,
+            out Vector3 sampledPosition)
         {
-            if (navMeshAgent == null)
-                return;
+            return TrySampleNavMeshPosition(
+                desiredPosition,
+                navMeshSampleRadius,
+                out sampledPosition
+            );
+        }
 
-            if (!navMeshAgent.enabled)
-                return;
+        protected bool TrySampleNavMeshPosition(
+            Vector3 desiredPosition,
+            float sampleRadius,
+            out Vector3 sampledPosition)
+        {
+            sampledPosition = desiredPosition;
 
-            if (!navMeshAgent.isOnNavMesh)
-                return;
+            int areaMask = navMeshAgent != null
+                ? navMeshAgent.areaMask
+                : NavMesh.AllAreas;
 
-            navMeshAgent.nextPosition = transform.position;
+            bool positionFound = NavMesh.SamplePosition(
+                desiredPosition,
+                out NavMeshHit hit,
+                sampleRadius,
+                areaMask
+            );
+
+            if (!positionFound)
+                return false;
+
+            sampledPosition = hit.position;
+            return true;
+        }
+
+        private bool TryPlaceAgentOnNavMesh(Vector3 desiredPosition)
+        {
+            if (navMeshAgent == null || !navMeshAgent.enabled)
+                return false;
+
+            if (navMeshAgent.isOnNavMesh)
+                return true;
+
+            if (!TrySampleNavMeshPosition(
+                    desiredPosition,
+                    out Vector3 sampledPosition))
+            {
+                return false;
+            }
+
+            return navMeshAgent.Warp(sampledPosition);
+        }
+
+        private bool IsNavMeshAgentReady()
+        {
+            return navMeshAgent != null
+                   && navMeshAgent.enabled
+                   && navMeshAgent.isOnNavMesh;
+        }
+
+        private Vector3 GetFlatDirectionTo(Vector3 destination)
+        {
+            Vector3 direction = destination - transform.position;
+            direction.y = 0f;
+
+            if (direction.sqrMagnitude < 0.01f)
+                return Vector3.zero;
+
+            return direction.normalized;
         }
 
         private void ResetNavMeshAgentPath()
         {
-            if (navMeshAgent == null)
+            hasNavMeshDestination = false;
+            currentNavMeshDestination = Vector3.zero;
+
+            if (!IsNavMeshAgentReady())
                 return;
 
-            if (!navMeshAgent.enabled)
-                return;
-
-            if (!navMeshAgent.isOnNavMesh)
-                return;
-
+            navMeshAgent.isStopped = true;
             navMeshAgent.ResetPath();
-            navMeshAgent.nextPosition = transform.position;
         }
 
         protected bool HasPlayer()
@@ -312,11 +388,6 @@ namespace Enemies
             return target.AimPosition(verticalOffset);
         }
 
-        protected Vector3 GetPatrolDirection()
-        {
-            return patrol.GetDirection(transform.position);
-        }
-
         protected bool TryDamagePlayer(
             Collider hitCollider,
             int damage,
@@ -333,19 +404,14 @@ namespace Enemies
             );
         }
 
-        protected bool IsInLayerMask(int layer, LayerMask layerMask)
-        {
-            return (layerMask.value & (1 << layer)) != 0;
-        }
-
         protected bool IsOwnCollider(Collider colliderToCheck)
         {
             return colliderToCheck != null
-                   && (colliderToCheck.transform == transform
-                       || colliderToCheck.transform.IsChildOf(transform));
+                   && (
+                       colliderToCheck.transform == transform
+                       || colliderToCheck.transform.IsChildOf(transform)
+                   );
         }
-
-        protected virtual void OnControllerColliderHit(ControllerColliderHit hit) { }
 
         protected virtual void OnDrawGizmosSelected()
         {
