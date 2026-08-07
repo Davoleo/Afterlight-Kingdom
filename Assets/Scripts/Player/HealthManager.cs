@@ -14,6 +14,7 @@ namespace Player
         public const int MaxHealth = 6;
 
         private ArrowLauncher _arrowLauncher;
+        private PlayerCharacterController _characterController;
 
         public int Health
         {
@@ -33,8 +34,9 @@ namespace Player
 
             GameObject gameManager = GameObject.FindGameObjectWithTag("GameManager");
             _arrowLauncher = GetComponent<ArrowLauncher>();
+            _characterController = GetComponent<PlayerCharacterController>();
 
-            if (gameManager != null)
+            if (gameManager)
                 _menuManager = gameManager.GetComponent<MenuManager>();
         }
 
@@ -59,13 +61,17 @@ namespace Player
             _arrowLauncher.ClearAllArrows();
             _isDead = false;
             Health = MaxHealth;
+            //flush the inputs
+            _characterController.ResetInputs();
+            // avoid character to keep momentum after respawn 
+            _characterController.motor.BaseVelocity  = Vector3.zero;
         }
 
         private void HandleDeath()
         {
             _isDead = true;
 
-            if (_menuManager != null)
+            if (_menuManager)
                 _menuManager.ShowDeathScreen();
         }
     }

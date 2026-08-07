@@ -78,6 +78,13 @@ namespace Player
             MoveInputs = inputs;
             commands |= pcommands;
         }
+        
+        public void ResetInputs()
+        {
+            MoveInputs = default;
+            commands.Clear();
+        }
+        
         public void ApplyExternalKnockback(Vector3 direction, float distance, float duration)
         {
             direction.y = 0f;
