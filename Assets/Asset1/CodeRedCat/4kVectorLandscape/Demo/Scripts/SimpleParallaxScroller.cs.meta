@@ -1,0 +1,18 @@
+fileFormatVersion: 2
+guid: 26b07dae429332c4389f6edf9502a804
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 299874
+  packageName: Free 4k Parallax Vector Backgrounds
+  packageVersion: 1.1
+  assetPath: Assets/Asset1/CodeRedCat/4kVectorLandscape/Demo/Scripts/SimpleParallaxScroller.cs
+  uploadId: 711393
