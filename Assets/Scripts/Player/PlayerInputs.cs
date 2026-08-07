@@ -44,5 +44,10 @@ namespace Player
         {
             flags |= command;
         }
+
+        public static void Clear(ref this PlayerCommand flags)
+        {
+            flags = PlayerCommand.None;
+        }
     }
 }

@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using Core;
-using Projectiles;
 using UnityEngine;
 
 namespace Gameplay
@@ -52,7 +51,6 @@ namespace Gameplay
 
         public void RestoreState(EnemySaveData enemyState)
         {
-            ClearStuckArrows();
 
             gameObject.SetActive(enemyState.isAlive);
 
@@ -76,16 +74,6 @@ namespace Gameplay
             _characterController.enabled = false;
             transform.SetPositionAndRotation(position, rotation);
             _characterController.enabled = wasEnabled;
-        }
-        
-        private void ClearStuckArrows()
-        {
-            Arrow[] stuckArrows = GetComponentsInChildren<Arrow>(true);
-
-            foreach (Arrow arrow in stuckArrows)
-            {
-                Destroy(arrow.gameObject);
-            }
         }
     }
 }

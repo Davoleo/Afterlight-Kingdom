@@ -8,8 +8,6 @@ namespace Player.State
         private readonly float _maxMoveSpeed = 5f;
         private readonly float _movementSharpness = 15f;
         
-        public event Action OnJumped;
-        
         public override void UpdateVelocity(ref Vector3 vel, float dt)
         {
             // Reorient current velocity to the slope normal so speed is preserved on ramps.
@@ -20,7 +18,7 @@ namespace Player.State
                 Ctx.motor.ForceUnground();  // tells KCC to stop snapping to ground this frame
                 vel += (Ctx.jumpUpSpeed * Ctx.motor.CharacterUp)
                                    - Vector3.Project(vel, Ctx.motor.CharacterUp);
-                OnJumped?.Invoke();
+                InvokeJumpEvent();
                 // State transition to Airborne happens in PostGroundingUpdate automatically.
                 return;
             }

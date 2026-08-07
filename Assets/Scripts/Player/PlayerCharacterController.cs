@@ -1,3 +1,4 @@
+using System;
 using Gameplay;
 using KinematicCharacterController;
 using Player.State;
@@ -16,6 +17,8 @@ namespace Player
 
         [Header("Jump")]
         [SerializeField] public float jumpUpSpeed = 5f;
+
+        [SerializeField] public float climbJumpStrength = 3f;
 
         [Header("Dash")]
         [SerializeField] private float dashCooldown = 2f;
@@ -40,7 +43,9 @@ namespace Player
         public PlayerCommand commands;
 
         private Vector3 _currentGroundObjectPos;
-        private Vector3 _digitalCharacterForward;
+        public Vector3 DigitalCharacterForward;
+
+        public Vector3 CurrentLadderNormal;
 
         public PlayerStateMachine StateMachine;
 
@@ -65,7 +70,7 @@ namespace Player
             if (_abilityManager == null)
                 Debug.LogError("AbilityManager component missing on GameManager", this);
 
-            _digitalCharacterForward = motor.CharacterForward;
+            DigitalCharacterForward = motor.CharacterForward;
         }
 
         public void SetInputs(MovementInputs inputs, PlayerCommand pcommands)
@@ -73,6 +78,13 @@ namespace Player
             MoveInputs = inputs;
             commands |= pcommands;
         }
+        
+        public void ResetInputs()
+        {
+            MoveInputs = default;
+            commands.Clear();
+        }
+        
         public void ApplyExternalKnockback(Vector3 direction, float distance, float duration)
         {
             direction.y = 0f;
@@ -97,15 +109,17 @@ namespace Player
 
         public void UpdateRotation(ref Quaternion currentRotation, float deltaTime)
         {
+            if (CurrentState == StateMachine.ClimbingState) return;
+
             //Rotate player depending on the movement direction
             var movement = ComputeMoveDirection();
             if (movement != Vector3.zero)
             {
-                _digitalCharacterForward = movement;
+                DigitalCharacterForward = movement;
             }
 
-            var newRot = Quaternion.LookRotation(_digitalCharacterForward);
-            if (currentRotation != newRot)
+            var newRot = Quaternion.LookRotation(DigitalCharacterForward);
+            if (Quaternion.Angle(currentRotation, newRot) > 0.1f)
             {
                 currentRotation = Quaternion.Slerp(currentRotation, newRot, deltaTime * 16);
             }
@@ -249,7 +263,7 @@ namespace Player
                 return;
             }
 
-            _arrowLauncher.TryLaunch(_digitalCharacterForward);
+            _arrowLauncher.TryLaunch(DigitalCharacterForward);
 
             CommandUtils.Off(ref commands, PlayerCommand.Shoot);
         }

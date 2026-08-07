@@ -18,7 +18,7 @@ namespace Gameplay
 
     public class CheckpointManager : MonoBehaviour
     {
-        public Checkpoint LastCheckPoint = new(new Vector3(0f, 2f, 0f), 0f);
+        public Checkpoint LastCheckPoint;
 
         private PlayerCharacterController _playerController;
         private PlayerCameraController _cameraController;
@@ -26,6 +26,8 @@ namespace Gameplay
         private void Start()
         {
             var player = GameObject.FindGameObjectWithTag("Player");
+            LastCheckPoint = new Checkpoint(player.transform.position, player.transform.rotation.y);
+
             _playerController = player.GetComponent<PlayerCharacterController>();
             _cameraController = GameObject.FindWithTag("MainCamera").GetComponentInParent<PlayerCameraController>();
 

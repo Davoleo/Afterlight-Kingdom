@@ -1,4 +1,4 @@
-using Controllers;
+using System;
 using UnityEngine;
 
 namespace Player.State
@@ -7,15 +7,21 @@ namespace Player.State
     public abstract class PlayerState
     {
         protected PlayerCharacterController Ctx;
+        public static event Action OnJumped;
 
         public void SetContext(PlayerCharacterController ctx)
         {
             this.Ctx = ctx;
         }
+
+        protected static void InvokeJumpEvent()
+        {
+            OnJumped?.Invoke();
+        }
         
-        public virtual void OnEnter(){}
-        public virtual void OnExit(PlayerState next){}
+        public virtual void OnEnter() {}
+        public virtual void OnExit(PlayerState next) {}
         public abstract void UpdateVelocity(ref Vector3 vel, float dt);
-        public virtual void BeforeUpdate(float dt) { }
+        public virtual void BeforeUpdate(float dt) {}
     }
 }
