@@ -6363,7 +6363,7 @@ MonoBehaviour:
   radius: 400.5
   height: 120
   radialSegments: 64
-  verticalOffset: 50
+  verticalOffset: 30
   uTile: 8
   vTile: 1
 --- !u!4 &231752271 stripped
@@ -8514,8 +8514,8 @@ MonoBehaviour:
   m_VolumeTrigger: {fileID: 0}
   m_VolumeFrameworkUpdateModeOption: 2
   m_RenderPostProcessing: 1
-  m_Antialiasing: 0
-  m_AntialiasingQuality: 2
+  m_Antialiasing: 3
+  m_AntialiasingQuality: 1
   m_StopNaN: 0
   m_Dithering: 0
   m_ClearDepth: 1
@@ -10569,7 +10569,7 @@ MonoBehaviour:
   radius: 600
   height: 300
   radialSegments: 64
-  verticalOffset: -150
+  verticalOffset: -170
   uTile: 8
   vTile: 1
 --- !u!23 &406755726
@@ -11882,7 +11882,7 @@ MonoBehaviour:
   radius: 200
   height: 150
   radialSegments: 64
-  verticalOffset: -170
+  verticalOffset: -190
   uTile: 8
   vTile: 2
 --- !u!4 &455604203 stripped
@@ -15814,10 +15814,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3d498e8055f07e144bec4167a545fd73, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  radius: 200.5
+  radius: 200
   height: 80
   radialSegments: 64
-  verticalOffset: -20
+  verticalOffset: -40
   uTile: 8
   vTile: 1
 --- !u!1001 &587648753
@@ -23533,7 +23533,7 @@ MonoBehaviour:
   radius: 400
   height: 150
   radialSegments: 64
-  verticalOffset: -100
+  verticalOffset: -120
   uTile: 8
   vTile: 1
 --- !u!4 &865247319 stripped
@@ -36764,7 +36764,7 @@ PrefabInstance:
       value: 7
       objectReference: {fileID: 0}
     - target: {fileID: 3724397873852013955, guid: c0ed91e6ec403124a9a1b76e0c33eed6, type: 3}
-      propertyPath: m_Materials.Array.data[0]
+      propertyPath: 'm_Materials.Array.data[0]'
       value: 
       objectReference: {fileID: 2100000, guid: 022670d7612618844aebd571d48090f7, type: 2}
     - target: {fileID: 5641663863895998267, guid: c0ed91e6ec403124a9a1b76e0c33eed6, type: 3}
@@ -45931,7 +45931,7 @@ MonoBehaviour:
   radius: 600.5
   height: 150
   radialSegments: 64
-  verticalOffset: 150
+  verticalOffset: 130
   uTile: 8
   vTile: 1
 --- !u!1001 &1634479797
@@ -46411,7 +46411,7 @@ PrefabInstance:
     m_TransformParent: {fileID: 388534287}
     m_Modifications:
     - target: {fileID: 4983927363037067545, guid: 57b32168a216646469b2daa667456376, type: 3}
-      propertyPath: m_Materials.Array.data[0]
+      propertyPath: 'm_Materials.Array.data[0]'
       value: 
       objectReference: {fileID: 2100000, guid: 022670d7612618844aebd571d48090f7, type: 2}
     - target: {fileID: 6152299014247383670, guid: 57b32168a216646469b2daa667456376, type: 3}
