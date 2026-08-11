@@ -1,5 +1,4 @@
 using System.Collections;
-using Controllers;
 using Gameplay;
 using Player;
 using UnityEngine;
@@ -25,7 +24,7 @@ namespace Triggers
 
         [Header("Optional Animator")]
         [SerializeField] private Animator chestAnimator;
-        [SerializeField] private string openTriggerName = "Open";
+        [SerializeField] private string openTriggerName = "OpenChest";
 
         private bool _opened;
         private bool _playerInside;
@@ -46,13 +45,7 @@ namespace Triggers
             _collectiblesManager = gameManager.GetComponent<CollectiblesManager>();
 
             if (_collectiblesManager.IsCollected(rewardId))
-            {
                 _opened = true;
-                SetChestVisualOpen(true);
-                return;
-            }
-
-            SetChestVisualOpen(false);
         }
 
         private void Update()
@@ -91,9 +84,7 @@ namespace Triggers
 
             _opened = true;
 
-            SetChestVisualOpen(true);
-
-            if (chestAnimator && !string.IsNullOrWhiteSpace(openTriggerName))
+            if (chestAnimator)
                 chestAnimator.SetTrigger(openTriggerName);
 
             StartCoroutine(SpawnRewardRoutine());
@@ -135,15 +126,6 @@ namespace Triggers
             }
 
             reward.transform.position = endPosition;
-        }
-
-        private void SetChestVisualOpen(bool isOpen)
-        {
-            if (closedVisual)
-                closedVisual.SetActive(!isOpen);
-
-            if (openedVisual)
-                openedVisual.SetActive(isOpen);
         }
     }
 }
