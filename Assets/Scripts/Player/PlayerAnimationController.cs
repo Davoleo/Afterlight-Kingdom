@@ -1,4 +1,5 @@
 using Player.State;
+using Unity.VisualScripting;
 using UnityEngine;
 
 namespace Player
@@ -39,8 +40,13 @@ namespace Player
         private void Update()
         {
             bool isGrounded = characterController.IsGrounded;
-            _animator.SetFloat(SpeedHash,         characterController.ForwardSpeed);
-            _animator.SetFloat(VerticalSpeedHash, characterController.VerticalSpeed);
+            float fwdSpeed = characterController.ForwardSpeed;
+            float vertSpeed = characterController.VerticalSpeed;
+            // Prevent the character from slowing down the running animation if stable on a slope
+            float currentSpeed = isGrounded ? Mathf.Abs(fwdSpeed) + Mathf.Abs(vertSpeed) : fwdSpeed;
+            
+            _animator.SetFloat(SpeedHash,         currentSpeed);
+            _animator.SetFloat(VerticalSpeedHash, vertSpeed);
             _animator.SetBool(GroundedHash,       isGrounded);
             _animator.SetBool(AirborneHash,       !isGrounded);
             _animator.SetBool(DashHash,           characterController.StateMachine.CurrentState == characterController.StateMachine.DashingState);
