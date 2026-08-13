@@ -1,5 +1,4 @@
 using Player.State;
-using Unity.VisualScripting;
 using UnityEngine;
 
 namespace Player
@@ -36,6 +35,7 @@ namespace Player
         {
             _animator.SetTrigger(JumpHash);
         }
+        
 
         private void Update()
         {

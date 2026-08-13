@@ -1,4 +1,3 @@
-using System;
 using UnityEngine;
 
 namespace Player.State
@@ -13,7 +12,7 @@ namespace Player.State
             // Reorient current velocity to the slope normal so speed is preserved on ramps.
             vel = Ctx.motor.GetDirectionTangentToSurface(vel, Ctx.motor.GroundingStatus.GroundNormal) * vel.magnitude;
 
-            if (CommandUtils.IsUp(Ctx.commands, PlayerCommand.Jump))
+            if (CommandUtils.IsUp(Ctx.triggers, PlayerTrigger.Jump))
             {
                 Ctx.motor.ForceUnground();  // tells KCC to stop snapping to ground this frame
                 vel += (Ctx.jumpUpSpeed * Ctx.motor.CharacterUp)

@@ -107,12 +107,12 @@
                 },
                 {
                     "name": "Shoot",
-                    "type": "Button",
+                    "type": "Value",
                     "id": "0decf69a-df5d-4eef-9374-70f670ef34be",
-                    "expectedControlType": "",
+                    "expectedControlType": "Double",
                     "processors": "",
                     "interactions": "",
-                    "initialStateCheck": false
+                    "initialStateCheck": true
                 },
                 {
                     "name": "Climb",
