@@ -60939,10 +60939,22 @@ PrefabInstance:
       propertyPath: bowstringLine
       value: 
       objectReference: {fileID: 0}
+    - target: {fileID: 7629166111987709219, guid: 6725f11bb9e0ba4d783b8acbdb1c66e1, type: 3}
+      propertyPath: arrowInHand
+      value: 
+      objectReference: {fileID: 4208308555125493634, guid: 610d9ae141cc55a4485cc00229ff3d29, type: 3}
+    - target: {fileID: 7629166111987709219, guid: 6725f11bb9e0ba4d783b8acbdb1c66e1, type: 3}
+      propertyPath: grabStringDelay
+      value: 0.05
+      objectReference: {fileID: 0}
     - target: {fileID: 7720670380383919340, guid: 6725f11bb9e0ba4d783b8acbdb1c66e1, type: 3}
       propertyPath: damageOverlay
       value: 
       objectReference: {fileID: 537886461}
+    - target: {fileID: 8241502049495792556, guid: 6725f11bb9e0ba4d783b8acbdb1c66e1, type: 3}
+      propertyPath: aimOffset.y
+      value: 60
+      objectReference: {fileID: 0}
     - target: {fileID: 8241502049495792556, guid: 6725f11bb9e0ba4d783b8acbdb1c66e1, type: 3}
       propertyPath: upperSpineBone
       value: 

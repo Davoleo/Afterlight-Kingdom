@@ -8,11 +8,12 @@ namespace Player
     /// Controls the bow mechanics for the player character, including drawing, aiming, and shooting.
     /// Manages the upper body Animator layer weight for smooth blending and procedurally corrects 
     /// spine bone rotations to align mismatched animation assets (Mixamo vs. Kevin Iglesias' Unity Assets).
+    /// Handles the logic to bend the bow and the bow string through BowVisualsController.cs.
     /// </summary>
     public class BowController : MonoBehaviour
     {
         [SerializeField] public Transform upperSpineBone;
-        [SerializeField] public Vector3 aimOffset = new Vector3(0, 90, 0);
+        [SerializeField] public Vector3 aimOffset = new(0, 90, 0);
         
         // Components
         private Animator _animator;
@@ -20,13 +21,16 @@ namespace Player
         private ArrowLauncher _arrowLauncher;
         private int _upperBodyLayerIndex;
         private AbilityManager _abilityManager;
+        private BowVisualsController _bowVisuals;
 
         // Utility variables
         private bool _wasDrawingLastFrame;
         private float _targetWeight;
         private float _currentWeight;
-        private readonly float _layerBlendSpeed = 8f;
+        private const float LayerBlendSpeed = 8f;
         private AnimatorStateInfo _stateInfo;
+        private const float BowDrawDuration = 0.1f;
+        private const float BowShootDuration = 0.01f;
 
         // Animator Hashes, the others are stored inside PlayerAnimatorController.cs
         private static readonly int DrawHash = Animator.StringToHash("Draw");
@@ -43,17 +47,25 @@ namespace Player
             _arrowLauncher = GetComponent<ArrowLauncher>();
             _upperBodyLayerIndex = _animator.GetLayerIndex("Bow");
             _abilityManager = GameObject.FindGameObjectsWithTag("GameManager")[0].GetComponent<AbilityManager>();
+            _bowVisuals = GetComponent<BowVisualsController>();
         }
         
         private void LateUpdate()
         {
+            float currentLayerWeight = _animator.GetLayerWeight(_upperBodyLayerIndex);
             /* Enforce spine rotation for character rig, necessary because Mixamo and Kevin Iglesias animations
             * have two different base orientations due to software exportation discrepancies.
             * Late update ensures that the rotation occurs after the animator applied its transformations. */
             if (_animator.GetLayerWeight(_upperBodyLayerIndex) > 0.1f)
             {
-                upperSpineBone.localRotation *= Quaternion.Euler(aimOffset);
+                // Use the layer weight to smoothly rotate the Upper Spine bone through slerp
+                Quaternion targetRotationOffset = Quaternion.Euler(aimOffset);
+                Quaternion smoothedOffset = Quaternion.Slerp(Quaternion.identity, targetRotationOffset, currentLayerWeight);
+                
+                upperSpineBone.localRotation *= smoothedOffset;
             }
+            
+            _bowVisuals.UpdateBowstring();
         }
 
         public void Update()
@@ -68,22 +80,34 @@ namespace Player
                 (_playerCharacterController.PlayerInputs.DrawInput || _stateInfo.shortNameHash == ShootHash) ? 1f : 0f;
             
             float currentWeight = _animator.GetLayerWeight(_upperBodyLayerIndex);
-            float newWeight = Mathf.Lerp(currentWeight, targetWeight, Time.deltaTime * _layerBlendSpeed);
+            float newWeight = Mathf.Lerp(currentWeight, targetWeight, Time.deltaTime * LayerBlendSpeed);
             
             bool canDraw = _abilityManager.HasAbility(AbilityType.Bow);
             bool wantsToDraw = canDraw && _playerCharacterController.PlayerInputs.DrawInput;
 
             IsDrawing = wantsToDraw;
-
-            // Shoot only when the draw button is released AND the bow is draw 
-            if (_wasDrawingLastFrame && !wantsToDraw)
+            
+            switch (wantsToDraw)
             {
-                if (_stateInfo.shortNameHash == DrawnStateHash)
+                case true when !_wasDrawingLastFrame:
+                    _bowVisuals.LoadBow(0f, BowDrawDuration);
+                    _bowVisuals.ShowArrow();
+                    break;
+                // Shoot only when the draw button is released AND the bow is drawn
+                case false when _wasDrawingLastFrame:
                 {
-                    Shoot();
+                    // character needs to fully draw the bow to shoot (wait until the animator enters the drawn state)
+                    if (_stateInfo.shortNameHash == DrawnStateHash) Shoot();
+                    else
+                    {
+                        // Released too soon (Cancel)
+                        _bowVisuals.CancelLoadBow(0f, 0.1f);
+                        _bowVisuals.HideArrow();
+                    }
+
+                    break;
                 }
             }
-
             _wasDrawingLastFrame = wantsToDraw;
 
             _animator.SetBool(DrawHash, wantsToDraw);
@@ -94,6 +118,7 @@ namespace Player
         {
             _animator.SetTrigger(ShootHash);
             _arrowLauncher.Shoot(_playerCharacterController.DigitalCharacterForward);
+            _bowVisuals.ShootArrow(0f, BowShootDuration);
         }
     }
 }

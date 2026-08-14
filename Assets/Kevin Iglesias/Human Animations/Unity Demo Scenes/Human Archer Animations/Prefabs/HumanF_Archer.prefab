@@ -666,7 +666,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f88b358208b147648804ddb50a1e7825, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  archerAnimator: {fileID: 5348263984606774366}
+  archerAnimator: {fileID: 0}
   animationToPlay: 0
   bowstringLine: {fileID: 4551757275123561774}
   limb01: {fileID: 2971545061305749684}
@@ -729,11 +729,6 @@ Transform:
 --- !u!4 &4581038871530497697 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -6574882734343921810, guid: 1841c298173cdad4db8df8602c8f1c8d, type: 3}
-  m_PrefabInstance: {fileID: 1968719996880173519}
-  m_PrefabAsset: {fileID: 0}
---- !u!95 &5348263984606774366 stripped
-Animator:
-  m_CorrespondingSourceObject: {fileID: 5866666021909216657, guid: 1841c298173cdad4db8df8602c8f1c8d, type: 3}
   m_PrefabInstance: {fileID: 1968719996880173519}
   m_PrefabAsset: {fileID: 0}
 --- !u!4 &5831455432282278685 stripped
