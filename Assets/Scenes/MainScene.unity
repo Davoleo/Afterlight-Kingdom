@@ -9868,6 +9868,11 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 6152299014247383670, guid: 57b32168a216646469b2daa667456376, type: 3}
   m_PrefabInstance: {fileID: 1091943075}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &374858701 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 3762022143017168961, guid: 6725f11bb9e0ba4d783b8acbdb1c66e1, type: 3}
+  m_PrefabInstance: {fileID: 6326112293703713004}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &375336358
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -27708,6 +27713,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e6ee02d2a88304ac6817f20b106f74bc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  bow: {fileID: 374858701}
+  quiver: {fileID: 1864766332}
 --- !u!4 &1008727824 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 6152299014247383670, guid: 57b32168a216646469b2daa667456376, type: 3}
@@ -53506,6 +53513,11 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 4dac94d003cc763488d5431ece96921e, type: 3}
+--- !u!1 &1864766332 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 4055889891551808850, guid: 6725f11bb9e0ba4d783b8acbdb1c66e1, type: 3}
+  m_PrefabInstance: {fileID: 6326112293703713004}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1866118559
 GameObject:
   m_ObjectHideFlags: 0
@@ -61039,6 +61051,14 @@ PrefabInstance:
       propertyPath: damageOverlay
       value: 
       objectReference: {fileID: 537886461}
+    - target: {fileID: 8241502049495792556, guid: 6725f11bb9e0ba4d783b8acbdb1c66e1, type: 3}
+      propertyPath: bow
+      value: 
+      objectReference: {fileID: 374858701}
+    - target: {fileID: 8241502049495792556, guid: 6725f11bb9e0ba4d783b8acbdb1c66e1, type: 3}
+      propertyPath: quiver
+      value: 
+      objectReference: {fileID: 1864766332}
     - target: {fileID: 8241502049495792556, guid: 6725f11bb9e0ba4d783b8acbdb1c66e1, type: 3}
       propertyPath: aimOffset.y
       value: 60

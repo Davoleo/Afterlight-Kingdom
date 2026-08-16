@@ -336,6 +336,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   upperSpineBone: {fileID: 8965391954780132255}
   aimOffset: {x: 0, y: 90, z: 0}
+  bow: {fileID: 0}
+  quiver: {fileID: 0}
 --- !u!114 &7629166111987709219
 MonoBehaviour:
   m_ObjectHideFlags: 0
