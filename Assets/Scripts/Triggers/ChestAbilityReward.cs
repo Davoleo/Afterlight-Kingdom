@@ -1,5 +1,4 @@
 using System.Collections;
-using Controllers;
 using Gameplay;
 using Player;
 using UnityEngine;
@@ -61,7 +60,7 @@ namespace Triggers
 
             if (openAutomaticallyOnPlayerEnter) return;
 
-            if (CommandUtils.IsUp(_characterController.commands, PlayerCommand.Interact))
+            if (CommandUtils.IsUp(_characterController.triggers, PlayerTrigger.Interact))
                 OpenChest();
         }
 

@@ -11,7 +11,7 @@ namespace Player.State
         public override void UpdateVelocity(ref Vector3 vel, float dt)
         {
             // Partial air control: player can steer but not instantly change direction.
-            if (Ctx.MoveInputs.MoveInput.sqrMagnitude > 0.01f)
+            if (Ctx.PlayerInputs.MoveInput.sqrMagnitude > 0.01f)
             {
                 Vector3 targetHorizontal = Ctx.ComputeMoveDirection() * _maxAirMoveSpeed;
                 Vector3 velocityDiff     = Vector3.ProjectOnPlane(targetHorizontal - vel, _gravity.normalized);

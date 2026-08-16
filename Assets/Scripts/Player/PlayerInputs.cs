@@ -7,47 +7,47 @@ namespace Player
     /// Snapshot of player input, collected each Update by PlayerInputHandler
     /// and consumed each FixedUpdate by PlayerCharacterController.
     /// </summary>
-    public struct MovementInputs
+    public struct PlayerInputs
     {
         public Vector2 MoveInput;
         public Vector3 CameraForward;   // pre-flattened to the horizontal plane
         public Vector3 CameraRight;     // pre-flattened to the horizontal plane
         public Vector2 ClimbInput;
+        public bool DrawInput;
     }
 
     [Flags]
-    public enum PlayerCommand
+    public enum PlayerTrigger
     {
         None  = 0,
         Jump  = 1 << 0,
         Dash  = 1 << 1,
-        Shoot = 1 << 2,
-        Interact = 1 << 3,
+        Interact = 1 << 2,
 
-        RotateCameraLeft = 1 << 4,
-        RotateCameraRight = 1 << 5,
+        RotateCameraLeft = 1 << 3,
+        RotateCameraRight = 1 << 4,
     }
 
     static class CommandUtils
     {
-        public static bool IsUp(PlayerCommand flags, PlayerCommand command)
+        public static bool IsUp(PlayerTrigger flags, PlayerTrigger trigger)
         {
-            return (command & flags) == command;
+            return (trigger & flags) == trigger;
         }
 
-        public static void Off(ref PlayerCommand flags, PlayerCommand command)
+        public static void Off(ref PlayerTrigger flags, PlayerTrigger trigger)
         {
-             flags &= ~command;
+             flags &= ~trigger;
         }
 
-        public static void On(ref PlayerCommand flags, PlayerCommand command)
+        public static void On(ref PlayerTrigger flags, PlayerTrigger trigger)
         {
-            flags |= command;
+            flags |= trigger;
         }
 
-        public static void Clear(ref this PlayerCommand flags)
+        public static void Clear(ref this PlayerTrigger flags)
         {
-            flags = PlayerCommand.None;
+            flags = PlayerTrigger.None;
         }
     }
 }

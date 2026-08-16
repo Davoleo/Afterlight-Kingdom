@@ -45,11 +45,11 @@ namespace Player
         {
             var pendingRotationInput = 0;
 
-            if (CommandUtils.IsUp(_player.commands, PlayerCommand.RotateCameraLeft))
+            if (CommandUtils.IsUp(_player.triggers, PlayerTrigger.RotateCameraLeft))
             {
                 pendingRotationInput = -1;
             }
-            else if (CommandUtils.IsUp(_player.commands, PlayerCommand.RotateCameraRight))
+            else if (CommandUtils.IsUp(_player.triggers, PlayerTrigger.RotateCameraRight))
             {
                 pendingRotationInput = 1;
             }
@@ -70,7 +70,7 @@ namespace Player
             _rotationTimer = 0f;
             _isRotating = true;
 
-            CommandUtils.Off(ref _player.commands, PlayerCommand.RotateCameraLeft | PlayerCommand.RotateCameraRight);
+            CommandUtils.Off(ref _player.triggers, PlayerTrigger.RotateCameraLeft | PlayerTrigger.RotateCameraRight);
         }
 
         /// <summary>

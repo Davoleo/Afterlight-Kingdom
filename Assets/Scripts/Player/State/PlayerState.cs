@@ -8,6 +8,7 @@ namespace Player.State
     {
         protected PlayerCharacterController Ctx;
         public static event Action OnJumped;
+        public static event Action OnShoot;
 
         public void SetContext(PlayerCharacterController ctx)
         {
@@ -17,6 +18,11 @@ namespace Player.State
         protected static void InvokeJumpEvent()
         {
             OnJumped?.Invoke();
+        }
+
+        protected static void InvokeShootEvent()
+        {
+            OnShoot?.Invoke();
         }
         
         public virtual void OnEnter() {}
