@@ -15,10 +15,6 @@ namespace Player
         [SerializeField] public Transform upperSpineBone;
         [SerializeField] public Vector3 aimOffset = new(0, 90, 0);
         
-        [Header("Prefabs")]
-        [SerializeField] public GameObject bow;
-        [SerializeField] public GameObject quiver;
-        
         // Components
         private Animator _animator;
         private PlayerCharacterController _playerCharacterController;
