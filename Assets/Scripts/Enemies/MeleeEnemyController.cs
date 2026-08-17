@@ -26,6 +26,9 @@ namespace Enemies
         [SerializeField] private int attackDamage = 1;
         [SerializeField] private LayerMask playerLayer;
 
+        [Header("Animation")]
+        [SerializeField] private Animator animator;
+
         private EnemyState currentState;
 
         private bool isPreparingAttack;
@@ -41,6 +44,9 @@ namespace Enemies
 
             UpdateState();
             UpdateMovementDirection();
+
+            UpdateAnimation();
+
             UpdateAttack();
 
             MoveAndRotate(Time.deltaTime);
@@ -119,6 +125,8 @@ namespace Enemies
 
             isPreparingAttack = true;
             attackStartTime = Time.time;
+
+            animator.SetTrigger("Attack");
         }
 
         private void UpdateAttack()
@@ -184,6 +192,7 @@ namespace Enemies
                     return;
             }
         }
+
         private void ChangeState(EnemyState newState)
         {
             currentState = newState;
@@ -218,6 +227,16 @@ namespace Enemies
                     LookDirection = GetPlayerDirection();
                     break;
             }
+        }
+
+       private void UpdateAnimation()
+        {
+            if (animator == null)
+                return;
+
+            bool isMoving = MovementDirection.sqrMagnitude > 0.01f;
+
+            animator.SetBool("IsMoving", isMoving);
         }
 
         protected override void OnDrawGizmosSelected()
