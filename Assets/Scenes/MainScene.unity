@@ -39699,7 +39699,8 @@ MonoBehaviour:
   rewardPrefab: {fileID: 1935170665073443475, guid: 95f3e43bd46d242ec8df94874d742cae, type: 3}
   rewardSpawnPoint: {fileID: 2014295596}
   rewardRiseHeight: 0.6
-  rewardRiseDuration: 0.6
+  animationDuration: 0.6
+  finalScale: 1
   openAutomaticallyOnPlayerEnter: 0
   closedVisual: {fileID: 1539719703}
   openedVisual: {fileID: 1539719703}

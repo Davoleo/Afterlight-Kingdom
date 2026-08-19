@@ -247,9 +247,8 @@ namespace Player
 
         public void AfterCharacterUpdate(float deltaTime)
         {
-            CommandUtils.Off(ref commands, PlayerCommand.Jump | PlayerCommand.Dash);
-
             HandleShootInput();
+            CommandUtils.Clear(ref commands);
         }
 
         private void HandleShootInput()
@@ -264,8 +263,6 @@ namespace Player
             }
 
             _arrowLauncher.TryLaunch(DigitalCharacterForward);
-
-            CommandUtils.Off(ref commands, PlayerCommand.Shoot);
         }
 
         public Vector3 ComputeMoveDirection()
