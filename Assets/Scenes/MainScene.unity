@@ -39701,7 +39701,7 @@ MonoBehaviour:
   rewardSpawnPoint: {fileID: 2014295596}
   rewardRiseHeight: 0.6
   rewardRiseDuration: 0.6
-  openAutomaticallyOnPlayerEnter: 1
+  openAutomaticallyOnPlayerEnter: 0
   closedVisual: {fileID: 1539719703}
   openedVisual: {fileID: 1539719703}
   chestAnimator: {fileID: 0}
