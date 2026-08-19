@@ -14,8 +14,10 @@ namespace Triggers
         [SerializeField] private Transform rewardSpawnPoint;
 
         [Header("Reward Animation")]
+        [SerializeField] private float rewardSpawnDelay = 0.5f;
         [SerializeField] private float rewardRiseHeight = 0.8f;
-        [SerializeField] private float rewardRiseDuration = 0.6f;
+        [SerializeField] private float animationDuration = 0.6f;
+        [SerializeField] private float scaleMult = 2.5f;
 
         [Header("Chest Opening")]
         [SerializeField] private bool openAutomaticallyOnPlayerEnter = true;
@@ -24,7 +26,7 @@ namespace Triggers
 
         [Header("Optional Animator")]
         [SerializeField] private Animator chestAnimator;
-        [SerializeField] private string openTriggerName = "Open";
+        [SerializeField] private string openTriggerName = "OpenChest";
 
         private bool _opened;
         private bool _playerInside;
@@ -45,13 +47,7 @@ namespace Triggers
             _collectiblesManager = gameManager.GetComponent<CollectiblesManager>();
 
             if (_collectiblesManager.IsCollected(rewardId))
-            {
                 _opened = true;
-                SetChestVisualOpen(true);
-                return;
-            }
-
-            SetChestVisualOpen(false);
         }
 
         private void Update()
@@ -61,7 +57,10 @@ namespace Triggers
             if (openAutomaticallyOnPlayerEnter) return;
 
             if (CommandUtils.IsUp(_characterController.triggers, PlayerTrigger.Interact))
+            {
                 OpenChest();
+                //CommandUtils.Off(ref _characterController.triggers, PlayerTrigger.Interact);
+            }
         }
 
         private void OnTriggerEnter(Collider other)
@@ -90,9 +89,7 @@ namespace Triggers
 
             _opened = true;
 
-            SetChestVisualOpen(true);
-
-            if (chestAnimator && !string.IsNullOrWhiteSpace(openTriggerName))
+            if (chestAnimator)
                 chestAnimator.SetTrigger(openTriggerName);
 
             StartCoroutine(SpawnRewardRoutine());
@@ -103,6 +100,9 @@ namespace Triggers
             if (!rewardPrefab || !rewardSpawnPoint)
                 yield break;
 
+            if (CommandUtils.IsUp(_characterController.triggers, PlayerTrigger.Interact))
+                yield return new WaitForSeconds(rewardSpawnDelay);
+
             Vector3 startPosition = rewardSpawnPoint.position;
             Vector3 endPosition = startPosition + Vector3.up * rewardRiseHeight;
 
@@ -111,6 +111,7 @@ namespace Triggers
                 startPosition,
                 rewardSpawnPoint.rotation
             );
+            Vector3 initialScale = reward.transform.localScale;
 
             AbilityRewardClaimHandler claimHandler = reward.GetComponent<AbilityRewardClaimHandler>();
 
@@ -121,28 +122,21 @@ namespace Triggers
 
             float elapsed = 0f;
 
-            while (elapsed < rewardRiseDuration)
+            while (elapsed < animationDuration)
             {
                 elapsed += Time.deltaTime;
 
-                float t = Mathf.Clamp01(elapsed / rewardRiseDuration);
+                float t = Mathf.Clamp01(elapsed / animationDuration);
                 float smoothT = Mathf.SmoothStep(0f, 1f, t);
 
                 reward.transform.position = Vector3.Lerp(startPosition, endPosition, smoothT);
+                reward.transform.localScale = Vector3.Lerp(initialScale, initialScale * scaleMult, smoothT*2);
 
                 yield return null;
             }
 
             reward.transform.position = endPosition;
-        }
-
-        private void SetChestVisualOpen(bool isOpen)
-        {
-            if (closedVisual)
-                closedVisual.SetActive(!isOpen);
-
-            if (openedVisual)
-                openedVisual.SetActive(isOpen);
+            // reward.transform.localScale = endScale;
         }
     }
 }
