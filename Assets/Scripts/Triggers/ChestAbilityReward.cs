@@ -59,7 +59,7 @@ namespace Triggers
             if (CommandUtils.IsUp(_characterController.triggers, PlayerTrigger.Interact))
             {
                 OpenChest();
-                CommandUtils.Off(ref _characterController.triggers, PlayerCommand.Interact);
+                //CommandUtils.Off(ref _characterController.triggers, PlayerTrigger.Interact);
             }
         }
 
@@ -100,7 +100,7 @@ namespace Triggers
             if (!rewardPrefab || !rewardSpawnPoint)
                 yield break;
 
-            if (CommandUtils.IsUp(_characterController.commands, PlayerCommand.Interact))
+            if (CommandUtils.IsUp(_characterController.triggers, PlayerTrigger.Interact))
                 yield return new WaitForSeconds(rewardSpawnDelay);
 
             Vector3 startPosition = rewardSpawnPoint.position;
