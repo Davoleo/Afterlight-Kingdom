@@ -1,4 +1,3 @@
-using Controllers;
 using Core;
 using Gameplay;
 using Player;
@@ -73,7 +72,7 @@ namespace Triggers
                 RefreshPromptText();
             }
 
-            if (_playerInside && CommandUtils.IsUp(_characterController.commands, PlayerCommand.Interact))
+            if (_playerInside && CommandUtils.IsUp(_characterController.triggers, PlayerTrigger.Interact))
                 ClaimReward();
         }
 

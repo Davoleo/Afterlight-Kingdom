@@ -23,10 +23,10 @@ namespace Player.State
 
         public override void UpdateVelocity(ref Vector3 vel, float dt)
         {
-            var climbInput = Ctx.MoveInputs.ClimbInput.y;
+            var climbInput = Ctx.PlayerInputs.ClimbInput.y;
             var moveVector = Ctx.ComputeMoveDirection();
 
-            if (CommandUtils.IsUp(Ctx.commands, PlayerCommand.Jump))
+            if (CommandUtils.IsUp(Ctx.triggers, PlayerTrigger.Jump))
             {
                 vel += Ctx.climbJumpStrength * (Ctx.motor.CharacterUp + Ctx.CurrentLadderNormal);
                 InvokeJumpEvent();

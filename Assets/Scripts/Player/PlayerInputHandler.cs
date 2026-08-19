@@ -68,23 +68,24 @@ namespace Player
             camForward.Normalize();
             camRight.Normalize();
 
-            MovementInputs moveInputs = new MovementInputs
+            PlayerInputs moveInputs = new PlayerInputs
             {
                 MoveInput = moveAction.action.ReadValue<Vector2>(),
                 CameraForward = camForward,
                 CameraRight = camRight,
-                ClimbInput = climbAction.action.ReadValue<Vector2>()
+                ClimbInput = climbAction.action.ReadValue<Vector2>(),
+                // Draw/Shoot Action is of type double, trigger won't handle the holding of the button 
+                DrawInput = shootAction.action.ReadValue<float>() > 0,
             };
 
-            PlayerCommand commands = PlayerCommand.None;
-            commands |= rotateLeftAction.action.triggered ? PlayerCommand.RotateCameraLeft : 0;
-            commands |= rotateRightAction.action.triggered ? PlayerCommand.RotateCameraRight : 0;
-            commands |= jumpAction.action.triggered ? PlayerCommand.Jump : 0;
-            commands |= dashAction.action.triggered ? PlayerCommand.Dash : 0;
-            commands |= shootAction.action.triggered ? PlayerCommand.Shoot : 0;
-            commands |= interactAction.action.triggered ? PlayerCommand.Interact : 0;
+            PlayerTrigger triggers = PlayerTrigger.None;
+            triggers |= rotateLeftAction.action.triggered ? PlayerTrigger.RotateCameraLeft : 0;
+            triggers |= rotateRightAction.action.triggered ? PlayerTrigger.RotateCameraRight : 0;
+            triggers |= jumpAction.action.triggered ? PlayerTrigger.Jump : 0;
+            triggers |= dashAction.action.triggered ? PlayerTrigger.Dash : 0;
+            triggers |= interactAction.action.triggered ? PlayerTrigger.Interact : 0;
 
-            characterController.SetInputs(moveInputs, commands);
+            characterController.SetInputs(moveInputs, triggers);
         }
     }
 }

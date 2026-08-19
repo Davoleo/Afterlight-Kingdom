@@ -1,4 +1,3 @@
-using Controllers;
 using Gameplay;
 using Player;
 using UnityEngine;
@@ -21,9 +20,9 @@ namespace Triggers
         private void Update()
         {
             if (!_isClose) return;
-            if (!CommandUtils.IsUp(_controller.commands, PlayerCommand.Interact)) return;
+            if (!CommandUtils.IsUp(_controller.triggers, PlayerTrigger.Interact)) return;
 
-            CommandUtils.Off(ref _controller.commands, PlayerCommand.Interact);
+            CommandUtils.Off(ref _controller.triggers, PlayerTrigger.Interact);
             if (_manager.UseKey())
                 gameObject.SetActive(false);
         }
