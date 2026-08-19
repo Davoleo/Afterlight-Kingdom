@@ -55,7 +55,10 @@ namespace Triggers
             if (openAutomaticallyOnPlayerEnter) return;
 
             if (CommandUtils.IsUp(_characterController.commands, PlayerCommand.Interact))
+            {
                 OpenChest();
+                CommandUtils.Off(ref _characterController.commands, PlayerCommand.Interact);
+            }
         }
 
         private void OnTriggerEnter(Collider other)
