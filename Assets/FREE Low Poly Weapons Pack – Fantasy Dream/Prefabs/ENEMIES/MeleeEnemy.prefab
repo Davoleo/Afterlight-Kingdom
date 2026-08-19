@@ -187,11 +187,11 @@ MonoBehaviour:
   navMeshSampleRadius: 2
   navMeshStoppingDistance: 0.05
   chaseSpeed: 3
-  attackRange: 1
+  attackRange: 2
   attackCooldown: 0.6
   attackWindup: 0.2
   attackPoint: {fileID: 5808734525443025105}
-  attackRadius: 1.2
+  attackRadius: 2.05
   attackDamage: 1
   playerLayer:
     serializedVersion: 2
