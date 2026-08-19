@@ -37,7 +37,10 @@ namespace Enemies
         [SerializeField] private float obstacleCheckDistance = 0.35f;
 
         private EnemyState currentState;
+
         private Vector3 chargeDirection;
+        private Vector3 chargeDestination;
+
         private bool hasHitPlayerDuringCharge;
         private float stateStartTime;
 
@@ -62,18 +65,25 @@ namespace Enemies
 
         protected override void SetInitialState()
         {
-            ChangeState(startsActive ? EnemyState.Patrolling : EnemyState.Sleeping);
+            ChangeState(
+                startsActive
+                    ? EnemyState.Patrolling
+                    : EnemyState.Sleeping
+            );
         }
 
         protected override void OnResetToSpawn()
         {
             chargeDirection = Vector3.zero;
+            chargeDestination = Vector3.zero;
             hasHitPlayerDuringCharge = false;
         }
 
         protected override float GetCurrentSpeed()
         {
-            return currentState == EnemyState.Charging ? chargeSpeed : patrolSpeed;
+            return currentState == EnemyState.Charging
+                ? chargeSpeed
+                : patrolSpeed;
         }
 
         private bool IsPlayerAtChargeHeight()
@@ -81,7 +91,9 @@ namespace Enemies
             if (!HasPlayer())
                 return false;
 
-            float heightDifference = Mathf.Abs(Target.Player.position.y - transform.position.y);
+            float heightDifference = Mathf.Abs(
+                Target.Player.position.y - transform.position.y
+            );
 
             return heightDifference <= maxChargeHeightDifference;
         }
@@ -94,12 +106,17 @@ namespace Enemies
             switch (currentState)
             {
                 case EnemyState.Patrolling:
-                    if (IsPlayerInsideDetection() && IsPlayerAtChargeHeight())
+                    if (IsPlayerInsideDetection()
+                        && IsPlayerAtChargeHeight())
+                    {
                         PrepareCharge();
+                    }
+
                     break;
 
                 case EnemyState.PreparingCharge:
-                    if (IsPlayerOutsideLoseRange() || !IsPlayerAtChargeHeight())
+                    if (IsPlayerOutsideLoseRange()
+                        || !IsPlayerAtChargeHeight())
                     {
                         ChangeState(EnemyState.Patrolling);
                         return;
@@ -130,10 +147,15 @@ namespace Enemies
                     if (Time.time < stateStartTime + chargeCooldown)
                         return;
 
-                    if (IsPlayerInsideDetection() && IsPlayerAtChargeHeight())
+                    if (IsPlayerInsideDetection()
+                        && IsPlayerAtChargeHeight())
+                    {
                         PrepareCharge();
+                    }
                     else
+                    {
                         ChangeState(EnemyState.Patrolling);
+                    }
 
                     break;
             }
@@ -162,6 +184,7 @@ namespace Enemies
             }
 
             chargeDirection = GetPlayerDirection();
+            chargeDirection.y = 0f;
 
             if (chargeDirection.sqrMagnitude < 0.01f)
             {
@@ -169,13 +192,36 @@ namespace Enemies
                 return;
             }
 
+            chargeDirection.Normalize();
+
             if (IsObstacleInChargeDirection())
             {
                 StopChargeAgainstObstacle();
                 return;
             }
 
-            MovementDirection = chargeDirection;
+            // The charge endpoint is fixed when the charge starts.
+            Vector3 desiredChargeDestination =
+                transform.position
+                + chargeDirection * chargeSpeed * chargeDuration;
+
+            if (!TrySampleNavMeshPosition(
+                    desiredChargeDestination,
+                    out chargeDestination))
+            {
+                ChangeState(EnemyState.Patrolling);
+                return;
+            }
+
+            MovementDirection =
+                GetNavMeshDirectionTo(chargeDestination);
+
+            if (MovementDirection.sqrMagnitude < 0.01f)
+            {
+                ChangeState(EnemyState.Patrolling);
+                return;
+            }
+
             LookDirection = chargeDirection;
             hasHitPlayerDuringCharge = false;
 
@@ -190,14 +236,12 @@ namespace Enemies
             if (obstacleLayer.value == 0)
                 return false;
 
-            Vector3 direction = chargeDirection.normalized;
-
             //raycast to detect obstacles between enemy and player
             Vector3 origin = GetBodyCenter();
 
             return HasBlockingHit(
                 origin,
-                direction,
+                chargeDirection.normalized,
                 obstacleCheckDistance,
                 out Collider blockingCollider
             );
@@ -207,6 +251,7 @@ namespace Enemies
         {
             MovementDirection = Vector3.zero;
             chargeDirection = Vector3.zero;
+            chargeDestination = Vector3.zero;
 
             ChangeState(EnemyState.Cooldown);
         }
@@ -215,6 +260,7 @@ namespace Enemies
         {
             MovementDirection = Vector3.zero;
             chargeDirection = Vector3.zero;
+            chargeDestination = Vector3.zero;
 
             ChangeState(EnemyState.Cooldown);
         }
@@ -226,7 +272,9 @@ namespace Enemies
 
             Vector3 hitPosition = chargeHitPoint != null
                 ? chargeHitPoint.position
-                : transform.position + chargeDirection * 0.9f + Vector3.up * 0.7f;
+                : transform.position
+                  + chargeDirection * 0.9f
+                  + Vector3.up * 0.7f;
 
             Collider[] hitColliders = Physics.OverlapSphere(
                 hitPosition,
@@ -238,9 +286,7 @@ namespace Enemies
             {
                 //before applying damage we check if an obstacle blocks the hit
                 if (IsPlayerBlockedByObstacle(hitCollider))
-                {
                     continue;
-                }
 
                 bool damageApplied = TryDamagePlayer(
                     hitCollider,
@@ -250,10 +296,12 @@ namespace Enemies
                     chargeKnockbackDistance
                 );
 
+                if (!damageApplied)
+                    continue;
+
                 hasHitPlayerDuringCharge = true;
 
                 StopChargeAfterPlayerHit();
-
                 return;
             }
         }
@@ -274,17 +322,12 @@ namespace Enemies
 
             direction.Normalize();
 
-            bool hasBlockingHit = HasBlockingHit(
+            return HasBlockingHit(
                 origin,
                 direction,
                 distance,
                 out Collider blockingCollider
             );
-
-            if (!hasBlockingHit)
-                return false;
-
-            return true;
         }
 
         private bool HasBlockingHit(
@@ -308,7 +351,8 @@ namespace Enemies
 
             System.Array.Sort(
                 hits,
-                (firstHit, secondHit) => firstHit.distance.CompareTo(secondHit.distance)
+                (firstHit, secondHit) =>
+                    firstHit.distance.CompareTo(secondHit.distance)
             );
 
             foreach (RaycastHit hit in hits)
@@ -331,10 +375,15 @@ namespace Enemies
 
         private Vector3 GetBodyCenter()
         {
-            if (characterController == null)
+            if (navMeshAgent == null)
                 return transform.position + Vector3.up;
 
-            return transform.TransformPoint(characterController.center);
+            return transform.position
+                   + Vector3.up
+                   * (
+                       navMeshAgent.baseOffset
+                       + navMeshAgent.height * 0.5f
+                   );
         }
 
         private void ChangeState(EnemyState newState)
@@ -356,31 +405,38 @@ namespace Enemies
                 case EnemyState.Patrolling:
                     if (IsPlayerInsideDetection())
                     {
-                        MovementDirection = Vector3.zero;
                         LookDirection = GetPlayerDirection();
                     }
                     else
                     {
-                        MovementDirection = GetNavMeshPatrolDirection();
+                        MovementDirection =
+                            GetNavMeshPatrolDirection();
+
                         LookDirection = MovementDirection;
                     }
 
                     break;
 
                 case EnemyState.PreparingCharge:
-                    MovementDirection = Vector3.zero;
-                    LookDirection = chargeDirection.sqrMagnitude > 0.01f
-                        ? chargeDirection
-                        : GetPlayerDirection();
+                    LookDirection =
+                        chargeDirection.sqrMagnitude > 0.01f
+                            ? chargeDirection
+                            : GetPlayerDirection();
+
                     break;
 
                 case EnemyState.Charging:
-                    MovementDirection = chargeDirection;
+                    // The charge follows the direction calculated by the NavMesh path.
+                    MovementDirection =
+                        GetNavMeshDirectionTo(chargeDestination);
+
+                    if (MovementDirection.sqrMagnitude >= 0.01f)
+                        chargeDirection = MovementDirection;
+
                     LookDirection = chargeDirection;
                     break;
 
                 case EnemyState.Cooldown:
-                    MovementDirection = Vector3.zero;
                     LookDirection = GetPlayerDirection();
                     break;
             }
@@ -392,24 +448,30 @@ namespace Enemies
 
             Vector3 hitPosition = chargeHitPoint != null
                 ? chargeHitPoint.position
-                : transform.position + transform.forward * 0.9f + Vector3.up * 0.7f;
+                : transform.position
+                  + transform.forward * 0.9f
+                  + Vector3.up * 0.7f;
 
             Gizmos.color = Color.green;
-            Gizmos.DrawWireSphere(hitPosition, chargeHitRadius);
+            Gizmos.DrawWireSphere(
+                hitPosition,
+                chargeHitRadius
+            );
 
             Gizmos.color = Color.red;
 
-            Vector3 debugDirection = Application.isPlaying && chargeDirection.sqrMagnitude > 0.01f
-                ? chargeDirection.normalized
-                : transform.forward;
+            Vector3 debugDirection =
+                Application.isPlaying
+                && chargeDirection.sqrMagnitude > 0.01f
+                    ? chargeDirection.normalized
+                    : transform.forward;
 
-            Vector3 debugCenter = characterController != null
-                ? transform.TransformPoint(characterController.center)
-                : transform.position + Vector3.up;
+            Vector3 debugCenter = GetBodyCenter();
 
             Gizmos.DrawLine(
                 debugCenter,
-                debugCenter + debugDirection * obstacleCheckDistance
+                debugCenter
+                + debugDirection * obstacleCheckDistance
             );
         }
     }

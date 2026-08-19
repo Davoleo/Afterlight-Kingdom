@@ -56,10 +56,10 @@ namespace Triggers
 
             if (openAutomaticallyOnPlayerEnter) return;
 
-            if (CommandUtils.IsUp(_characterController.commands, PlayerCommand.Interact))
+            if (CommandUtils.IsUp(_characterController.triggers, PlayerTrigger.Interact))
             {
                 OpenChest();
-                CommandUtils.Off(ref _characterController.commands, PlayerCommand.Interact);
+                CommandUtils.Off(ref _characterController.triggers, PlayerCommand.Interact);
             }
         }
 

@@ -1,15 +1,12 @@
-using System;
 using Gameplay;
 using KinematicCharacterController;
 using Player.State;
-using Projectiles;
 using UnityEngine;
 
 namespace Player
 {
     public class PlayerCharacterController : MonoBehaviour, ICharacterController
     {
-        private ArrowLauncher _arrowLauncher;
         private AbilityManager _abilityManager;
 
         [Header("References")]
@@ -39,8 +36,8 @@ namespace Player
         public float ForwardSpeed => Vector3.Dot(motor.Velocity, motor.CharacterForward);
         public float VerticalSpeed => Vector3.Dot(motor.Velocity, motor.CharacterUp);
 
-        public MovementInputs MoveInputs;
-        public PlayerCommand commands;
+        public PlayerInputs PlayerInputs;
+        public PlayerTrigger triggers;
 
         private Vector3 _currentGroundObjectPos;
         public Vector3 DigitalCharacterForward;
@@ -61,10 +58,6 @@ namespace Player
 
         private void Start()
         {
-            _arrowLauncher = GetComponent<ArrowLauncher>();
-            if (_arrowLauncher == null)
-                Debug.LogError("ArrowLauncher component missing on " + gameObject.name, this);
-            
             _abilityManager = GameObject.FindGameObjectWithTag("GameManager").GetComponent<AbilityManager>();
 
             if (_abilityManager == null)
@@ -73,16 +66,16 @@ namespace Player
             DigitalCharacterForward = motor.CharacterForward;
         }
 
-        public void SetInputs(MovementInputs inputs, PlayerCommand pcommands)
+        public void SetInputs(PlayerInputs inputs, PlayerTrigger pcommands)
         {
-            MoveInputs = inputs;
-            commands |= pcommands;
+            PlayerInputs = inputs;
+            triggers |= pcommands;
         }
         
         public void ResetInputs()
         {
-            MoveInputs = default;
-            commands.Clear();
+            PlayerInputs = default;
+            triggers.Clear();
         }
         
         public void ApplyExternalKnockback(Vector3 direction, float distance, float duration)
@@ -205,29 +198,29 @@ namespace Player
 
         private void HandleDashInput()
         {
-            if (!CommandUtils.IsUp(commands, PlayerCommand.Dash))
+            if (!CommandUtils.IsUp(triggers, PlayerTrigger.Dash))
                 return;
 
             if (!_abilityManager.HasAbility(AbilityType.Dash))
             {
-                CommandUtils.Off(ref commands, PlayerCommand.Dash);
+                CommandUtils.Off(ref triggers, PlayerTrigger.Dash);
                 return;
             }
 
             if (dashCooldownTimer > 0f)
             {
-                CommandUtils.Off(ref commands, PlayerCommand.Dash);
+                CommandUtils.Off(ref triggers, PlayerTrigger.Dash);
                 return;
             }
 
             if (CurrentState == StateMachine.DashingState)
             {
-                CommandUtils.Off(ref commands, PlayerCommand.Dash);
+                CommandUtils.Off(ref triggers, PlayerTrigger.Dash);
                 return;
             }
 
             dashCooldownTimer = dashCooldown;
-            CommandUtils.Off(ref commands, PlayerCommand.Dash);
+            CommandUtils.Off(ref triggers, PlayerTrigger.Dash);
             StateMachine.TransitionToState(StateMachine.DashingState);
         }
 
@@ -247,31 +240,16 @@ namespace Player
 
         public void AfterCharacterUpdate(float deltaTime)
         {
-            HandleShootInput();
-            CommandUtils.Clear(ref commands);
-        }
-
-        private void HandleShootInput()
-        {
-            if (!CommandUtils.IsUp(commands, PlayerCommand.Shoot))
-                return;
-
-            if (!_abilityManager.HasAbility(AbilityType.Bow))
-            {
-                CommandUtils.Off(ref commands, PlayerCommand.Shoot);
-                return;
-            }
-
-            _arrowLauncher.TryLaunch(DigitalCharacterForward);
+            CommandUtils.Clear(ref triggers);
         }
 
         public Vector3 ComputeMoveDirection()
         {
-            if (MoveInputs.MoveInput.sqrMagnitude < 0.01f)
+            if (PlayerInputs.MoveInput.sqrMagnitude < 0.01f)
                 return Vector3.zero;
 
-            return (MoveInputs.CameraForward * MoveInputs.MoveInput.y
-                    + MoveInputs.CameraRight * MoveInputs.MoveInput.x).normalized;
+            return (PlayerInputs.CameraForward * PlayerInputs.MoveInput.y
+                    + PlayerInputs.CameraRight * PlayerInputs.MoveInput.x).normalized;
         }
 
         public void SnapPlayerLocation(float t)

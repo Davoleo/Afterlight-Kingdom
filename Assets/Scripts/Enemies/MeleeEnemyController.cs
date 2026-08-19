@@ -26,7 +26,11 @@ namespace Enemies
         [SerializeField] private int attackDamage = 1;
         [SerializeField] private LayerMask playerLayer;
 
+        [Header("Animation")]
+        [SerializeField] private Animator animator;
+
         private EnemyState currentState;
+
         private bool isPreparingAttack;
         private float attackStartTime;
         private float lastAttackTime;
@@ -40,6 +44,9 @@ namespace Enemies
 
             UpdateState();
             UpdateMovementDirection();
+
+            UpdateAnimation();
+
             UpdateAttack();
 
             MoveAndRotate(Time.deltaTime);
@@ -53,7 +60,11 @@ namespace Enemies
 
         protected override void SetInitialState()
         {
-            ChangeState(startsActive ? EnemyState.Patrolling : EnemyState.Sleeping);
+            ChangeState(
+                startsActive
+                    ? EnemyState.Patrolling
+                    : EnemyState.Sleeping
+            );
         }
 
         protected override void OnResetToSpawn()
@@ -64,15 +75,17 @@ namespace Enemies
 
         protected override float GetCurrentSpeed()
         {
-            return currentState == EnemyState.Chasing ? chaseSpeed : patrolSpeed;
+            return currentState == EnemyState.Chasing
+                ? chaseSpeed
+                : patrolSpeed;
         }
 
         private void UpdateState()
         {
-            float distanceFromPlayer = GetDistanceFromPlayer();
-
             if (currentState == EnemyState.Sleeping)
                 return;
+
+            float distanceFromPlayer = GetDistanceFromPlayer();
 
             if (distanceFromPlayer <= attackRange)
             {
@@ -83,11 +96,10 @@ namespace Enemies
                 return;
             }
 
-            if (currentState == EnemyState.Attacking && distanceFromPlayer > attackRange)
+            if (currentState == EnemyState.Attacking)
             {
                 ChangeState(EnemyState.Chasing);
                 isPreparingAttack = false;
-                return;
             }
 
             if (IsPlayerInsideDetection())
@@ -96,8 +108,11 @@ namespace Enemies
                 return;
             }
 
-            if (currentState == EnemyState.Chasing && IsPlayerOutsideLoseRange())
+            if (currentState == EnemyState.Chasing
+                && IsPlayerOutsideLoseRange())
+            {
                 ChangeState(EnemyState.Patrolling);
+            }
         }
 
         private void TryAttack()
@@ -110,6 +125,8 @@ namespace Enemies
 
             isPreparingAttack = true;
             attackStartTime = Time.time;
+
+            animator.SetTrigger("Attack");
         }
 
         private void UpdateAttack()
@@ -134,19 +151,31 @@ namespace Enemies
 
         private void PerformAttack()
         {
+            // If no attack point has been assigned, the hitbox is positioned
+            // automatically in front of the enemy.
+            Vector3 hitPosition = attackPoint != null
+                ? attackPoint.position
+                : transform.position
+                + transform.forward * attackRange * 0.5f
+                + Vector3.up * navMeshAgent.height * 0.5f;
+
+            // Search every layer and then explicitly verify that the collider
+            // belongs to the player. This avoids configuration errors in Player Layer.
             Collider[] hitColliders = Physics.OverlapSphere(
-                attackPoint.position,
+                hitPosition,
                 attackRadius,
-                playerLayer
+                Physics.AllLayers,
+                QueryTriggerInteraction.Collide
             );
 
-            if (hitColliders.Length == 0)
-            {
-                return;
-            }
             foreach (Collider hitCollider in hitColliders)
             {
-                Vector3 knockbackDirection = hitCollider.bounds.center - transform.position;
+                if (!Target.IsPlayerCollider(hitCollider))
+                    continue;
+
+                Vector3 knockbackDirection =
+                    hitCollider.bounds.center - transform.position;
+
                 knockbackDirection.y = 0f;
 
                 if (knockbackDirection.sqrMagnitude < 0.01f)
@@ -159,10 +188,8 @@ namespace Enemies
                     true
                 );
 
-                if (!damageApplied)
-                    continue;
-
-                return;
+                if (damageApplied)
+                    return;
             }
         }
 
@@ -182,24 +209,34 @@ namespace Enemies
                     break;
 
                 case EnemyState.Patrolling:
-                    MovementDirection = GetNavMeshPatrolDirection();
+                    MovementDirection =
+                        GetNavMeshPatrolDirection();
+
                     LookDirection = MovementDirection;
                     break;
 
                 case EnemyState.Chasing:
-                    MovementDirection = GetNavMeshDirectionTo(Target.Player.position);
-
-                    if (MovementDirection.sqrMagnitude < 0.01f)
-                        MovementDirection = GetPlayerDirection();
+                    // Chasing uses only the path calculated by the NavMeshAgent.
+                    MovementDirection =
+                        GetNavMeshDirectionTo(Target.Player.position);
 
                     LookDirection = MovementDirection;
                     break;
 
                 case EnemyState.Attacking:
-                    MovementDirection = Vector3.zero;
                     LookDirection = GetPlayerDirection();
                     break;
             }
+        }
+
+       private void UpdateAnimation()
+        {
+            if (animator == null)
+                return;
+
+            bool isMoving = MovementDirection.sqrMagnitude > 0.01f;
+
+            animator.SetBool("IsMoving", isMoving);
         }
 
         protected override void OnDrawGizmosSelected()
@@ -210,7 +247,10 @@ namespace Enemies
                 return;
 
             Gizmos.color = Color.magenta;
-            Gizmos.DrawWireSphere(attackPoint.position, attackRadius);
+            Gizmos.DrawWireSphere(
+                attackPoint.position,
+                attackRadius
+            );
         }
     }
 }
