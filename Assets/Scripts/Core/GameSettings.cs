@@ -5,6 +5,9 @@ namespace Core
     [CreateAssetMenu(fileName = "GameSettings", menuName = "Game/Settings")]
     public class GameSettings : ScriptableObject
     {
+        public const string MasterVolume = "MasterVolume";
+        private const string FullScreen = "FullScreen";
+
         [Range(0f, 1f)] public float masterVolume = 1f;
         public bool fullscreen = true;
 
@@ -16,15 +19,15 @@ namespace Core
 
         public void Save()
         {
-            PlayerPrefs.SetFloat("MasterVolume", masterVolume);
-            PlayerPrefs.SetInt("FullScreen", fullscreen ? 1 : 0);
+            PlayerPrefs.SetFloat(MasterVolume, masterVolume);
+            PlayerPrefs.SetInt(FullScreen, fullscreen ? 1 : 0);
             PlayerPrefs.Save();
         }
         
         public void Load()
         {
-            masterVolume = PlayerPrefs.GetFloat("MasterVolume", 1f);
-            fullscreen = PlayerPrefs.GetInt("FullScreen", 1) == 1;
+            masterVolume = PlayerPrefs.GetFloat(MasterVolume, 1f);
+            fullscreen = PlayerPrefs.GetInt(FullScreen, 1) == 1;
         }
     }
 }
