@@ -1,4 +1,5 @@
 using Enemies;
+using Sound;
 using UnityEngine;
 
 namespace Projectiles
@@ -18,6 +19,8 @@ namespace Projectiles
         [Header("Stuck")]
         [SerializeField] private float stuckLifetime = 15f;
         [SerializeField] private Collider standingCollider;
+
+        [Header("SFX")] [SerializeField] private AudioClip arrowHit;
 
         private Vector3 _direction;
         private float _distanceTraveled;
@@ -95,6 +98,7 @@ namespace Projectiles
                 return;
             }
 
+            AudioManager.Instance.PlaySfx(arrowHit);
             StickToEnvironment(hit.point);
         }
 

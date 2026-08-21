@@ -84046,6 +84046,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 4253981393804280641, guid: bb56ede23dc95104db20e030690fa722, type: 3}
+      propertyPath: chestOpenSfx
+      value: 
+      objectReference: {fileID: 8300000, guid: 2f6077dd3a557e94daf0c8bc37ebd00b, type: 3}
     - target: {fileID: 5927211433277036372, guid: bb56ede23dc95104db20e030690fa722, type: 3}
       propertyPath: m_LocalPosition.x
       value: 4
@@ -84217,39 +84221,39 @@ PrefabInstance:
       objectReference: {fileID: 1882855974}
     - target: {fileID: 9106672909570668111, guid: 6725f11bb9e0ba4d783b8acbdb1c66e1, type: 3}
       propertyPath: m_Positions.Array.data[0].x
-      value: 0.6109009
+      value: 0.43785596
       objectReference: {fileID: 0}
     - target: {fileID: 9106672909570668111, guid: 6725f11bb9e0ba4d783b8acbdb1c66e1, type: 3}
       propertyPath: m_Positions.Array.data[0].y
-      value: 1.5740194
+      value: 1.9413712
       objectReference: {fileID: 0}
     - target: {fileID: 9106672909570668111, guid: 6725f11bb9e0ba4d783b8acbdb1c66e1, type: 3}
       propertyPath: m_Positions.Array.data[0].z
-      value: 0.50044703
+      value: 0.27632356
       objectReference: {fileID: 0}
     - target: {fileID: 9106672909570668111, guid: 6725f11bb9e0ba4d783b8acbdb1c66e1, type: 3}
       propertyPath: m_Positions.Array.data[1].x
-      value: 0.9712058
+      value: 0.98588794
       objectReference: {fileID: 0}
     - target: {fileID: 9106672909570668111, guid: 6725f11bb9e0ba4d783b8acbdb1c66e1, type: 3}
       propertyPath: m_Positions.Array.data[1].y
-      value: 1.8811777
+      value: 1.9119976
       objectReference: {fileID: 0}
     - target: {fileID: 9106672909570668111, guid: 6725f11bb9e0ba4d783b8acbdb1c66e1, type: 3}
       propertyPath: m_Positions.Array.data[1].z
-      value: 0.21220191
+      value: 0.19854665
       objectReference: {fileID: 0}
     - target: {fileID: 9106672909570668111, guid: 6725f11bb9e0ba4d783b8acbdb1c66e1, type: 3}
       propertyPath: m_Positions.Array.data[2].x
-      value: 1.3315104
+      value: 1.5339197
       objectReference: {fileID: 0}
     - target: {fileID: 9106672909570668111, guid: 6725f11bb9e0ba4d783b8acbdb1c66e1, type: 3}
       propertyPath: m_Positions.Array.data[2].y
-      value: 2.1883364
+      value: 1.882624
       objectReference: {fileID: 0}
     - target: {fileID: 9106672909570668111, guid: 6725f11bb9e0ba4d783b8acbdb1c66e1, type: 3}
       propertyPath: m_Positions.Array.data[2].z
-      value: -0.07604313
+      value: 0.12076968
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -84280,6 +84284,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   footstep: {fileID: 8300000, guid: 14efb7a071f2b5a42b9ec7286e070e41, type: 3}
+  jumpLand: {fileID: 8300000, guid: 22d0141649245e04393b1d642629ebf2, type: 3}
+  bowDraw: {fileID: 8300000, guid: 30d45064915e2c54cb6d02519ade2b45, type: 3}
+  bowShoot: {fileID: 8300000, guid: ae33998bb30c38b4082489a173976793, type: 3}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
