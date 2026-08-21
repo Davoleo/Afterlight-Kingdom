@@ -1,3 +1,4 @@
+using Core;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -59,6 +60,16 @@ namespace Player
 
         private void Update()
         {
+            // While paused/dead, Time.timeScale alone doesn't stop input from being read
+            // (Update still runs every frame), so feed downstream systems "nothing pressed"
+            // instead of live input - this is what was letting the bow keep drawing/animating
+            // while the game was supposedly paused.
+            if (GameStateManager.Current != GameState.Playing)
+            {
+                characterController.SetInputs(default, PlayerTrigger.None);
+                return;
+            }
+
             // Flatten camera axes to the horizontal plane so vertical camera tilt
             // doesn't affect movement direction.
             Vector3 camForward = _cameraTransform.forward;

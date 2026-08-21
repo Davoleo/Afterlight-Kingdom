@@ -1,3 +1,4 @@
+using Core;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
@@ -15,11 +16,9 @@ namespace Controllers
         [SerializeField] private Button pauseFirstSelected;
         [SerializeField] private InputActionReference pauseAction;
 
-        private bool _isPaused;
-
         private void Start()
         {
-            Time.timeScale = 1f;
+            GameStateManager.SetState(GameState.Playing);
             deathPanel.SetActive(false);
             pausePanel.SetActive(false);
         }
@@ -29,16 +28,15 @@ namespace Controllers
 
         private void OnPausePressed(InputAction.CallbackContext _)
         {
-            if (deathPanel.activeSelf) return; //Can't open pause if player is dead
-            if (_isPaused) HidePauseMenu(); else ShowPauseMenu();
+            if (GameStateManager.Current == GameState.Dead) return; //Can't open pause if player is dead
+            if (GameStateManager.Current == GameState.Paused) HidePauseMenu(); else ShowPauseMenu();
         }
 
         public void ShowDeathScreen()
         {
             deathPanel.SetActive(true);
             pausePanel.SetActive(false);
-            _isPaused = false;
-            Time.timeScale = 0f;
+            GameStateManager.SetState(GameState.Dead);
             deathFirstSelected.Select();
         }
 
@@ -46,23 +44,20 @@ namespace Controllers
         {
             deathPanel.SetActive(false);
             pausePanel.SetActive(false);
-            _isPaused = false;
-            Time.timeScale = 1f;
+            GameStateManager.SetState(GameState.Playing);
         }
 
         private void ShowPauseMenu()
         {
-            _isPaused = true;
             pausePanel.SetActive(true);
-            Time.timeScale = 0f;
+            GameStateManager.SetState(GameState.Paused);
             pauseFirstSelected.Select();
         }
 
         private void HidePauseMenu()
         {
-            _isPaused = false;
             pausePanel.SetActive(false);
-            Time.timeScale = 1f;
+            GameStateManager.SetState(GameState.Playing);
         }
     }
 }

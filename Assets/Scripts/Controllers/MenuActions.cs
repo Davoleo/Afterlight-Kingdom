@@ -23,15 +23,14 @@ namespace Controllers
         
         public void RestartFromCheckpoint()
         {
-            Time.timeScale = 1f; //resume play after reload checkpoint
             _cpManager.Respawn();
             _healthManager.ResetAfterRespawn();
-            _menuManager.CloseAllMenus();
+            _menuManager.CloseAllMenus(); // resumes play (sets GameState back to Playing)
         }
 
         public void ReturnToMenu()
         {
-            Time.timeScale = 1f;
+            GameStateManager.SetState(GameState.Playing);
             SceneLoader.LoadScene(SceneNames.MainMenu);
         }
 
@@ -44,7 +43,7 @@ namespace Controllers
 
         public void Continue()
         {
-            Time.timeScale = 1f;
+            GameStateManager.SetState(GameState.Playing);
             SceneLoader.LoadScene(SceneNames.Core);
         }
 
