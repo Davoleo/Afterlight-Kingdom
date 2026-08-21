@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Core;
 using Triggers;
@@ -25,7 +26,17 @@ namespace Gameplay
         public int coins;
         public int keys;
 
-        public List<string> collectedIds = new List<string>();
+        public List<string> collectedIds;
+
+        private readonly Dictionary<CollectibleType, AudioClip> _sfx = new();
+
+        private void Start()
+        {
+            _sfx[CollectibleType.Coin] = Resources.Load<AudioClip>("Sound/coin_pickup");
+            _sfx[CollectibleType.Key] = Resources.Load<AudioClip>("Sound/key");
+        }
+
+        public AudioClip GetPickupSound(CollectibleType type) => _sfx[type];
 
         private void Awake()
         {
@@ -76,7 +87,7 @@ namespace Gameplay
             {
                 CollectibleType.Coin => coins,
                 CollectibleType.Key => keys,
-                _ => throw new System.ArgumentOutOfRangeException(nameof(type), type, null)
+                _ => throw new ArgumentOutOfRangeException(nameof(type), type, null)
             };
         }
 
