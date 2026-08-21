@@ -1,4 +1,5 @@
-﻿using Sound;
+﻿using System;
+using Sound;
 using UnityEngine;
 
 namespace Player
@@ -10,27 +11,43 @@ namespace Player
         public AudioClip jumpLand;
         [Header("Bow")]
         public AudioClip bowDraw;
-
         public AudioClip bowShoot;
+
+        [SerializeField]
+        public AudioClip[] climbSfx;
+
+        private void Start()
+        {
+            climbSfx = new[] {
+                Resources.Load<AudioClip>("Sound/wooden_ladder_1"),
+                Resources.Load<AudioClip>("Sound/wooden_ladder_2"),
+                Resources.Load<AudioClip>("Sound/wooden_ladder_3"),
+            };
+        }
 
         private void OnFootStep(string surface)
         {
-            AudioManager.Instance.PlaySfx(footstep);
+            AudioManager.Instance.PlaySfx(footstep, 1.5f);
         }
 
         private void OnJumpLand(string surface)
         {
-            AudioManager.Instance.PlaySfx(jumpLand, 0.3f);
+            AudioManager.Instance.PlaySfx(jumpLand, 0.5f);
         }
 
         private void OnBowDraw()
         {
-            AudioManager.Instance.PlaySfx(bowDraw);
+            AudioManager.Instance.PlaySfx(bowDraw, 0.7f);
         }
 
         private void OnBowRelease()
         {
-            AudioManager.Instance.PlaySfx(bowShoot);
+            AudioManager.Instance.PlaySfx(bowShoot, 0.7f);
+        }
+
+        private void OnPlayerClimb()
+        {
+            AudioManager.Instance.PlayRandomSfx(climbSfx, 1.7f);
         }
     }
 }

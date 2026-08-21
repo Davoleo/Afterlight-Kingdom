@@ -95,7 +95,7 @@ namespace Triggers
             if (chestAnimator)
                 chestAnimator.SetTrigger(openTriggerName);
 
-            AudioManager.Instance.PlaySfx(chestOpenSfx);
+            AudioManager.Instance.PlaySfx(chestOpenSfx, volumeMult: 1.5f);
             StartCoroutine(SpawnRewardRoutine());
         }
 
