@@ -3,12 +3,13 @@ using UnityEngine;
 
 namespace Core
 {
-    // Single source of truth for whether the game is actively playing, paused, or the
-    // player is dead. Anything that must stop (or reset) when the game isn't playing
-    // subscribes here, instead of every system independently checking Time.timeScale.
+    // Single source of truth for whether the Core scene is still loading, the game is
+    // actively playing, paused, or the player is dead. Anything that must stop (or reset)
+    // when the game isn't playing subscribes here, instead of every system independently
+    // checking Time.timeScale.
     public static class GameStateManager
     {
-        public static GameState Current { get; private set; } = GameState.Playing;
+        public static GameState Current { get; private set; } = GameState.Loading;
 
         public static event Action<GameState> StateChanged;
 

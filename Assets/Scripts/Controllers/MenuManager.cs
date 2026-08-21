@@ -18,7 +18,8 @@ namespace Controllers
 
         private void Start()
         {
-            GameStateManager.SetState(GameState.Playing);
+            // GameState starts (and returns to) Loading/Playing under CoreLoader's control -
+            // this only needs to make sure no leftover panel is showing.
             deathPanel.SetActive(false);
             pausePanel.SetActive(false);
         }
@@ -28,8 +29,9 @@ namespace Controllers
 
         private void OnPausePressed(InputAction.CallbackContext _)
         {
-            if (GameStateManager.Current == GameState.Dead) return; //Can't open pause if player is dead
-            if (GameStateManager.Current == GameState.Paused) HidePauseMenu(); else ShowPauseMenu();
+            // Can't pause while loading, and can't open pause if the player is dead
+            if (GameStateManager.Current == GameState.Paused) HidePauseMenu();
+            else if (GameStateManager.Current == GameState.Playing) ShowPauseMenu();
         }
 
         public void ShowDeathScreen()
