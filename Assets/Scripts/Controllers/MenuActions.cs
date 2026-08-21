@@ -9,7 +9,7 @@ namespace Controllers
     {
         private CheckpointManager _cpManager;
         private MenuManager _menuManager;
-        private HealthManager _healthManager;  
+        private HealthManager _healthManager;
 
         private void Start()
         {
@@ -25,28 +25,27 @@ namespace Controllers
         {
             Time.timeScale = 1f; //resume play after reload checkpoint
             _cpManager.Respawn();
-
             _healthManager.ResetAfterRespawn();
-
             _menuManager.CloseAllMenus();
         }
 
         public void ReturnToMenu()
         {
             Time.timeScale = 1f;
-            SceneLoader.LoadScene(0);
+            SceneLoader.LoadScene(SceneNames.MainMenu);
         }
 
         public void NewGame()
         {
+            GameSession.LevelToLoad = SceneNames.Level1;
             SaveManager.Delete();
-            SceneLoader.LoadScene("MainScene");
+            SceneLoader.LoadScene(SceneNames.Core);
         }
 
         public void Continue()
         {
             Time.timeScale = 1f;
-            SceneLoader.LoadScene("MainScene");
+            SceneLoader.LoadScene(SceneNames.Core);
         }
 
         public void QuitGame()

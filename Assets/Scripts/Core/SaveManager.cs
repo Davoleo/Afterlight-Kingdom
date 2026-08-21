@@ -2,8 +2,7 @@ using System.Collections.Generic;
 using System.IO;
 using Gameplay;
 using UnityEngine;
-using Controllers;
-using Player;
+using UnityEngine.SceneManagement;
 
 namespace Core
 { 
@@ -32,6 +31,8 @@ namespace Core
                     
             var data = new SaveData
             {
+                levelName = SceneManager.GetActiveScene().name,
+
                 checkpointX = cpManager.LastCheckPoint.Position.x,
                 checkpointY = cpManager.LastCheckPoint.Position.y,
                 checkpointZ = cpManager.LastCheckPoint.Position.z,
