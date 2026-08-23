@@ -1,3 +1,4 @@
+using Core;
 using Gameplay;
 using Projectiles;
 using UnityEngine;
@@ -49,7 +50,30 @@ namespace Player
             _abilityManager = GameObject.FindGameObjectsWithTag("GameManager")[0].GetComponent<AbilityManager>();
             _bowVisuals = GetComponent<BowVisualsController>();
         }
-        
+
+        private void OnEnable()
+        {
+            GameStateManager.Respawned += HandleRespawn;
+        }
+
+        private void OnDisable()
+        {
+            GameStateManager.Respawned -= HandleRespawn;
+        }
+
+        // Whatever the bow was doing at the moment of death (mid-draw, mid-cancel...) is
+        // irrelevant after a respawn - cancel it and put the bow back to its resting state.
+        private void HandleRespawn()
+        {
+            _wasDrawingLastFrame = false;
+            IsDrawing = false;
+
+            _bowVisuals.CancelLoadBow(0f, 0f);
+            _bowVisuals.HideArrow();
+            _animator.SetBool(DrawHash, false);
+            _animator.SetLayerWeight(_upperBodyLayerIndex, 0f);
+        }
+
         private void LateUpdate()
         {
             float currentLayerWeight = _animator.GetLayerWeight(_upperBodyLayerIndex);

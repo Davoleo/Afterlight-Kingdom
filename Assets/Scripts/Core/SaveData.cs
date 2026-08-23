@@ -14,6 +14,8 @@ namespace Core
     [Serializable]
     public class SaveData
     {
+        public string levelName;
+
         public float checkpointX;
         public float checkpointY;
         public float checkpointZ;

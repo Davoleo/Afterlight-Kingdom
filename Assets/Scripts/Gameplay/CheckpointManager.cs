@@ -31,7 +31,8 @@ namespace Gameplay
             _playerController = player.GetComponent<PlayerCharacterController>();
             _cameraController = GameObject.FindWithTag("MainCamera").GetComponentInParent<PlayerCameraController>();
 
-            Respawn();
+            // Respawn() is called explicitly by CoreLoader once the level has actually
+            // finished loading - it needs the level's colliders/geometry to exist first.
         }
 
         public void Respawn()
