@@ -46,13 +46,13 @@ namespace Enemies
         private EnemyState currentState;
 
         private bool isPreparingShot;
+        private bool hasRetreatDestination;
+
         private float shotStartTime;
         private float lastShotTime;
         private float stateStartTime;
 
         private Vector3 retreatDestination;
-        private bool hasRetreatDestination;
-
         private Vector3 originalPosition;
         private Vector3 originalForward;
 
@@ -60,31 +60,28 @@ namespace Enemies
         {
             base.Update();
 
-            if (!HasPlayer() || IsPlayerDead())
-                return;
+            if (!HasPlayer() || IsPlayerDead()) return;
 
             UpdateState();
             UpdateMovementDirection();
             UpdateShot();
             UpdateAnimation();
-
             MoveAndRotate(Time.deltaTime);
         }
 
         public override void Activate()
         {
-            if (currentState == EnemyState.Sleeping)
-                ChangeState(EnemyState.Patrolling);
+            if (currentState == EnemyState.Sleeping) ChangeState(EnemyState.Patrolling);
         }
 
         protected override void SetInitialState()
         {
             originalPosition = transform.position;
+
             originalForward = transform.forward;
             originalForward.y = 0f;
 
-            if (originalForward.sqrMagnitude > 0.01f)
-                originalForward.Normalize();
+            if (originalForward.sqrMagnitude > 0.01f) originalForward.Normalize();
 
             ChangeState(startsActive ? EnemyState.Patrolling : EnemyState.Sleeping);
         }
@@ -92,14 +89,14 @@ namespace Enemies
         protected override void OnResetToSpawn()
         {
             isPreparingShot = false;
+            hasRetreatDestination = false;
+
             shotStartTime = 0f;
             lastShotTime = Time.time;
 
             retreatDestination = Vector3.zero;
-            hasRetreatDestination = false;
 
-            if (animator == null)
-                return;
+            if (animator == null) return;
 
             animator.SetBool("IsPatrolling", false);
             animator.SetBool("IsRetreating", false);
@@ -108,61 +105,24 @@ namespace Enemies
 
         protected override float GetCurrentSpeed()
         {
-            if (currentState == EnemyState.Retreating)
-                return retreatSpeed;
-
-            if (currentState == EnemyState.Advancing)
-                return advanceSpeed;
-
-            return patrolSpeed;
-        }
-
-        private float GetHorizontalDistanceFromPlayer()
-        {
-            if (!HasPlayer())
-                return Mathf.Infinity;
-
-            Vector3 playerPosition = Target.Player.position;
-            Vector3 enemyPosition = transform.position;
-
-            playerPosition.y = 0f;
-            enemyPosition.y = 0f;
-
-            return Vector3.Distance(enemyPosition, playerPosition);
-        }
-
-        private bool IsAtOriginalPosition()
-        {
-            Vector3 currentPosition = transform.position;
-            Vector3 targetPosition = originalPosition;
-
-            currentPosition.y = 0f;
-            targetPosition.y = 0f;
-
-            return Vector3.Distance(currentPosition, targetPosition) <= returnPositionTolerance;
+            return currentState switch
+            {
+                EnemyState.Retreating => retreatSpeed,
+                EnemyState.Advancing => advanceSpeed,
+                _ => patrolSpeed
+            };
         }
 
         private void UpdateState()
         {
-            if (currentState == EnemyState.Sleeping)
-                return;
-
-            /*
-             * Once the casting animation has started,
-             * the wizard must complete the shot.
-             *
-             * Distance changes, retreat and detection loss
-             * cannot interrupt the cast.
-             */
-            if (currentState == EnemyState.Shooting && isPreparingShot)
-                return;
+            if (currentState == EnemyState.Sleeping) return;
+            if (currentState == EnemyState.Shooting && isPreparingShot) return;
 
             float distanceFromPlayer = GetHorizontalDistanceFromPlayer();
 
             if (currentState == EnemyState.PostShot)
             {
-                if (Time.time < stateStartTime + postShotDelay)
-                    return;
+                if (Time.time < stateStartTime + postShotDelay) return;
 
                 if (!IsPlayerInsideDetection())
                 {
@@ -190,9 +150,9 @@ namespace Enemies
 
             if (!IsPlayerInsideDetection())
             {
-                if (currentState == EnemyState.Advancing
-                    || currentState == EnemyState.Shooting
-                    || currentState == EnemyState.Retreating)
+                if (currentState == EnemyState.Advancing ||
+                    currentState == EnemyState.Shooting ||
+                    currentState == EnemyState.Retreating)
                 {
                     isPreparingShot = false;
                     ChangeState(EnemyState.Waiting);
@@ -208,8 +168,7 @@ namespace Enemies
         {
             if (distanceFromPlayer <= minimumShootingDistance)
             {
-                if (currentState == EnemyState.Retreating && hasRetreatDestination)
-                    return;
+                if (currentState == EnemyState.Retreating && hasRetreatDestination) return;
 
                 if (TryCalculateRetreatDestination())
                 {
@@ -218,10 +177,7 @@ namespace Enemies
                 }
                 else
                 {
-                    if (currentState != EnemyState.Shooting)
-                        ChangeState(EnemyState.Shooting);
-
-                    TryShoot();
+                    EnterShootingState();
                 }
 
                 return;
@@ -237,31 +193,41 @@ namespace Enemies
                 return;
             }
 
-            if (currentState != EnemyState.Shooting)
-                ChangeState(EnemyState.Shooting);
+            EnterShootingState();
+        }
 
+        private void EnterShootingState()
+        {
+            if (currentState != EnemyState.Shooting) ChangeState(EnemyState.Shooting);
             TryShoot();
+        }
+
+        private void ChangeState(EnemyState newState)
+        {
+            if (currentState == newState) return;
+
+            currentState = newState;
+            stateStartTime = Time.time;
+
+            if (newState != EnemyState.Retreating)
+                hasRetreatDestination = false;
         }
 
         private void TryShoot()
         {
-            if (isPreparingShot)
-                return;
-
-            if (Time.time < lastShotTime + shootCooldown)
-                return;
+            if (isPreparingShot) return;
+            if (Time.time < lastShotTime + shootCooldown) return;
+            if (!IsCenteredOnGrid()) return;
 
             isPreparingShot = true;
             shotStartTime = Time.time;
 
-            if (animator != null)
-                animator.SetTrigger("Shoot");
+            if (animator != null) animator.SetTrigger("Shoot");
         }
 
         private void UpdateShot()
         {
-            if (!isPreparingShot)
-                return;
+            if (!isPreparingShot) return;
 
             if (currentState != EnemyState.Shooting)
             {
@@ -269,8 +235,7 @@ namespace Enemies
                 return;
             }
 
-            if (Time.time < shotStartTime + shootWindup)
-                return;
+            if (Time.time < shotStartTime + shootWindup) return;
 
             isPreparingShot = false;
             lastShotTime = Time.time;
@@ -281,14 +246,12 @@ namespace Enemies
 
         private void Shoot()
         {
-            if (shootPoint == null || projectilePrefab == null)
-                return;
+            if (shootPoint == null || projectilePrefab == null) return;
 
             Vector3 targetPosition = Target.Player.position + Vector3.up * playerChestAimOffset;
             Vector3 shootDirection = targetPosition - shootPoint.position;
 
-            if (shootDirection.sqrMagnitude < 0.01f)
-                return;
+            if (shootDirection.sqrMagnitude < 0.01f) return;
 
             shootDirection.Normalize();
 
@@ -316,10 +279,7 @@ namespace Enemies
 
         private Vector3 GetAdvanceDirection()
         {
-            if (!TrySampleNavMeshPosition(Target.Player.position, out Vector3 navMeshPlayerPosition))
-                return Vector3.zero;
-
-            return GetNavMeshDirectionTo(navMeshPlayerPosition);
+            return GetNavMeshDirectionTo(Target.Player.position);
         }
 
         private bool TryCalculateRetreatDestination()
@@ -337,7 +297,10 @@ namespace Enemies
 
             Vector3 desiredRetreatPosition = transform.position - playerDirection * retreatDistance;
 
-            if (!TryGetNearestNavMeshPosition(desiredRetreatPosition, out retreatDestination))
+            if (!TrySampleNavMeshPosition(
+                    desiredRetreatPosition,
+                    retreatNavMeshSampleRadius,
+                    out retreatDestination))
             {
                 hasRetreatDestination = false;
                 return false;
@@ -357,39 +320,14 @@ namespace Enemies
 
         private Vector3 GetRetreatDirection()
         {
-            if (!hasRetreatDestination)
-                return Vector3.zero;
+            if (!hasRetreatDestination) return Vector3.zero;
 
-            Vector3 retreatDirection = GetNavMeshDirectionTo(retreatDestination);
+            Vector3 direction = GetNavMeshDirectionTo(retreatDestination);
 
-            if (retreatDirection.sqrMagnitude < 0.01f)
-            {
-                hasRetreatDestination = false;
-                return Vector3.zero;
-            }
+            if (direction.sqrMagnitude >= 0.01f) return direction;
 
-            return retreatDirection;
-        }
-
-        private bool TryGetNearestNavMeshPosition(Vector3 desiredPosition, out Vector3 navMeshPosition)
-        {
-            return TrySampleNavMeshPosition(
-                desiredPosition,
-                retreatNavMeshSampleRadius,
-                out navMeshPosition
-            );
-        }
-
-        private void ChangeState(EnemyState newState)
-        {
-            if (currentState == newState)
-                return;
-
-            currentState = newState;
-            stateStartTime = Time.time;
-
-            if (currentState != EnemyState.Retreating)
-                hasRetreatDestination = false;
+            hasRetreatDestination = false;
+            return Vector3.zero;
         }
 
         private void UpdateMovementDirection()
@@ -400,16 +338,14 @@ namespace Enemies
             switch (currentState)
             {
                 case EnemyState.Sleeping:
+                case EnemyState.Waiting:
                     break;
 
                 case EnemyState.Patrolling:
                     MovementDirection = GetNavMeshPatrolDirection();
-
-                    if (IsAtOriginalPosition() && MovementDirection.sqrMagnitude < 0.01f)
-                        LookDirection = originalForward;
-                    else
-                        LookDirection = MovementDirection;
-
+                    LookDirection = IsAtOriginalPosition() && MovementDirection.sqrMagnitude < 0.01f
+                        ? originalForward
+                        : MovementDirection;
                     break;
 
                 case EnemyState.Advancing:
@@ -418,9 +354,6 @@ namespace Enemies
                     break;
 
                 case EnemyState.Shooting:
-                    LookDirection = GetPlayerDirection();
-                    break;
-
                 case EnemyState.PostShot:
                     LookDirection = GetPlayerDirection();
                     break;
@@ -429,45 +362,51 @@ namespace Enemies
                     MovementDirection = GetRetreatDirection();
                     LookDirection = GetPlayerDirection();
                     break;
-
-                case EnemyState.Waiting:
-                    break;
             }
+        }
+
+        private float GetHorizontalDistanceFromPlayer()
+        {
+            if (!HasPlayer()) return Mathf.Infinity;
+
+            Vector3 difference = Target.Player.position - transform.position;
+            difference.y = 0f;
+
+            return difference.magnitude;
+        }
+
+        private bool IsAtOriginalPosition()
+        {
+            Vector3 difference = transform.position - originalPosition;
+            difference.y = 0f;
+
+            return difference.sqrMagnitude <= returnPositionTolerance * returnPositionTolerance;
         }
 
         private void UpdateAnimation()
         {
-            if (animator == null)
-                return;
+            if (animator == null) return;
 
-            bool isWalking =
-                (currentState == EnemyState.Patrolling || currentState == EnemyState.Advancing)
-                && MovementDirection.sqrMagnitude > 0.01f;
+            bool isMoving = MovementDirection.sqrMagnitude > 0.01f;
+            bool isWalking = (currentState == EnemyState.Patrolling || currentState == EnemyState.Advancing) && isMoving;
+            bool isRetreating = currentState == EnemyState.Retreating && isMoving;
 
             animator.SetBool("IsPatrolling", isWalking);
-
-            animator.SetBool(
-                "IsRetreating",
-                currentState == EnemyState.Retreating
-                && MovementDirection.sqrMagnitude > 0.01f
-            );
+            animator.SetBool("IsRetreating", isRetreating);
         }
 
         protected override void OnDrawGizmosSelected()
         {
             base.OnDrawGizmosSelected();
 
-            if (shootPoint == null)
-                return;
+            if (shootPoint != null)
+            {
+                Gizmos.color = Color.magenta;
+                Gizmos.DrawWireSphere(shootPoint.position, 0.2f);
 
-            Gizmos.color = Color.magenta;
-            Gizmos.DrawWireSphere(shootPoint.position, 0.2f);
-
-            Gizmos.color = Color.red;
-            Gizmos.DrawLine(
-                shootPoint.position,
-                shootPoint.position + shootPoint.forward * 1.5f
-            );
+                Gizmos.color = Color.red;
+                Gizmos.DrawLine(shootPoint.position, shootPoint.position + shootPoint.forward * 1.5f);
+            }
 
             Gizmos.color = Color.blue;
             Gizmos.DrawWireSphere(transform.position, minimumShootingDistance);

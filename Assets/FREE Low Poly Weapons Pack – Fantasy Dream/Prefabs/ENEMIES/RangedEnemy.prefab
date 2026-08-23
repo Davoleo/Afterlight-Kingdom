@@ -160,18 +160,18 @@ MonoBehaviour:
     pointTolerance: 0.25
   startsActive: 1
   patrolSpeed: 2
-  acceleration: 15
   rotationSpeed: 12
-  navMeshRepathInterval: 0.1
+  gridCenterTolerance: 0.02
+  gridResolveSearchRadius: 3
+  gridMaxExpandedNodes: 2048
   navMeshSampleRadius: 2
-  navMeshStoppingDistance: 0.05
   shootPoint: {fileID: 2369133556651652903}
   projectilePrefab: {fileID: 1663374941067995523, guid: 70b95b24e7aa7436bb3ad29221b12d93, type: 3}
   advanceSpeed: 2
   retreatSpeed: 3
-  minimumShootingDistance: 3
-  desiredShootingDistance: 5
-  retreatDistance: 2.5
+  minimumShootingDistance: 2
+  desiredShootingDistance: 4
+  retreatDistance: 3
   retreatNavMeshSampleRadius: 2
   shootCooldown: 1.5
   shootWindup: 0.3
