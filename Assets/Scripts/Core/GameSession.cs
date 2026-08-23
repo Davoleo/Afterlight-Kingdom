@@ -9,7 +9,14 @@ namespace Core
         public static string ResolveLevelToLoad()
         {
             SaveData save = SaveManager.HasSave ? SaveManager.Load() : null;
-            return !string.IsNullOrEmpty(save?.levelName) ? save.levelName : LevelToLoad;
+            string savedLevel = save?.levelName;
+
+            // Core is the boot/hub scene, never a real level - a save file that names it
+            // (e.g. written while the active scene hadn't switched to the level yet) must
+            // not be trusted, or CoreLoader would try to load Core as if it were a level.
+            if (string.IsNullOrEmpty(savedLevel) || savedLevel == SceneNames.Core) return LevelToLoad;
+
+            return savedLevel;
         }
     }
 }

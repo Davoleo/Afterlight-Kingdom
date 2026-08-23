@@ -24,11 +24,19 @@ namespace Core
             // checkpoint was recorded in, otherwise use the one chosen from the menu (new game)
             string levelName = GameSession.ResolveLevelToLoad();
 
+            if (levelName == SceneNames.Core)
+            {
+                // Never load Core as if it were a level,
+                // doing so would spawn a second Core scene with its own
+                // CoreLoader, which would repeat this and recurse without end.
+                Debug.LogError("CoreLoader: resolved level is 'Core' - refusing to load it as a level.");
+                yield break;
+            }
+
             // If the level is already loaded (e.g. it was left open in the Editor's multi-scene
-            // Hierarchy before pressing Play), don't load a second copy of it on top. Core itself
-            // is explicitly excluded - it must never be mistaken for the resolved level name.
+            // Hierarchy before pressing Play), don't load a second copy of it on top.
             Scene existingScene = SceneManager.GetSceneByName(levelName);
-            bool alreadyLoaded = levelName != SceneNames.Core && existingScene.IsValid() && existingScene.isLoaded;
+            bool alreadyLoaded = existingScene.IsValid() && existingScene.isLoaded;
 
             if (!alreadyLoaded)
             {

@@ -47,10 +47,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   platformPart: {fileID: 8623302204450173207}
   platformCollider: {fileID: 6956488378316312005}
-  openDelay: 0.35
+  openDelay: 0.6
   openDuration: 0.2
   stayOpenTime: 1.2
-  closeDuration: 1.5
+  closeDuration: 1
   hingeSide: 0
   openAngle: 90
   playerTag: Player

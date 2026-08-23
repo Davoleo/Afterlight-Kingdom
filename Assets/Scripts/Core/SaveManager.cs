@@ -29,9 +29,19 @@ namespace Core
             var abilityManager = gm.GetComponent<AbilityManager>();
             //var playerController = GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerCharacterController>();
                     
+            string activeSceneName = SceneManager.GetActiveScene().name;
+            if (activeSceneName == "Core")
+            {
+                // Should never happen - it means whatever called Save() ran before CoreLoader
+                // finished switching the active scene to the level, or after it somehow reverted.
+                // Logged (with stack trace) so the actual caller can be identified if this fires again.
+                Debug.LogError($"SaveManager.Save: active scene is 'Core' at save time (caller: {gm.name}). " +
+                                "This would corrupt the save's levelName - investigate before this write lands on disk.");
+            }
+
             var data = new SaveData
             {
-                levelName = SceneManager.GetActiveScene().name,
+                levelName = activeSceneName,
 
                 checkpointX = cpManager.LastCheckPoint.Position.x,
                 checkpointY = cpManager.LastCheckPoint.Position.y,
