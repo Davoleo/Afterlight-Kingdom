@@ -24,9 +24,10 @@ namespace Triggers
         [SerializeField] private GameObject closedVisual;
         [SerializeField] private GameObject openedVisual;
 
-        [Header("Optional Animator")]
+        [Header("Animation")]
         [SerializeField] private Animator chestAnimator;
         [SerializeField] private string openTriggerName = "OpenChest";
+        [SerializeField] private ParticleSystem particles;
 
         private bool _opened;
         private bool _playerInside;
@@ -102,6 +103,8 @@ namespace Triggers
 
             if (CommandUtils.IsUp(_characterController.triggers, PlayerTrigger.Interact))
                 yield return new WaitForSeconds(rewardSpawnDelay);
+
+            particles.Play();
 
             Vector3 startPosition = rewardSpawnPoint.position;
             Vector3 endPosition = startPosition + Vector3.up * rewardRiseHeight;
