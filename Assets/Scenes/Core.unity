@@ -1839,7 +1839,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   stepAngle: 90
   rotationDuration: 0.3
-  cameraDistance: 5
+  cameraDistance: 6
 --- !u!1 &981504325
 GameObject:
   m_ObjectHideFlags: 0
