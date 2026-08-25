@@ -10,7 +10,6 @@ namespace Gameplay
     {
         Coin,
         Key,
-        Ability
     }
 
     public struct Collectibles
@@ -37,11 +36,6 @@ namespace Gameplay
         }
 
         public AudioClip GetPickupSound(CollectibleType type) => _sfx[type];
-
-        private void Awake()
-        {
-            InitializeCollectiblesLists();
-        }
 
         public void Collect(CollectibleType type, string id)
         {
@@ -100,28 +94,23 @@ namespace Gameplay
             return true;
         }
 
+        // Called explicitly by CoreLoader once the level has actually finished loading and
+        // become the active scene - same reasoning as CheckpointManager.Respawn(): the level's
+        // Coin/Key objects don't exist yet while this GameObject is still booting inside Core.
         public void RestoreFromSave(SaveData save)
         {
             coins = save.coins;
             keys = save.keys;
             collectedIds = save.collectedIds != null ? new List<string>(save.collectedIds) : new List<string>();
 
+            RefreshCollectibleReferences();
             RestoreCollectedState();
         }
 
-        private void InitializeCollectiblesLists()
+        private void RefreshCollectibleReferences()
         {
-            if (Collectibles.Coins == null)
-            {
-                Collectibles.Coins = new List<GameObject>();
-                Collectibles.Coins.AddRange(GameObject.FindGameObjectsWithTag("Coins"));
-            }
-
-            if (Collectibles.Keys == null)
-            {
-                Collectibles.Keys = new List<GameObject>();
-                Collectibles.Keys.AddRange(GameObject.FindGameObjectsWithTag("Keys"));
-            }
+            Collectibles.Coins = new List<GameObject>(GameObject.FindGameObjectsWithTag("Coins"));
+            Collectibles.Keys = new List<GameObject>(GameObject.FindGameObjectsWithTag("Keys"));
         }
 
         private void RestoreCollectedState()

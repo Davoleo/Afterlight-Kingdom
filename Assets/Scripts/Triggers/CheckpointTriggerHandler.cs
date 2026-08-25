@@ -29,6 +29,13 @@ namespace Triggers
         {
             if (!other.CompareTag("Player")) return;
 
+            // CoreLoader hasn't promoted the level to the active scene yet (can happen if the
+            // player already overlaps this trigger while the level is still loading additively
+            // on top of Core) - saving now would record "Core" as the level name and corrupt
+            // the save. Ignore the trigger; it'll fire again once the player moves
+            // through it during real play.
+            if (GameStateManager.Current != GameState.Playing) return;
+
             _healthManager.Heal(HealthManager.MaxHealth);
 
             Vector3 offsetPos = new Vector3(

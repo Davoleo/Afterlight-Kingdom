@@ -1,3 +1,4 @@
+using Core;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
@@ -15,11 +16,10 @@ namespace Controllers
         [SerializeField] private Button pauseFirstSelected;
         [SerializeField] private InputActionReference pauseAction;
 
-        private bool _isPaused;
-
         private void Start()
         {
-            Time.timeScale = 1f;
+            // GameState starts (and returns to) Loading/Playing under CoreLoader's control -
+            // this only needs to make sure no leftover panel is showing.
             deathPanel.SetActive(false);
             pausePanel.SetActive(false);
         }
@@ -29,16 +29,16 @@ namespace Controllers
 
         private void OnPausePressed(InputAction.CallbackContext _)
         {
-            if (deathPanel.activeSelf) return; //Can't open pause if player is dead
-            if (_isPaused) HidePauseMenu(); else ShowPauseMenu();
+            // Can't pause while loading, and can't open pause if the player is dead
+            if (GameStateManager.Current == GameState.Paused) HidePauseMenu();
+            else if (GameStateManager.Current == GameState.Playing) ShowPauseMenu();
         }
 
         public void ShowDeathScreen()
         {
             deathPanel.SetActive(true);
             pausePanel.SetActive(false);
-            _isPaused = false;
-            Time.timeScale = 0f;
+            GameStateManager.SetState(GameState.Dead);
             deathFirstSelected.Select();
         }
 
@@ -46,23 +46,20 @@ namespace Controllers
         {
             deathPanel.SetActive(false);
             pausePanel.SetActive(false);
-            _isPaused = false;
-            Time.timeScale = 1f;
+            GameStateManager.SetState(GameState.Playing);
         }
 
         private void ShowPauseMenu()
         {
-            _isPaused = true;
             pausePanel.SetActive(true);
-            Time.timeScale = 0f;
+            GameStateManager.SetState(GameState.Paused);
             pauseFirstSelected.Select();
         }
 
         private void HidePauseMenu()
         {
-            _isPaused = false;
             pausePanel.SetActive(false);
-            Time.timeScale = 1f;
+            GameStateManager.SetState(GameState.Playing);
         }
     }
 }

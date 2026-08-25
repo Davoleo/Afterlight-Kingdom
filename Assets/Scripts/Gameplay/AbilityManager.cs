@@ -18,37 +18,38 @@ namespace Gameplay
 
         private void Start()
         {
-            var save = SaveManager.Load();
-
-            if (save?.unlockedAbilities == null) return;
-
-            UnlockedAbilities = new HashSet<AbilityType>(save.unlockedAbilities);
-            // Access the script to disable if ability is not unlocked
+            // Access the scripts to disable if the ability isn't unlocked, needed
+            // regardless of whether a save exists (e.g. a fresh New Game).
             _player = GameObject.FindGameObjectsWithTag("Player")[0];
             _bowController = _player.GetComponent<BowController>();
             _bowVisuals = _player.GetComponent<BowVisualsController>();
+
+            var save = SaveManager.Load();
+
+            if (save?.unlockedAbilities != null)
+                UnlockedAbilities = new HashSet<AbilityType>(save.unlockedAbilities);
+
+            RefreshAbilityState();
         }
 
-        private void Update()
+        public void UnlockAbility(AbilityType ability)
         {
-            if (!HasAbility(AbilityType.Bow))
-            {
-                _bowController.enabled = false;
-                _bowVisuals.enabled = false;
-                bow.SetActive(false);
-                quiver.SetActive(false);
-            }
-            else
-            {
-                _bowController.enabled = true;
-                _bowVisuals.enabled = true;
-                bow.SetActive(true);
-                quiver.SetActive(true);
-            }
+            UnlockedAbilities.Add(ability);
+            RefreshAbilityState();
         }
-
-        public void UnlockAbility(AbilityType ability) => UnlockedAbilities.Add(ability);
 
         public bool HasAbility(AbilityType ability) => UnlockedAbilities.Contains(ability);
+
+        // Applies the current ability set to the bow, instead of polling every frame in Update()
+        // for something that only ever changes right here or once at boot.
+        private void RefreshAbilityState()
+        {
+            bool hasBow = HasAbility(AbilityType.Bow);
+
+            _bowController.enabled = hasBow;
+            _bowVisuals.enabled = hasBow;
+            bow.SetActive(hasBow);
+            quiver.SetActive(hasBow);
+        }
     }
 }
