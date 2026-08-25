@@ -10,7 +10,7 @@ namespace Triggers
     [RequireComponent(typeof(Collider))]
     public class LevelTransitionTrigger : MonoBehaviour
     {
-        public string nextLevelName;
+        public SceneNames nextLevelName;
         public Vector3 spawnPosition;
         public float spawnRotation;
 
@@ -34,14 +34,14 @@ namespace Triggers
             string previousLevelName = gameObject.scene.name;
 
             // 1. Load the next level additively and wait for it to finish
-            AsyncOperation loadOp = SceneManager.LoadSceneAsync(nextLevelName, LoadSceneMode.Additive);
+            AsyncOperation loadOp = SceneManager.LoadSceneAsync(nextLevelName.ToString(), LoadSceneMode.Additive);
             while (loadOp is { isDone: false })
             {
                 yield return null;
             }
 
             // 2. Make the new level the active scene (lighting, new spawns end up there, etc.)
-            Scene targetScene = SceneManager.GetSceneByName(nextLevelName);
+            Scene targetScene = SceneManager.GetSceneByName(nextLevelName.ToString());
             SceneManager.SetActiveScene(targetScene);
 
             // 3. Move the player to the new level's spawn point

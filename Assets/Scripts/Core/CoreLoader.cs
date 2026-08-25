@@ -24,7 +24,7 @@ namespace Core
             // checkpoint was recorded in, otherwise use the one chosen from the menu (new game)
             string levelName = GameSession.ResolveLevelToLoad();
 
-            if (levelName == SceneNames.Core)
+            if (levelName == SceneNames.Core.ToString())
             {
                 // Never load Core as if it were a level,
                 // doing so would spawn a second Core scene with its own

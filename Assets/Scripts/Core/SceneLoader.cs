@@ -1,3 +1,4 @@
+using UnityEditor;
 using UnityEngine.SceneManagement;
 
 namespace Core
@@ -7,6 +8,11 @@ namespace Core
         public static void LoadScene(string sceneName)
         {
             SceneManager.LoadScene(sceneName);
+        }
+
+        public static void LoadScene(SceneNames sceneName)
+        {
+            SceneManager.LoadScene(sceneName.ToString());
         }
 
         public static void LoadScene(int sceneIndex)
@@ -19,7 +25,7 @@ namespace Core
             // preprocessor directive
 #if UNITY_EDITOR
             // compiled only in editor
-            UnityEditor.EditorApplication.isPlaying = false;
+            EditorApplication.isPlaying = false;
 #else
             // compiled only in final build
                     Application.Quit();
