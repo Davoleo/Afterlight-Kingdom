@@ -44,6 +44,7 @@ GameObject:
   - component: {fileID: 8239091927107026269}
   - component: {fileID: 4253981393804280641}
   - component: {fileID: 5286247316908417998}
+  - component: {fileID: 1188809159073143038}
   m_Layer: 0
   m_Name: Chest
   m_TagString: Untagged
@@ -159,6 +160,7 @@ MonoBehaviour:
   openedVisual: {fileID: 3741117609438898670}
   chestAnimator: {fileID: 0}
   openTriggerName: OpenChest
+  chestOpenSfx: {fileID: 8300000, guid: 2f6077dd3a557e94daf0c8bc37ebd00b, type: 3}
 --- !u!95 &5286247316908417998
 Animator:
   serializedVersion: 7
@@ -181,6 +183,19 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &1188809159073143038
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7360139639386825666}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3fbc628d70ba4c11ab18c6306dd63f45, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  material: 3
 --- !u!1001 &1332360040638270701
 PrefabInstance:
   m_ObjectHideFlags: 0

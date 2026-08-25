@@ -22,6 +22,7 @@ GameObject:
   - component: {fileID: 2729919358070443188}
   - component: {fileID: 8241502049495792556}
   - component: {fileID: 7629166111987709219}
+  - component: {fileID: 5183283292761482127}
   m_Layer: 6
   m_Name: Character
   m_TagString: Player
@@ -156,7 +157,6 @@ MonoBehaviour:
   dashCooldownTimer: 0
   knockbackDrag: 12
   triggers: 0
-  DigitalCharacterForward: {x: 0, y: 0, z: 0}
   CurrentLadderNormal: {x: 0, y: 0, z: 0}
 --- !u!114 &1968148925741943213
 MonoBehaviour:
@@ -382,6 +382,21 @@ MonoBehaviour:
   limb01FlexOffset: {x: 0, y: 0, z: -15}
   limb02FlexOffset: {x: 0, y: 0, z: -15}
   arrowInHand: {fileID: 0}
+--- !u!114 &5183283292761482127
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 843450463001694474}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 86621ed96f9b4240b8c06473584e9770, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  bowDraw: {fileID: 8300000, guid: 30d45064915e2c54cb6d02519ade2b45, type: 3}
+  bowShoot: {fileID: 8300000, guid: ae33998bb30c38b4082489a173976793, type: 3}
+  climbSfx: []
 --- !u!1 &6557920474979051439
 GameObject:
   m_ObjectHideFlags: 0
