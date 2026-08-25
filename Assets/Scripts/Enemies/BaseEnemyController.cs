@@ -247,6 +247,8 @@ namespace Enemies
 
         private void HandlePlayerDeathReset()
         {
+            if (target == null || !target.HasPlayer()) return;
+
             if (!target.IsPlayerDead())
             {
                 hasResetAfterPlayerDeath = false;
@@ -258,7 +260,6 @@ namespace Enemies
             ResetToSpawn();
             hasResetAfterPlayerDeath = true;
         }
-
         protected void ResetToSpawn()
         {
             currentGridCell = spawnGridCell;
