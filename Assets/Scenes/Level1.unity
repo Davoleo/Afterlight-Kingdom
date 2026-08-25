@@ -264609,7 +264609,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   nextLevelName: Level2
-  spawnPosition: {x: 0, y: 1, z: 0}
+  spawnPosition: {x: 0, y: 2, z: 0}
   spawnRotation: 0
 --- !u!65 &2144874983
 BoxCollider:

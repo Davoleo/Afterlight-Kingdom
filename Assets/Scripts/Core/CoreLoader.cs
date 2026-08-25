@@ -64,6 +64,13 @@ namespace Core
             // 3. The level's colliders/geometry now genuinely exist - safe to position the player.
             GetComponent<CheckpointManager>().Respawn();
 
+            // Same reasoning: the level's Coin/Key objects don't exist until now either, so
+            // restoring collectible counts/collected state has to wait until this point too.
+            if (SaveManager.HasSave)
+            {
+                GetComponent<CollectiblesManager>().RestoreFromSave(SaveManager.Load());
+            }
+
             GameStateManager.SetState(GameState.Playing);
         }
     }

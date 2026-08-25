@@ -6,7 +6,7 @@ namespace Core
     {
         public static string LevelToLoad = SceneNames.Level1;
 
-        public static string ResolveLevelToLoad()
+        public static string  ResolveLevelToLoad()
         {
             SaveData save = SaveManager.HasSave ? SaveManager.Load() : null;
             string savedLevel = save?.levelName;

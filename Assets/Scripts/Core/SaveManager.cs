@@ -35,8 +35,12 @@ namespace Core
                 // Should never happen - it means whatever called Save() ran before CoreLoader
                 // finished switching the active scene to the level, or after it somehow reverted.
                 // Logged (with stack trace) so the actual caller can be identified if this fires again.
+                // Bail out instead of writing: a save with levelName == "Core" gets silently
+                // discarded by GameSession.ResolveLevelToLoad anyway, so writing it here would
+                // just overwrite a possibly-good previous save with a corrupted one.
                 Debug.LogError($"SaveManager.Save: active scene is 'Core' at save time (caller: {gm.name}). " +
-                                "This would corrupt the save's levelName - investigate before this write lands on disk.");
+                                "Refusing to write - this would corrupt the save's levelName.");
+                return;
             }
 
             var data = new SaveData
