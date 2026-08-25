@@ -96,8 +96,6 @@ namespace Enemies
 
             retreatDestination = Vector3.zero;
 
-            if (animator == null) return;
-
             animator.SetBool("IsPatrolling", false);
             animator.SetBool("IsRetreating", false);
             animator.ResetTrigger("Shoot");
@@ -142,17 +140,14 @@ namespace Enemies
                     return;
                 }
 
-                if (Time.time >= stateStartTime + lostPlayerIdleDuration)
-                    ChangeState(EnemyState.Patrolling);
+                if (Time.time >= stateStartTime + lostPlayerIdleDuration) ChangeState(EnemyState.Patrolling);
 
                 return;
             }
 
             if (!IsPlayerInsideDetection())
             {
-                if (currentState == EnemyState.Advancing ||
-                    currentState == EnemyState.Shooting ||
-                    currentState == EnemyState.Retreating)
+                if (currentState == EnemyState.Advancing || currentState == EnemyState.Shooting || currentState == EnemyState.Retreating)
                 {
                     isPreparingShot = false;
                     ChangeState(EnemyState.Waiting);
@@ -187,8 +182,7 @@ namespace Enemies
             {
                 isPreparingShot = false;
 
-                if (currentState != EnemyState.Advancing)
-                    ChangeState(EnemyState.Advancing);
+                if (currentState != EnemyState.Advancing) ChangeState(EnemyState.Advancing);
 
                 return;
             }
@@ -209,8 +203,7 @@ namespace Enemies
             currentState = newState;
             stateStartTime = Time.time;
 
-            if (newState != EnemyState.Retreating)
-                hasRetreatDestination = false;
+            if (newState != EnemyState.Retreating) hasRetreatDestination = false;
         }
 
         private void TryShoot()
@@ -257,11 +250,7 @@ namespace Enemies
 
             Vector3 spawnPosition = shootPoint.position + shootDirection * projectileSpawnOffset;
 
-            GameObject projectile = Instantiate(
-                projectilePrefab,
-                spawnPosition,
-                Quaternion.LookRotation(shootDirection)
-            );
+            GameObject projectile = Instantiate(projectilePrefab, spawnPosition, Quaternion.LookRotation(shootDirection));
 
             projectile.SetActive(true);
             projectile.transform.SetParent(null);
@@ -297,10 +286,7 @@ namespace Enemies
 
             Vector3 desiredRetreatPosition = transform.position - playerDirection * retreatDistance;
 
-            if (!TrySampleNavMeshPosition(
-                    desiredRetreatPosition,
-                    retreatNavMeshSampleRadius,
-                    out retreatDestination))
+            if (!TrySampleNavMeshPosition(desiredRetreatPosition, retreatNavMeshSampleRadius, out retreatDestination))
             {
                 hasRetreatDestination = false;
                 return false;
@@ -343,9 +329,7 @@ namespace Enemies
 
                 case EnemyState.Patrolling:
                     MovementDirection = GetNavMeshPatrolDirection();
-                    LookDirection = IsAtOriginalPosition() && MovementDirection.sqrMagnitude < 0.01f
-                        ? originalForward
-                        : MovementDirection;
+                    LookDirection = IsAtOriginalPosition() && MovementDirection.sqrMagnitude < 0.01f ? originalForward : MovementDirection;
                     break;
 
                 case EnemyState.Advancing:
@@ -385,8 +369,6 @@ namespace Enemies
 
         private void UpdateAnimation()
         {
-            if (animator == null) return;
-
             bool isMoving = MovementDirection.sqrMagnitude > 0.01f;
             bool isWalking = (currentState == EnemyState.Patrolling || currentState == EnemyState.Advancing) && isMoving;
             bool isRetreating = currentState == EnemyState.Retreating && isMoving;

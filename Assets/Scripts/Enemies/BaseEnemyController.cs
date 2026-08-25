@@ -49,18 +49,11 @@ namespace Enemies
 
         private readonly List<Vector2Int> pathBuffer = new List<Vector2Int>();
 
-        protected virtual void Awake()
-        {
-            if (navMeshAgent == null) navMeshAgent = GetComponent<NavMeshAgent>();
-            if (target == null) target = new EnemyTarget();
-            if (patrol == null) patrol = new EnemyPatrol();
-
-            navMeshAgent.updatePosition = true;
-            navMeshAgent.updateRotation = false;
-        }
-
         protected virtual void Start()
         {
+            navMeshAgent.updatePosition = true;
+            navMeshAgent.updateRotation = false;
+
             target.Initialize();
 
             if (!TryPlaceAgentOnNavMesh(transform.position) || !InitializeGridNavigation())
@@ -84,7 +77,6 @@ namespace Enemies
         protected abstract void SetInitialState();
         protected virtual void OnResetToSpawn() { }
         protected virtual float GetCurrentSpeed() => patrolSpeed;
-
 
         private bool InitializeGridNavigation()
         {
@@ -220,8 +212,6 @@ namespace Enemies
             return GetNavMeshDirectionTo(patrol.GetCurrentTargetPosition());
         }
 
-
-
         protected bool IsCenteredOnGrid()
         {
             if (gridNavigation == null || hasGridStep) return false;
@@ -244,7 +234,6 @@ namespace Enemies
             return gridNavigation != null && gridNavigation.TryGetCellCenter(cell, out center);
         }
 
-
         private void RotateTowardsLookDirection(float deltaTime)
         {
             Vector3 direction = LookDirection;
@@ -255,7 +244,6 @@ namespace Enemies
             Quaternion targetRotation = Quaternion.LookRotation(direction.normalized, Vector3.up);
             transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, 1f - Mathf.Exp(-rotationSpeed * deltaTime));
         }
-
 
         private void HandlePlayerDeathReset()
         {
@@ -273,12 +261,6 @@ namespace Enemies
 
         protected void ResetToSpawn()
         {
-            if (!navMeshAgent.Warp(spawnGridCenter))
-            {
-                Debug.LogWarning($"{name}: impossibile tornare alla cella di spawn {spawnGridCell}.", this);
-                return;
-            }
-
             currentGridCell = spawnGridCell;
             gridStepCell = spawnGridCell;
             gridStepCenter = Vector3.zero;
@@ -295,11 +277,6 @@ namespace Enemies
             OnResetToSpawn();
             SetInitialState();
         }
-
-        // =========================================================
-        // NAVMESH HELPERS
-        // =========================================================
-
         protected bool TrySampleNavMeshPosition(Vector3 desiredPosition, out Vector3 sampledPosition)
         {
             return TrySampleNavMeshPosition(desiredPosition, navMeshSampleRadius, out sampledPosition);
@@ -319,7 +296,6 @@ namespace Enemies
 
         private bool TryPlaceAgentOnNavMesh(Vector3 desiredPosition)
         {
-            if (navMeshAgent == null || !navMeshAgent.enabled) return false;
             if (navMeshAgent.isOnNavMesh) return true;
             if (!TrySampleNavMeshPosition(desiredPosition, out Vector3 sampledPosition)) return false;
 
@@ -330,7 +306,6 @@ namespace Enemies
         {
             return navMeshAgent != null && navMeshAgent.enabled && navMeshAgent.isOnNavMesh;
         }
-
 
         protected bool HasPlayer() => target.HasPlayer();
         protected bool IsPlayerDead() => target.IsPlayerDead();
@@ -347,8 +322,7 @@ namespace Enemies
 
         protected bool IsOwnCollider(Collider colliderToCheck)
         {
-            return colliderToCheck != null &&
-                   (colliderToCheck.transform == transform || colliderToCheck.transform.IsChildOf(transform));
+            return colliderToCheck != null && (colliderToCheck.transform == transform || colliderToCheck.transform.IsChildOf(transform));
         }
 
         protected virtual void OnDrawGizmosSelected()

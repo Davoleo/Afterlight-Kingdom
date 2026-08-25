@@ -46,11 +46,23 @@ namespace Enemies
         private float stateStartTime;
         private float chargeEndTime;
 
+        // Used to interrupt the current action only once
+        // when the Hit animation starts.
+        private bool wasHitAnimationActive;
+
+        // Allows EnemyHealth to use exactly the same Animator
+        // used by this controller.
+        public Animator EnemyAnimator => animator;
+
         protected override void Update()
         {
             base.Update();
 
             if (!HasPlayer() || IsPlayerDead())
+                return;
+
+            // Hit and Death have priority over every normal enemy action.
+            if (HandleDamageAnimationState())
                 return;
 
             UpdateState();
@@ -76,6 +88,7 @@ namespace Enemies
             chargeDestination = Vector3.zero;
             hasHitPlayerDuringCharge = false;
             chargeEndTime = 0f;
+            wasHitAnimationActive = false;
         }
 
         protected override float GetCurrentSpeed()
@@ -209,7 +222,21 @@ namespace Enemies
                 return;
             }
 
-            float maximumChargeDistance = chargeSpeed;
+            /*
+             * The maximum charge distance is based on the player's
+             * current distance instead of using chargeSpeed as a fixed distance.
+             */
+            Vector3 playerPosition = Target.Player.position;
+            Vector3 currentPosition = transform.position;
+
+            playerPosition.y = 0f;
+            currentPosition.y = 0f;
+
+            float distanceToPlayer = Vector3.Distance(currentPosition, playerPosition);
+
+            // Add a small margin so the charge ends slightly beyond the player.
+            float maximumChargeDistance = distanceToPlayer + 1f;
+
             bool destinationFound = false;
 
             /*
@@ -250,13 +277,13 @@ namespace Enemies
             LookDirection = chargeDirection;
             hasHitPlayerDuringCharge = false;
 
-            Vector3 currentPosition = transform.position;
+            Vector3 currentPositionForCharge = transform.position;
             Vector3 destinationPosition = chargeDestination;
 
-            currentPosition.y = 0f;
+            currentPositionForCharge.y = 0f;
             destinationPosition.y = 0f;
 
-            float actualChargeDistance = Vector3.Distance(currentPosition, destinationPosition);
+            float actualChargeDistance = Vector3.Distance(currentPositionForCharge, destinationPosition);
             float actualChargeDuration = actualChargeDistance / chargeSpeed;
 
             chargeEndTime = Time.time + actualChargeDuration;
@@ -265,8 +292,7 @@ namespace Enemies
         }
 
         /*
-         * Prevents NavMesh sampling from moving
-         * the charge destination sideways.
+         * Prevents NavMesh sampling from moving the charge destination sideways.
          */
         private void KeepPositionOnChargeAxis(ref Vector3 position)
         {
@@ -303,6 +329,89 @@ namespace Enemies
             ChangeState(EnemyState.Cooldown);
         }
 
+        /*
+         * Immediately interrupts the current charge or charge preparation
+         * when the enemy receives damage.
+         */
+        private void StopActionForHit()
+        {
+            MovementDirection = Vector3.zero;
+            LookDirection = Vector3.zero;
+
+            chargeDirection = Vector3.zero;
+            chargeDestination = Vector3.zero;
+
+            chargeEndTime = 0f;
+            hasHitPlayerDuringCharge = false;
+
+            // After the Hit animation the enemy restarts
+            // from its normal patrol logic.
+            ChangeState(EnemyState.Patrolling);
+
+            // Remove the current NavMesh destination so the enemy
+            // does not continue moving during the Hit animation.
+            if (navMeshAgent.enabled && navMeshAgent.isOnNavMesh)
+            {
+                navMeshAgent.isStopped = true;
+                navMeshAgent.ResetPath();
+            }
+
+            // Disable all normal movement/charge animation parameters
+            // while Hit has priority.
+            animator.SetBool("IsPatrolling", false);
+            animator.SetBool("IsPreparingCharge", false);
+            animator.SetBool("IsCharging", false);
+        }
+
+        /*
+         * Gives Hit and Death priority over the normal state machine.
+         * Returns true while the normal enemy logic must remain suspended.
+         */
+        private bool HandleDamageAnimationState()
+        {
+            // Death always has maximum priority.
+            if (animator.GetBool("IsDead"))
+            {
+                MovementDirection = Vector3.zero;
+                LookDirection = Vector3.zero;
+
+                animator.SetBool("IsPatrolling", false);
+                animator.SetBool("IsPreparingCharge", false);
+                animator.SetBool("IsCharging", false);
+
+                if (navMeshAgent != null && navMeshAgent.enabled && navMeshAgent.isOnNavMesh)
+                    navMeshAgent.isStopped = true;
+
+                return true;
+            }
+
+            bool isHit = animator.GetBool("IsHit");
+
+            if (isHit)
+            {
+                // Interrupt the action only when Hit starts,
+                // not on every frame of the animation.
+                if (!wasHitAnimationActive)
+                {
+                    wasHitAnimationActive = true;
+                    StopActionForHit();
+                }
+
+                return true;
+            }
+
+            // Hit animation has just finished.
+            if (wasHitAnimationActive)
+            {
+                wasHitAnimationActive = false;
+
+                if (navMeshAgent != null && navMeshAgent.enabled && navMeshAgent.isOnNavMesh)
+                    navMeshAgent.isStopped = false;
+            }
+
+            return false;
+        }
+
         private bool IsObstacleInChargeDirection()
         {
             if (chargeDirection.sqrMagnitude < 0.01f)
@@ -336,13 +445,7 @@ namespace Enemies
                  * chargeDirection is cardinal,
                  * so the knockback is cardinal as well.
                  */
-                bool damageApplied = TryDamagePlayer(
-                    hitCollider,
-                    chargeDamage,
-                    chargeDirection,
-                    true,
-                    chargeKnockbackDistance
-                );
+                bool damageApplied = TryDamagePlayer(hitCollider, chargeDamage, chargeDirection, true, chargeKnockbackDistance);
 
                 if (!damageApplied)
                     continue;
@@ -371,30 +474,16 @@ namespace Enemies
             return HasBlockingHit(origin, direction, distance, out _);
         }
 
-        private bool HasBlockingHit(
-            Vector3 origin,
-            Vector3 direction,
-            float distance,
-            out Collider blockingCollider
-        )
+        private bool HasBlockingHit(Vector3 origin, Vector3 direction, float distance, out Collider blockingCollider)
         {
             blockingCollider = null;
 
-            RaycastHit[] hits = Physics.RaycastAll(
-                origin,
-                direction,
-                distance,
-                obstacleLayer,
-                QueryTriggerInteraction.Ignore
-            );
+            RaycastHit[] hits = Physics.RaycastAll(origin, direction, distance, obstacleLayer, QueryTriggerInteraction.Ignore);
 
             if (hits.Length == 0)
                 return false;
 
-            System.Array.Sort(
-                hits,
-                (firstHit, secondHit) => firstHit.distance.CompareTo(secondHit.distance)
-            );
+            System.Array.Sort(hits, (firstHit, secondHit) => firstHit.distance.CompareTo(secondHit.distance));
 
             foreach (RaycastHit hit in hits)
             {
@@ -416,8 +505,7 @@ namespace Enemies
 
         private Vector3 GetBodyCenter()
         {
-            return transform.position
-                   + Vector3.up * (navMeshAgent.baseOffset + navMeshAgent.height * 0.5f);
+            return transform.position + Vector3.up * (navMeshAgent.baseOffset + navMeshAgent.height * 0.5f);
         }
 
         private void ChangeState(EnemyState newState)
@@ -450,10 +538,7 @@ namespace Enemies
                     break;
 
                 case EnemyState.PreparingCharge:
-                    LookDirection = chargeDirection.sqrMagnitude > 0.01f
-                        ? chargeDirection
-                        : GetCardinalPlayerDirection();
-
+                    LookDirection = chargeDirection.sqrMagnitude > 0.01f ? chargeDirection : GetCardinalPlayerDirection();
                     break;
 
                 case EnemyState.Charging:
@@ -469,11 +554,19 @@ namespace Enemies
 
         private void UpdateAnimation()
         {
-            animator.SetBool(
-                "IsPatrolling",
-                currentState == EnemyState.Patrolling && MovementDirection.sqrMagnitude > 0.01f
-            );
+            if (animator == null)
+                return;
 
+            // Hit and Death have priority over the normal state animations.
+            if (animator.GetBool("IsHit") || animator.GetBool("IsDead"))
+            {
+                animator.SetBool("IsPatrolling", false);
+                animator.SetBool("IsPreparingCharge", false);
+                animator.SetBool("IsCharging", false);
+                return;
+            }
+
+            animator.SetBool("IsPatrolling", currentState == EnemyState.Patrolling && MovementDirection.sqrMagnitude > 0.01f);
             animator.SetBool("IsPreparingCharge", currentState == EnemyState.PreparingCharge);
             animator.SetBool("IsCharging", currentState == EnemyState.Charging);
         }
@@ -491,23 +584,19 @@ namespace Enemies
 
             Gizmos.color = Color.red;
 
-            Vector3 debugDirection = Application.isPlaying && chargeDirection.sqrMagnitude > 0.01f
-                ? chargeDirection
-                : transform.forward;
+            Vector3 debugDirection = Application.isPlaying && chargeDirection.sqrMagnitude > 0.01f ? chargeDirection : transform.forward;
 
             Vector3 debugCenter = GetBodyCenter();
 
-            Gizmos.DrawLine(
-                debugCenter,
-                debugCenter + debugDirection * obstacleCheckDistance
-            );
+            Gizmos.DrawLine(debugCenter, debugCenter + debugDirection * obstacleCheckDistance);
 
             if (Application.isPlaying && currentState == EnemyState.Charging)
             {
                 Gizmos.color = Color.yellow;
+
                 Gizmos.DrawWireSphere(chargeDestination, 0.15f);
                 Gizmos.DrawLine(transform.position, chargeDestination);
             }
         }
     }
-}  
+}
