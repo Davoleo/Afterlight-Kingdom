@@ -20,11 +20,14 @@ namespace Enemies
         [SerializeField] private float attackCooldown = 1.2f;
         [SerializeField] private float attackWindup = 0.5f;
 
+        // Time during which the enemy remains completely still
+        // after performing the attack.
+        [SerializeField] private float attackRecoveryDuration = 1f;
+
         [Header("Melee Hitbox")]
         [SerializeField] private Transform attackPoint;
         [SerializeField] private float attackRadius = 0.8f;
         [SerializeField] private int attackDamage = 1;
-        [SerializeField] private LayerMask playerLayer;
 
         [Header("Animation")]
         [SerializeField] private Animator animator;
@@ -34,6 +37,19 @@ namespace Enemies
         private bool isPreparingAttack;
         private float attackStartTime;
         private float lastAttackTime;
+        private bool isRecoveringAttack;
+        private float attackRecoveryEndTime;
+        private Vector3 attackPosition;
+        private bool hasLockedAttackPosition;
+
+        public Animator EnemyAnimator => animator;
+
+        protected override void Start()
+        {
+            base.Start();
+
+            animator.applyRootMotion = false;
+        }
 
         protected override void Update()
         {
@@ -44,12 +60,32 @@ namespace Enemies
 
             UpdateState();
             UpdateMovementDirection();
-
             UpdateAnimation();
-
             UpdateAttack();
 
+            /*
+             * During the attack and the recovery time
+             * the enemy remains completely still.
+             */
+            if (currentState == EnemyState.Attacking)
+            {
+                KeepAttackPosition();
+                return;
+            }
+
             MoveAndRotate(Time.deltaTime);
+        }
+
+        private void LateUpdate()
+        {
+            if (currentState != EnemyState.Attacking)
+                return;
+
+            if (!hasLockedAttackPosition)
+                return;
+
+            // Keep the enemy locked even after the Animator update.
+            KeepAttackPosition();
         }
 
         public override void Activate()
@@ -60,30 +96,57 @@ namespace Enemies
 
         protected override void SetInitialState()
         {
-            ChangeState(
-                startsActive
-                    ? EnemyState.Patrolling
-                    : EnemyState.Sleeping
-            );
+            ChangeState(startsActive ? EnemyState.Patrolling : EnemyState.Sleeping);
         }
 
         protected override void OnResetToSpawn()
         {
             isPreparingAttack = false;
+            isRecoveringAttack = false;
+
             lastAttackTime = Time.time;
+            attackRecoveryEndTime = 0f;
+
+            hasLockedAttackPosition = false;
+            attackPosition = Vector3.zero;
+
+            // Remove any attack still pending when the player dies.
+
+            animator.ResetTrigger("Attack");
+            animator.SetBool("IsMoving", false);
+            animator.Play("Idle", 0, 0f);
+            animator.Update(0f);
+   
         }
 
         protected override float GetCurrentSpeed()
         {
-            return currentState == EnemyState.Chasing
-                ? chaseSpeed
-                : patrolSpeed;
+            return currentState == EnemyState.Chasing ? chaseSpeed : patrolSpeed;
         }
 
         private void UpdateState()
         {
             if (currentState == EnemyState.Sleeping)
                 return;
+
+            /*
+             * While preparing the attack the enemy cannot
+             * leave the Attacking state.
+             */
+            if (currentState == EnemyState.Attacking && isPreparingAttack)
+                return;
+
+            /*
+             * After performing the attack, keep the enemy
+             * completely still for attackRecoveryDuration.
+             */
+            if (currentState == EnemyState.Attacking && isRecoveringAttack)
+            {
+                if (Time.time < attackRecoveryEndTime)
+                    return;
+
+                isRecoveringAttack = false;
+            }
 
             float distanceFromPlayer = GetDistanceFromPlayer();
 
@@ -99,7 +162,9 @@ namespace Enemies
             if (currentState == EnemyState.Attacking)
             {
                 ChangeState(EnemyState.Chasing);
+
                 isPreparingAttack = false;
+                isRecoveringAttack = false;
             }
 
             if (IsPlayerInsideDetection())
@@ -108,11 +173,8 @@ namespace Enemies
                 return;
             }
 
-            if (currentState == EnemyState.Chasing
-                && IsPlayerOutsideLoseRange())
-            {
+            if (currentState == EnemyState.Chasing && IsPlayerOutsideLoseRange())
                 ChangeState(EnemyState.Patrolling);
-            }
         }
 
         private void TryAttack()
@@ -120,13 +182,37 @@ namespace Enemies
             if (isPreparingAttack)
                 return;
 
+            if (isRecoveringAttack)
+                return;
+
             if (Time.time < lastAttackTime + attackCooldown)
                 return;
+
+            /*
+             * Save the player's direction exactly when the attack starts.
+             * The enemy does not rotate to follow the player afterwards.
+             */
+            Vector3 attackDirection = GetPlayerDirection();
+            attackDirection.y = 0f;
+
+            if (attackDirection.sqrMagnitude < 0.01f)
+                attackDirection = transform.forward;
+            else
+                attackDirection.Normalize();
+
+            // Lock the exact position where the attack starts.
+            attackPosition = transform.position;
+            hasLockedAttackPosition = true;
+
+            StopMovementImmediately();
+            if (attackDirection.sqrMagnitude > 0.01f)
+                transform.rotation = Quaternion.LookRotation(attackDirection, Vector3.up);
 
             isPreparingAttack = true;
             attackStartTime = Time.time;
 
-            animator.SetTrigger("Attack");
+            if (animator != null)
+                animator.SetTrigger("Attack");
         }
 
         private void UpdateAttack()
@@ -147,54 +233,100 @@ namespace Enemies
             lastAttackTime = Time.time;
 
             PerformAttack();
+
+            /*
+             * After performing the attack, keep the enemy
+             * completely still for the recovery duration.
+             */
+            isRecoveringAttack = true;
+            attackRecoveryEndTime = Time.time + attackRecoveryDuration;
         }
 
         private void PerformAttack()
         {
-            // If no attack point has been assigned, the hitbox is positioned
-            // automatically in front of the enemy.
-            Vector3 hitPosition = attackPoint != null
-                ? attackPoint.position
-                : transform.position
-                + transform.forward * attackRange * 0.5f
-                + Vector3.up * navMeshAgent.height * 0.5f;
+            Vector3 hitPosition = attackPoint != null ? attackPoint.position : transform.position + transform.forward * attackRange * 0.5f + Vector3.up * navMeshAgent.height * 0.5f;
 
-            // Search every layer and then explicitly verify that the collider
-            // belongs to the player. This avoids configuration errors in Player Layer.
-            Collider[] hitColliders = Physics.OverlapSphere(
-                hitPosition,
-                attackRadius,
-                Physics.AllLayers,
-                QueryTriggerInteraction.Collide
-            );
+            Collider[] hitColliders = Physics.OverlapSphere(hitPosition, attackRadius, Physics.AllLayers, QueryTriggerInteraction.Collide);
 
             foreach (Collider hitCollider in hitColliders)
             {
                 if (!Target.IsPlayerCollider(hitCollider))
                     continue;
 
-                Vector3 knockbackDirection =
-                    hitCollider.bounds.center - transform.position;
-
+                Vector3 knockbackDirection = hitCollider.bounds.center - transform.position;
                 knockbackDirection.y = 0f;
 
                 if (knockbackDirection.sqrMagnitude < 0.01f)
                     knockbackDirection = transform.forward;
 
-                bool damageApplied = TryDamagePlayer(
-                    hitCollider,
-                    attackDamage,
-                    knockbackDirection.normalized,
-                    true
-                );
+                bool damageApplied = TryDamagePlayer(hitCollider, attackDamage, knockbackDirection.normalized, true);
 
                 if (damageApplied)
                     return;
             }
         }
 
+        private void StopMovementImmediately()
+        {
+            MovementDirection = Vector3.zero;
+
+            if (navMeshAgent == null || !navMeshAgent.enabled || !navMeshAgent.isOnNavMesh)
+                return;
+
+            navMeshAgent.isStopped = true;
+            navMeshAgent.velocity = Vector3.zero;
+            navMeshAgent.ResetPath();
+        }
+
+        /*
+         * Keeps the enemy exactly at the position
+         * where the attack started.
+         */
+        private void KeepAttackPosition()
+        {
+            MovementDirection = Vector3.zero;
+
+            if (!hasLockedAttackPosition)
+                return;
+
+            if (navMeshAgent == null || !navMeshAgent.enabled || !navMeshAgent.isOnNavMesh)
+            {
+                transform.position = attackPosition;
+                return;
+            }
+
+            navMeshAgent.isStopped = true;
+            navMeshAgent.velocity = Vector3.zero;
+
+            if ((transform.position - attackPosition).sqrMagnitude > 0.000001f)
+                navMeshAgent.Warp(attackPosition);
+        }
+
         private void ChangeState(EnemyState newState)
         {
+            if (currentState == newState)
+                return;
+
+            if (newState == EnemyState.Attacking)
+            {
+                attackPosition = transform.position;
+                hasLockedAttackPosition = true;
+
+                StopMovementImmediately();
+            }
+
+            if (currentState == EnemyState.Attacking && newState != EnemyState.Attacking)
+            {
+                hasLockedAttackPosition = false;
+                isRecoveringAttack = false;
+
+                if (navMeshAgent.enabled && navMeshAgent.isOnNavMesh)
+                {
+                    navMeshAgent.velocity = Vector3.zero;
+                    navMeshAgent.isStopped = false;
+                }
+            }
+
             currentState = newState;
         }
 
@@ -209,32 +341,29 @@ namespace Enemies
                     break;
 
                 case EnemyState.Patrolling:
-                    MovementDirection =
-                        GetNavMeshPatrolDirection();
-
+                    MovementDirection = GetNavMeshPatrolDirection();
                     LookDirection = MovementDirection;
                     break;
 
                 case EnemyState.Chasing:
-                    // Chasing uses only the path calculated by the NavMeshAgent.
-                    MovementDirection =
-                        GetNavMeshDirectionTo(Target.Player.position);
-
+                    MovementDirection = GetNavMeshDirectionTo(Target.Player.position);
                     LookDirection = MovementDirection;
                     break;
 
                 case EnemyState.Attacking:
-                    LookDirection = GetPlayerDirection();
+                    // No movement or continuous rotation during attack.
+                    MovementDirection = Vector3.zero;
+                    LookDirection = Vector3.zero;
                     break;
             }
         }
 
-       private void UpdateAnimation()
+        private void UpdateAnimation()
         {
             if (animator == null)
                 return;
 
-            bool isMoving = MovementDirection.sqrMagnitude > 0.01f;
+            bool isMoving = currentState != EnemyState.Attacking && MovementDirection.sqrMagnitude > 0.01f;
 
             animator.SetBool("IsMoving", isMoving);
         }
@@ -242,15 +371,8 @@ namespace Enemies
         protected override void OnDrawGizmosSelected()
         {
             base.OnDrawGizmosSelected();
-
-            if (attackPoint == null)
-                return;
-
             Gizmos.color = Color.magenta;
-            Gizmos.DrawWireSphere(
-                attackPoint.position,
-                attackRadius
-            );
+            Gizmos.DrawWireSphere(attackPoint.position, attackRadius);
         }
     }
 }

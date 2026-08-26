@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -18,66 +19,52 @@ namespace Enemies
 
         [Header("Base Movement")]
         [SerializeField] protected float patrolSpeed = 2f;
-        [SerializeField] protected float acceleration = 15f;
         [SerializeField] protected float rotationSpeed = 12f;
 
+        [Header("Base Grid Navigation")]
+        [SerializeField] private float gridCenterTolerance = 0.02f;
+        [SerializeField] private int gridResolveSearchRadius = 3;
+        [SerializeField] private int gridMaxExpandedNodes = 2048;
+
         [Header("Base NavMesh")]
-        [SerializeField] protected float navMeshRepathInterval = 0.1f;
         [SerializeField] protected float navMeshSampleRadius = 2f;
-        [SerializeField] protected float navMeshStoppingDistance = 0.05f;
 
         protected Vector3 MovementDirection;
         protected Vector3 LookDirection;
 
         protected Vector3 SpawnPosition { get; private set; }
-
         protected EnemyTarget Target => target;
 
+        private EnemyGridNavigation gridNavigation;
+
+        private Vector2Int currentGridCell;
+        private Vector2Int spawnGridCell;
+
+        private Vector2Int gridStepCell;
+        private Vector3 gridStepCenter;
+        private Vector3 spawnGridCenter;
+
+        private bool hasGridStep;
         private bool hasResetAfterPlayerDeath;
-        private bool hasNavMeshDestination;
 
-        private float nextNavMeshRepathTime;
-        private Vector3 currentNavMeshDestination;
-
-        protected virtual void Awake()
-        {
-            if (navMeshAgent == null)
-                navMeshAgent = GetComponent<NavMeshAgent>();
-
-            // The NavMeshAgent is the only component that updates the enemy position.
-            navMeshAgent.updatePosition = true;
-
-            // Rotation is handled manually because some enemies must look at the player
-            // while remaining stationary.
-            navMeshAgent.updateRotation = false;
-
-            if (target == null)
-                target = new EnemyTarget();
-
-            if (patrol == null)
-                patrol = new EnemyPatrol();
-        }
+        private readonly List<Vector2Int> pathBuffer = new List<Vector2Int>();
 
         protected virtual void Start()
         {
+            navMeshAgent.updatePosition = true;
+            navMeshAgent.updateRotation = false;
+
             target.Initialize();
 
-            if (!TryPlaceAgentOnNavMesh(transform.position))
+            if (!TryPlaceAgentOnNavMesh(transform.position) || !InitializeGridNavigation())
             {
-                Debug.LogError(
-                    $"{name}: the enemy is not placed on a valid NavMesh.",
-                    this
-                );
-
+                Debug.LogError($"{name}: impossibile inizializzare la navigazione del nemico.", this);
                 enabled = false;
                 return;
             }
 
-            // The NavMesh can slightly adjust the initial position.
             SpawnPosition = transform.position;
-
             patrol.Initialize(SpawnPosition);
-
             SetInitialState();
         }
 
@@ -87,219 +74,223 @@ namespace Enemies
         }
 
         public abstract void Activate();
-
         protected abstract void SetInitialState();
-
         protected virtual void OnResetToSpawn() { }
+        protected virtual float GetCurrentSpeed() => patrolSpeed;
 
-        protected virtual float GetCurrentSpeed()
+        private bool InitializeGridNavigation()
         {
-            return patrolSpeed;
+            gridNavigation = new EnemyGridNavigation(navMeshAgent, gridResolveSearchRadius, gridMaxExpandedNodes);
+
+            Vector2Int requestedCell = gridNavigation.WorldToCell(transform.position);
+
+            if (!gridNavigation.TryFindNearestWalkableCell(requestedCell, out Vector2Int cell)) return false;
+            if (!gridNavigation.TryGetCellCenter(cell, out Vector3 center)) return false;
+            if (!navMeshAgent.Warp(center)) return false;
+
+            currentGridCell = cell;
+            spawnGridCell = cell;
+            spawnGridCenter = center;
+
+            hasGridStep = false;
+            gridStepCell = cell;
+            gridStepCenter = center;
+
+            navMeshAgent.ResetPath();
+            navMeshAgent.isStopped = false;
+
+            return true;
         }
 
         protected void MoveAndRotate(float deltaTime)
         {
-            MoveCharacter(deltaTime);
+            MoveCharacterOnGrid(deltaTime);
             RotateTowardsLookDirection(deltaTime);
         }
 
-        private void MoveCharacter(float deltaTime)
+        private void MoveCharacterOnGrid(float deltaTime)
         {
-            if (!IsNavMeshAgentReady())
+            if (!IsNavMeshAgentReady() || !hasGridStep) return;
+
+            Vector3 direction = GetCurrentGridStepDirection();
+
+            if (direction.sqrMagnitude < 0.01f)
+            {
+                CompleteGridStep();
                 return;
+            }
 
-            navMeshAgent.speed = GetCurrentSpeed();
-            navMeshAgent.acceleration = acceleration;
-            navMeshAgent.stoppingDistance = navMeshStoppingDistance;
+            float remainingDistance = GetGridStepRemainingDistance();
 
-            // The agent must remain active while traversing a NavMesh Link,
-            // even if its desired direction briefly becomes zero.
-            bool shouldMove =
-                navMeshAgent.isOnOffMeshLink
-                || (
-                    hasNavMeshDestination
-                    && MovementDirection.sqrMagnitude >= 0.01f
-                );
+            if (remainingDistance <= gridCenterTolerance)
+            {
+                CompleteGridStep();
+                return;
+            }
 
-            navMeshAgent.isStopped = !shouldMove;
+            float movement = Mathf.Min(GetCurrentSpeed() * deltaTime, remainingDistance);
+            navMeshAgent.Move(direction * movement);
+
+            if (GetGridStepRemainingDistance() <= gridCenterTolerance) CompleteGridStep();
+        }
+
+        private Vector3 GetCurrentGridStepDirection()
+        {
+            if (!hasGridStep) return Vector3.zero;
+
+            Vector2Int difference = gridStepCell - currentGridCell;
+
+            if (Mathf.Abs(difference.x) + Mathf.Abs(difference.y) != 1) return Vector3.zero;
+
+            return new Vector3(difference.x, 0f, difference.y);
+        }
+
+        private float GetGridStepRemainingDistance()
+        {
+            Vector3 direction = GetCurrentGridStepDirection();
+
+            if (direction.x != 0f) return Mathf.Abs(gridStepCenter.x - transform.position.x);
+            if (direction.z != 0f) return Mathf.Abs(gridStepCenter.z - transform.position.z);
+
+            return 0f;
+        }
+
+        private void CompleteGridStep()
+        {
+            if (!hasGridStep) return;
+
+            if (!navMeshAgent.Warp(gridStepCenter))
+            {
+                Debug.LogWarning($"{name}: impossibile completare lo step {currentGridCell} -> {gridStepCell}.", this);
+                hasGridStep = false;
+                return;
+            }
+
+            currentGridCell = gridStepCell;
+            hasGridStep = false;
+            gridStepCenter = Vector3.zero;
+        }
+
+        //pathfinding
+
+        protected Vector3 GetNavMeshDirectionTo(Vector3 destination)
+        {
+            if (gridNavigation == null) return Vector3.zero;
+
+            // Always find a complete cell
+            if (hasGridStep) return GetCurrentGridStepDirection();
+
+            Vector2Int targetCell = gridNavigation.WorldToCell(destination);
+
+            if (targetCell == currentGridCell) return Vector3.zero;
+
+            pathBuffer.Clear();
+
+            if (!gridNavigation.TryFindPath(currentGridCell, targetCell, pathBuffer)) return Vector3.zero;
+            if (pathBuffer.Count < 2) return Vector3.zero;
+
+            Vector2Int nextCell = pathBuffer[1];
+            Vector2Int difference = nextCell - currentGridCell;
+
+            if (Mathf.Abs(difference.x) + Mathf.Abs(difference.y) != 1)
+            {
+                Debug.LogError($"{name}: A* ha restituito uno step non adiacente {currentGridCell} -> {nextCell}.", this);
+                return Vector3.zero;
+            }
+
+            if (!gridNavigation.TryGetCellCenter(nextCell, out Vector3 nextCenter)) return Vector3.zero;
+
+            gridStepCell = nextCell;
+            gridStepCenter = nextCenter;
+            hasGridStep = true;
+
+            return GetCurrentGridStepDirection();
+        }
+
+        protected Vector3 GetNavMeshPatrolDirection()
+        {
+            patrol.UpdateTargetIfReached(transform.position);
+            return GetNavMeshDirectionTo(patrol.GetCurrentTargetPosition());
+        }
+
+        protected bool IsCenteredOnGrid()
+        {
+            if (gridNavigation == null || hasGridStep) return false;
+            if (!gridNavigation.TryGetCellCenter(currentGridCell, out Vector3 center)) return false;
+
+            return Mathf.Abs(transform.position.x - center.x) <= gridCenterTolerance &&
+                   Mathf.Abs(transform.position.z - center.z) <= gridCenterTolerance;
+        }
+
+        protected Vector2Int GetCurrentGridCell() => currentGridCell;
+
+        protected Vector2Int GetGridCell(Vector3 worldPosition)
+        {
+            return gridNavigation != null ? gridNavigation.WorldToCell(worldPosition) : Vector2Int.zero;
+        }
+
+        protected bool TryGetGridCellCenter(Vector2Int cell, out Vector3 center)
+        {
+            center = Vector3.zero;
+            return gridNavigation != null && gridNavigation.TryGetCellCenter(cell, out center);
         }
 
         private void RotateTowardsLookDirection(float deltaTime)
         {
-            if (LookDirection.sqrMagnitude < 0.01f)
-                return;
+            Vector3 direction = LookDirection;
+            direction.y = 0f;
 
-            Vector3 flatLookDirection = LookDirection;
-            flatLookDirection.y = 0f;
+            if (direction.sqrMagnitude < 0.01f) return;
 
-            if (flatLookDirection.sqrMagnitude < 0.01f)
-                return;
-
-            Quaternion targetRotation = Quaternion.LookRotation(
-                flatLookDirection.normalized,
-                Vector3.up
-            );
-
-            transform.rotation = Quaternion.Slerp(
-                transform.rotation,
-                targetRotation,
-                1f - Mathf.Exp(-rotationSpeed * deltaTime)
-            );
+            Quaternion targetRotation = Quaternion.LookRotation(direction.normalized, Vector3.up);
+            transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, 1f - Mathf.Exp(-rotationSpeed * deltaTime));
         }
 
         private void HandlePlayerDeathReset()
         {
+            if (target == null || !target.HasPlayer()) return;
+
             if (!target.IsPlayerDead())
             {
                 hasResetAfterPlayerDeath = false;
                 return;
             }
 
-            if (hasResetAfterPlayerDeath)
-                return;
+            if (hasResetAfterPlayerDeath) return;
 
             ResetToSpawn();
             hasResetAfterPlayerDeath = true;
         }
-
         protected void ResetToSpawn()
         {
-            ResetNavMeshAgentPath();
+            currentGridCell = spawnGridCell;
+            gridStepCell = spawnGridCell;
+            gridStepCenter = Vector3.zero;
+            hasGridStep = false;
 
-            if (TrySampleNavMeshPosition(
-                    SpawnPosition,
-                    out Vector3 resetPosition))
-            {
-                // Warp moves the enemy through the NavMeshAgent
-                // instead of modifying transform.position directly.
-                if (!navMeshAgent.Warp(resetPosition))
-                {
-                    Debug.LogWarning(
-                        $"{name}: the NavMeshAgent could not return to its spawn position.",
-                        this
-                    );
-                }
-            }
-            else
-            {
-                Debug.LogWarning(
-                    $"{name}: the spawn position is not close to a valid NavMesh.",
-                    this
-                );
-            }
+            navMeshAgent.ResetPath();
+            navMeshAgent.isStopped = false;
 
             patrol.Reset();
 
             MovementDirection = Vector3.zero;
             LookDirection = Vector3.zero;
 
-            nextNavMeshRepathTime = 0f;
-
-            ResetNavMeshAgentPath();
-
             OnResetToSpawn();
             SetInitialState();
         }
-
-        protected Vector3 GetNavMeshDirectionTo(Vector3 destination)
+        protected bool TrySampleNavMeshPosition(Vector3 desiredPosition, out Vector3 sampledPosition)
         {
-            if (!IsNavMeshAgentReady())
-                return Vector3.zero;
-
-            if (!TrySampleNavMeshPosition(
-                    destination,
-                    out Vector3 sampledDestination))
-            {
-                return Vector3.zero;
-            }
-
-            bool destinationChanged =
-                !hasNavMeshDestination
-                || Vector3.SqrMagnitude(
-                    sampledDestination - currentNavMeshDestination
-                ) > 0.0625f;
-
-            if (destinationChanged || Time.time >= nextNavMeshRepathTime)
-            {
-                if (!navMeshAgent.SetDestination(sampledDestination))
-                {
-                    hasNavMeshDestination = false;
-                    return Vector3.zero;
-                }
-
-                currentNavMeshDestination = sampledDestination;
-                hasNavMeshDestination = true;
-                nextNavMeshRepathTime =
-                    Time.time + navMeshRepathInterval;
-            }
-
-            if (navMeshAgent.pathPending)
-                return GetFlatDirectionTo(sampledDestination);
-
-            if (navMeshAgent.pathStatus == NavMeshPathStatus.PathInvalid)
-            {
-                hasNavMeshDestination = false;
-                return Vector3.zero;
-            }
-
-            Vector3 desiredVelocity = navMeshAgent.desiredVelocity;
-            desiredVelocity.y = 0f;
-
-            if (desiredVelocity.sqrMagnitude >= 0.01f)
-                return desiredVelocity.normalized;
-
-            Vector3 steeringDirection =
-                navMeshAgent.steeringTarget - transform.position;
-
-            steeringDirection.y = 0f;
-
-            if (steeringDirection.sqrMagnitude >= 0.01f)
-                return steeringDirection.normalized;
-
-            return GetFlatDirectionTo(sampledDestination);
+            return TrySampleNavMeshPosition(desiredPosition, navMeshSampleRadius, out sampledPosition);
         }
 
-        protected Vector3 GetNavMeshPatrolDirection()
-        {
-            patrol.UpdateTargetIfReached(transform.position);
-
-            Vector3 destination =
-                patrol.GetCurrentTargetPosition();
-
-            return GetNavMeshDirectionTo(destination);
-        }
-
-        protected bool TrySampleNavMeshPosition(
-            Vector3 desiredPosition,
-            out Vector3 sampledPosition)
-        {
-            return TrySampleNavMeshPosition(
-                desiredPosition,
-                navMeshSampleRadius,
-                out sampledPosition
-            );
-        }
-
-        protected bool TrySampleNavMeshPosition(
-            Vector3 desiredPosition,
-            float sampleRadius,
-            out Vector3 sampledPosition)
+        protected bool TrySampleNavMeshPosition(Vector3 desiredPosition, float sampleRadius, out Vector3 sampledPosition)
         {
             sampledPosition = desiredPosition;
 
-            int areaMask = navMeshAgent != null
-                ? navMeshAgent.areaMask
-                : NavMesh.AllAreas;
+            int areaMask = navMeshAgent != null ? navMeshAgent.areaMask : NavMesh.AllAreas;
 
-            bool positionFound = NavMesh.SamplePosition(
-                desiredPosition,
-                out NavMeshHit hit,
-                sampleRadius,
-                areaMask
-            );
-
-            if (!positionFound)
-                return false;
+            if (!NavMesh.SamplePosition(desiredPosition, out NavMeshHit hit, sampleRadius, areaMask)) return false;
 
             sampledPosition = hit.position;
             return true;
@@ -307,110 +298,33 @@ namespace Enemies
 
         private bool TryPlaceAgentOnNavMesh(Vector3 desiredPosition)
         {
-            if (navMeshAgent == null || !navMeshAgent.enabled)
-                return false;
-
-            if (navMeshAgent.isOnNavMesh)
-                return true;
-
-            if (!TrySampleNavMeshPosition(
-                    desiredPosition,
-                    out Vector3 sampledPosition))
-            {
-                return false;
-            }
+            if (navMeshAgent.isOnNavMesh) return true;
+            if (!TrySampleNavMeshPosition(desiredPosition, out Vector3 sampledPosition)) return false;
 
             return navMeshAgent.Warp(sampledPosition);
         }
 
         private bool IsNavMeshAgentReady()
         {
-            return navMeshAgent != null
-                   && navMeshAgent.enabled
-                   && navMeshAgent.isOnNavMesh;
+            return navMeshAgent != null && navMeshAgent.enabled && navMeshAgent.isOnNavMesh;
         }
 
-        private Vector3 GetFlatDirectionTo(Vector3 destination)
+        protected bool HasPlayer() => target.HasPlayer();
+        protected bool IsPlayerDead() => target.IsPlayerDead();
+        protected float GetDistanceFromPlayer() => target.DistanceFrom(transform.position);
+        protected bool IsPlayerInsideDetection() => target.IsInsideDetection(transform.position);
+        protected bool IsPlayerOutsideLoseRange() => target.IsOutsideLoseRange(transform.position);
+        protected Vector3 GetPlayerDirection() => target.DirectionFrom(transform.position);
+        protected Vector3 GetPlayerAimPosition(float verticalOffset = 1f) => target.AimPosition(verticalOffset);
+
+        protected bool TryDamagePlayer(Collider hitCollider, int damage, Vector3 knockbackDirection, bool useKnockback, float knockbackDistance = 0f)
         {
-            Vector3 direction = destination - transform.position;
-            direction.y = 0f;
-
-            if (direction.sqrMagnitude < 0.01f)
-                return Vector3.zero;
-
-            return direction.normalized;
-        }
-
-        private void ResetNavMeshAgentPath()
-        {
-            hasNavMeshDestination = false;
-            currentNavMeshDestination = Vector3.zero;
-
-            if (!IsNavMeshAgentReady())
-                return;
-
-            navMeshAgent.isStopped = true;
-            navMeshAgent.ResetPath();
-        }
-
-        protected bool HasPlayer()
-        {
-            return target.HasPlayer();
-        }
-
-        protected bool IsPlayerDead()
-        {
-            return target.IsPlayerDead();
-        }
-
-        protected float GetDistanceFromPlayer()
-        {
-            return target.DistanceFrom(transform.position);
-        }
-
-        protected bool IsPlayerInsideDetection()
-        {
-            return target.IsInsideDetection(transform.position);
-        }
-
-        protected bool IsPlayerOutsideLoseRange()
-        {
-            return target.IsOutsideLoseRange(transform.position);
-        }
-
-        protected Vector3 GetPlayerDirection()
-        {
-            return target.DirectionFrom(transform.position);
-        }
-
-        protected Vector3 GetPlayerAimPosition(float verticalOffset = 1f)
-        {
-            return target.AimPosition(verticalOffset);
-        }
-
-        protected bool TryDamagePlayer(
-            Collider hitCollider,
-            int damage,
-            Vector3 knockbackDirection,
-            bool useKnockback,
-            float knockbackDistance = 0f)
-        {
-            return EnemyPlayerDamage.TryDamage(
-                hitCollider,
-                damage,
-                knockbackDirection,
-                useKnockback,
-                knockbackDistance
-            );
+            return EnemyPlayerDamage.TryDamage(hitCollider, damage, knockbackDirection, useKnockback, knockbackDistance);
         }
 
         protected bool IsOwnCollider(Collider colliderToCheck)
         {
-            return colliderToCheck != null
-                   && (
-                       colliderToCheck.transform == transform
-                       || colliderToCheck.transform.IsChildOf(transform)
-                   );
+            return colliderToCheck != null && (colliderToCheck.transform == transform || colliderToCheck.transform.IsChildOf(transform));
         }
 
         protected virtual void OnDrawGizmosSelected()

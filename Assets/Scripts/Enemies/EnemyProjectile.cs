@@ -17,17 +17,27 @@ namespace Enemies
         [SerializeField] private LayerMask environmentLayer;
         [SerializeField] private bool destroyOnEnvironmentHit = true;
 
+        [Header("Animation")]
+        [SerializeField] private float rotationSpeed = 180f;
+        [SerializeField] private float pulseSpeed = 4f;
+        [SerializeField] private float pulseAmount = 0.08f;
+
         private Vector3 direction;
         private bool launched;
         private bool stopped;
 
+        private Vector3 initialScale;
+
         private void Start()
         {
+            initialScale = transform.localScale;
             Destroy(gameObject, lifeTime);
         }
 
         private void Update()
         {
+            UpdateVisualAnimation();
+
             if (!launched || stopped)
                 return;
 
@@ -38,9 +48,7 @@ namespace Enemies
         {
             //invalid direction
             if (launchDirection.sqrMagnitude < 0.01f)
-            {
                 return;
-            }
 
             direction = launchDirection.normalized;
             launched = true;
@@ -53,6 +61,24 @@ namespace Enemies
         {
             float distance = speed * Time.deltaTime;
             int collisionMask = playerLayer.value | environmentLayer.value;
+
+            //added: checks if the projectile is already overlapping the player
+            //when it starts very close to them
+            Collider[] playerOverlaps = Physics.OverlapSphere(
+                transform.position,
+                collisionRadius,
+                playerLayer,
+                QueryTriggerInteraction.Collide
+            );
+
+            foreach (Collider overlap in playerOverlaps)
+            {
+                if (overlap == null)
+                    continue;
+
+                HitPlayer(overlap);
+                return;
+            }
 
             bool hasHit = Physics.SphereCast(
                 transform.position,
@@ -72,6 +98,13 @@ namespace Enemies
             }
 
             transform.position += direction * distance;
+        }
+        private void UpdateVisualAnimation()
+        {
+            transform.Rotate(Vector3.forward, rotationSpeed * Time.deltaTime, Space.Self);
+
+            float pulse = 1f + Mathf.Sin(Time.time * pulseSpeed) * pulseAmount;
+            transform.localScale = initialScale * pulse;
         }
 
         private void OnTriggerEnter(Collider other)
@@ -93,10 +126,8 @@ namespace Enemies
                 return;
             }
 
-            if (IsInLayerMask(other.gameObject.layer, environmentLayer))
-            {
-                StopOnEnvironment();
-            }
+            //if the projectile hits any other scene collider, destroy it
+            StopOnEnvironment();
         }
 
         private void HitPlayer(Collider other)
