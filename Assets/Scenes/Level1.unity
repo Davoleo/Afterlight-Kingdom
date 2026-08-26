@@ -29816,7 +29816,7 @@ MonoBehaviour:
   radius: 400.5
   height: 120
   radialSegments: 64
-  verticalOffset: 30
+  verticalOffset: 80
   uTile: 8
   vTile: 1
 --- !u!1001 &231058321
@@ -50256,7 +50256,7 @@ MonoBehaviour:
   radius: 600
   height: 300
   radialSegments: 64
-  verticalOffset: -170
+  verticalOffset: -100
   uTile: 8
   vTile: 1
 --- !u!23 &406755726
@@ -54932,9 +54932,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   radius: 200
-  height: 150
+  height: 180
   radialSegments: 64
-  verticalOffset: -190
+  verticalOffset: -150
   uTile: 8
   vTile: 2
 --- !u!1001 &455308477
@@ -72636,7 +72636,7 @@ MonoBehaviour:
   radius: 200
   height: 80
   radialSegments: 64
-  verticalOffset: -40
+  verticalOffset: 0
   uTile: 8
   vTile: 1
 --- !u!1001 &586967946
@@ -105738,7 +105738,7 @@ MonoBehaviour:
   radius: 400
   height: 150
   radialSegments: 64
-  verticalOffset: -120
+  verticalOffset: -70
   uTile: 8
   vTile: 1
 --- !u!4 &863247316 stripped
@@ -197209,7 +197209,7 @@ MonoBehaviour:
   radius: 600.5
   height: 150
   radialSegments: 64
-  verticalOffset: 130
+  verticalOffset: 200
   uTile: 8
   vTile: 1
 --- !u!4 &1630936439 stripped

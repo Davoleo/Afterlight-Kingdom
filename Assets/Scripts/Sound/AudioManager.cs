@@ -1,4 +1,6 @@
-﻿using Core;
+﻿using System.Collections;
+using System.Collections.Generic;
+using Core;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
@@ -8,7 +10,11 @@ namespace Sound
     {
         public static AudioManager Instance { get; private set; }
         [SerializeField] private AudioSource globalSfxSource;
-        private float _volume = -1f;
+        [SerializeField] private AudioSource bgmSource;
+
+        private static Dictionary<SceneNames, BGM> IndexedBgm;
+
+        private Coroutine _bgmCoroutine;
 
         private void Awake()
         {
@@ -20,22 +26,26 @@ namespace Sound
 
             Instance = this;
             DontDestroyOnLoad(gameObject);
+
+            Sound.BGM.InitClips();
+            IndexedBgm = new()
+            {
+                { SceneNames.Level1, Sound.BGM.Forest },
+                { SceneNames.Level2, Sound.BGM.Village },
+                { SceneNames.Level3, Sound.BGM.Castle }
+            };
         }
 
-        private void LazyInitVolume()
+        public void SetVolumes(float bgm, float sfx)
         {
-            if (_volume < 0)
-            {
-                _volume = PlayerPrefs.GetFloat(GameSettings.MasterVolume);
-            }
+            bgmSource.volume = bgm;
+            globalSfxSource.volume = sfx;
         }
 
         public void PlaySfx(AudioClip clip, float volumeMult = 1f)
         {
-            LazyInitVolume();
-
             //Debug.Log("Playing SFX at volume: " + _volume + '*' + volumeMult);
-            globalSfxSource.PlayOneShot(clip, _volume * volumeMult);
+            globalSfxSource.PlayOneShot(clip, volumeMult);
         }
 
 
@@ -47,10 +57,42 @@ namespace Sound
         /// <param name="volumeMult">volume of playback</param>
         public void PlayRandomSfx(AudioClip[] pool, float volumeMult = 1f)
         {
-            LazyInitVolume();
-
             int randomIndex = Random.Range(0, pool.Length);
-            globalSfxSource.PlayOneShot(pool[randomIndex], _volume * volumeMult);
+            globalSfxSource.PlayOneShot(pool[randomIndex], volumeMult);
+        }
+
+        /// <summary>
+        /// Play BGM
+        /// </summary>
+        /// <param name="override">optional override scene BGM</param>
+        public void PlayBGM(BGM @override = null) => _bgmCoroutine = StartCoroutine(BGM(@override));
+
+        public IEnumerator BGM(BGM @override)
+        {
+            while (true)
+            {
+                if (@override is not null)
+                {
+                    bgmSource.clip = @override.UseOne();
+                }
+                else
+                {
+                    IndexedBgm.TryGetValue(GameSession.LevelToLoad, out var bgm);
+                    //Scene with no music
+                    if (bgm is null) yield break;
+
+                    bgmSource.clip = bgm.UseOne();
+                }
+
+                bgmSource.Play();
+
+                yield return new WaitForSeconds(60f);
+            }
+        }
+
+        public void StopBGM()
+        {
+            StopCoroutine(_bgmCoroutine);
         }
     }
 }
