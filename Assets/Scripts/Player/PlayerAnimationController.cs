@@ -1,3 +1,4 @@
+using Core;
 using Player.State;
 using UnityEngine;
 
@@ -24,18 +25,28 @@ namespace Player
         private void OnEnable()
         {
             PlayerState.OnJumped += TriggerJump;
+            GameStateManager.Respawned += ResetAnimatorState;
         }
 
         private void OnDisable()
         {
             PlayerState.OnJumped -= TriggerJump;
+            GameStateManager.Respawned -= ResetAnimatorState;
         }
 
         private void TriggerJump()
         {
             _animator.SetTrigger(JumpHash);
         }
-        
+
+        // Clears every trigger/bool and returns all layers to their default state, so the
+        // player never respawns mid-way through whatever animation was playing on death.
+        private void ResetAnimatorState()
+        {
+            _animator.Rebind();
+            _animator.Update(0f);
+        }
+
 
         private void Update()
         {

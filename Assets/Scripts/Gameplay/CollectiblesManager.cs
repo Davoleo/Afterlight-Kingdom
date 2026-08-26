@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Core;
 using Triggers;
@@ -9,7 +10,6 @@ namespace Gameplay
     {
         Coin,
         Key,
-        Ability
     }
 
     public struct Collectibles
@@ -26,11 +26,6 @@ namespace Gameplay
         public int keys;
 
         public List<string> collectedIds = new List<string>();
-
-        private void Awake()
-        {
-            InitializeCollectiblesLists();
-        }
 
         public void Collect(CollectibleType type, string id)
         {
@@ -76,7 +71,7 @@ namespace Gameplay
             {
                 CollectibleType.Coin => coins,
                 CollectibleType.Key => keys,
-                _ => throw new System.ArgumentOutOfRangeException(nameof(type), type, null)
+                _ => throw new ArgumentOutOfRangeException(nameof(type), type, null)
             };
         }
 
@@ -89,28 +84,23 @@ namespace Gameplay
             return true;
         }
 
+        // Called explicitly by CoreLoader once the level has actually finished loading and
+        // become the active scene - same reasoning as CheckpointManager.Respawn(): the level's
+        // Coin/Key objects don't exist yet while this GameObject is still booting inside Core.
         public void RestoreFromSave(SaveData save)
         {
             coins = save.coins;
             keys = save.keys;
             collectedIds = save.collectedIds != null ? new List<string>(save.collectedIds) : new List<string>();
 
+            RefreshCollectibleReferences();
             RestoreCollectedState();
         }
 
-        private void InitializeCollectiblesLists()
+        private void RefreshCollectibleReferences()
         {
-            if (Collectibles.Coins == null)
-            {
-                Collectibles.Coins = new List<GameObject>();
-                Collectibles.Coins.AddRange(GameObject.FindGameObjectsWithTag("Coins"));
-            }
-
-            if (Collectibles.Keys == null)
-            {
-                Collectibles.Keys = new List<GameObject>();
-                Collectibles.Keys.AddRange(GameObject.FindGameObjectsWithTag("Keys"));
-            }
+            Collectibles.Coins = new List<GameObject>(GameObject.FindGameObjectsWithTag("Coins"));
+            Collectibles.Keys = new List<GameObject>(GameObject.FindGameObjectsWithTag("Keys"));
         }
 
         private void RestoreCollectedState()

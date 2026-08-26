@@ -1,5 +1,6 @@
 using System;
 using Controllers;
+using Core;
 using Projectiles;
 using UnityEngine;
 
@@ -63,8 +64,11 @@ namespace Player
             Health = MaxHealth;
             //flush the inputs
             _characterController.ResetInputs();
-            // avoid character to keep momentum after respawn 
+            // avoid character to keep momentum after respawn
             _characterController.motor.BaseVelocity  = Vector3.zero;
+
+            // Let systems holding transient state (animator, bow visuals...) reset themselves
+            GameStateManager.NotifyRespawned();
         }
 
         private void HandleDeath()

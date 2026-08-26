@@ -243,7 +243,7 @@ namespace Player
 
         public void AfterCharacterUpdate(float deltaTime)
         {
-            CommandUtils.Off(ref triggers, PlayerTrigger.Jump | PlayerTrigger.Dash);
+            CommandUtils.Off(ref triggers, PlayerTrigger.Interact | PlayerTrigger.Dash | PlayerTrigger.Jump);
         }
 
         public Vector3 ComputeMoveDirection()

@@ -48,7 +48,7 @@ Shader "Custom/Kevin Iglesias/Human Melee Animations Scene"
                 float2 uv : TEXCOORD0;
             };
 
-            struct v2f
+            struct Varyings
             {
                 float4 vertex : SV_POSITION;
                 float3 normalWS : TEXCOORD0;
@@ -56,9 +56,9 @@ Shader "Custom/Kevin Iglesias/Human Melee Animations Scene"
                 float2 uv : TEXCOORD2;
             };
 
-            v2f vert(appdata v)
+            Varyings vert(appdata v)
             {
-                v2f o;
+                Varyings o;
                 o.vertex = UnityObjectToClipPos(v.vertex);
                 o.normalWS = UnityObjectToWorldNormal(v.normal);
                 o.worldPos = mul(unity_ObjectToWorld, v.vertex).xyz;
@@ -83,7 +83,7 @@ Shader "Custom/Kevin Iglesias/Human Melee Animations Scene"
                 return o;
             }
 
-            fixed4 frag(v2f i) : SV_Target
+            fixed4 frag(Varyings i) : SV_Target
             {
                 fixed4 tex = tex2D(_MainTex, i.uv) * _Color;
 
