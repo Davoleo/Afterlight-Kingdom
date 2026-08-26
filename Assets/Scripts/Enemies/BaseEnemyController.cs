@@ -101,6 +101,7 @@ namespace Enemies
 
             return true;
         }
+
         protected void MoveAndRotate(float deltaTime)
         {
             MoveCharacterOnGrid(deltaTime);
@@ -176,7 +177,7 @@ namespace Enemies
         {
             if (gridNavigation == null) return Vector3.zero;
 
-            // Un movimento tra due celle non viene mai interrotto a metà.
+            // Always find a complete cell
             if (hasGridStep) return GetCurrentGridStepDirection();
 
             Vector2Int targetCell = gridNavigation.WorldToCell(destination);

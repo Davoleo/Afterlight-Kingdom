@@ -309,7 +309,10 @@ namespace Player
             Vector3 atCharacterPosition,
             Quaternion atCharacterRotation,
             ref HitStabilityReport hitStabilityReport)
-        { }
+        {
+            if (hitCollider.CompareTag("Enemy"))
+                hitStabilityReport.IsStable = false;
+        }
 
         public void OnDiscreteCollisionDetected(Collider hitCollider)
         {
