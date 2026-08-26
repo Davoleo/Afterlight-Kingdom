@@ -62,6 +62,24 @@ namespace Enemies
             float distance = speed * Time.deltaTime;
             int collisionMask = playerLayer.value | environmentLayer.value;
 
+            //added: checks if the projectile is already overlapping the player
+            //when it starts very close to them
+            Collider[] playerOverlaps = Physics.OverlapSphere(
+                transform.position,
+                collisionRadius,
+                playerLayer,
+                QueryTriggerInteraction.Collide
+            );
+
+            foreach (Collider overlap in playerOverlaps)
+            {
+                if (overlap == null)
+                    continue;
+
+                HitPlayer(overlap);
+                return;
+            }
+
             bool hasHit = Physics.SphereCast(
                 transform.position,
                 collisionRadius,
@@ -81,7 +99,6 @@ namespace Enemies
 
             transform.position += direction * distance;
         }
-
         private void UpdateVisualAnimation()
         {
             transform.Rotate(Vector3.forward, rotationSpeed * Time.deltaTime, Space.Self);
@@ -109,8 +126,8 @@ namespace Enemies
                 return;
             }
 
-            if (IsInLayerMask(other.gameObject.layer, environmentLayer))
-                StopOnEnvironment();
+            //if the projectile hits any other scene collider, destroy it
+            StopOnEnvironment();
         }
 
         private void HitPlayer(Collider other)

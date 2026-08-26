@@ -24,6 +24,9 @@ namespace Player
         [Header("External Knockback")]
         [SerializeField] private float knockbackDrag = 12f;
 
+        [Header("Enemy Collision")]
+        [SerializeField] private float enemyTopSlideSpeed = 3f;
+
         private Vector3 externalKnockbackVelocity;
 
         //avoid knockback cumulation
@@ -281,22 +284,56 @@ namespace Player
             Vector3 hitPoint,
             ref HitStabilityReport hitStabilityReport)
         {
+            //if the player lands on top of an enemy, force the horizontal movement only backwards so it cannot slide sideways
+            if (hitCollider.CompareTag("Enemy") && hitNormal.y > 0.5f)
+            {
+                Vector3 backwardDirection = -DigitalCharacterForward;
+                backwardDirection.y = 0f;
+
+                if (backwardDirection.sqrMagnitude > 0.01f)
+                {
+                    backwardDirection.Normalize();
+                    motor.BaseVelocity = new Vector3(backwardDirection.x * enemyTopSlideSpeed,motor.BaseVelocity.y,backwardDirection.z * enemyTopSlideSpeed);
+                }
+            }
+            //if the player is moving directly into an enemy or its blocker, stop the horizontal movement so it does not redirect the player sideways, avoiding lateralslides
+            else if (hitCollider.CompareTag("Enemy"))
+            {
+                Vector3 horizontalVelocity = motor.Velocity;
+                horizontalVelocity.y = 0f;
+
+                Vector3 horizontalNormal = hitNormal;
+                horizontalNormal.y = 0f;
+
+                if (horizontalVelocity.sqrMagnitude > 0.01f && horizontalNormal.sqrMagnitude > 0.01f)
+                {
+                    horizontalVelocity.Normalize();
+                    horizontalNormal.Normalize();
+                    float movingIntoEnemy = Vector3.Dot(horizontalVelocity, -horizontalNormal);
+
+                    if (movingIntoEnemy > 0.2f)
+                    {
+                        motor.BaseVelocity = new Vector3(0f,motor.BaseVelocity.y,0f);
+                    }
+                }
+            }
+
             if (externalKnockbackTimer <= 0f)
                 return;
 
-            Vector3 horizontalNormal = hitNormal;
-            horizontalNormal.y = 0f;
+            Vector3 horizontalNormalKnockback = hitNormal;
+            horizontalNormalKnockback.y = 0f;
 
             Vector3 horizontalKnockback = externalKnockbackVelocity;
             horizontalKnockback.y = 0f;
 
-            if (horizontalNormal.sqrMagnitude < 0.01f || horizontalKnockback.sqrMagnitude < 0.01f)
+            if (horizontalNormalKnockback.sqrMagnitude < 0.01f || horizontalKnockback.sqrMagnitude < 0.01f)
                 return;
 
-            horizontalNormal.Normalize();
+            horizontalNormalKnockback.Normalize();
             horizontalKnockback.Normalize();
 
-            float movingIntoWall = Vector3.Dot(horizontalKnockback, -horizontalNormal);
+            float movingIntoWall = Vector3.Dot(horizontalKnockback, -horizontalNormalKnockback);
 
             if (movingIntoWall > 0.2f)
                 StopExternalKnockback();

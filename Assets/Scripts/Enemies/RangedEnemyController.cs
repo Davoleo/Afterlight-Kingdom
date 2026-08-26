@@ -118,11 +118,16 @@ namespace Enemies
 
             float distanceFromPlayer = GetHorizontalDistanceFromPlayer();
 
+            Vector3 horizontalDetectionPosition = transform.position;
+            horizontalDetectionPosition.y = Target.Player.position.y;
+
+            bool isPlayerInsideDetection = Target.IsInsideDetection(horizontalDetectionPosition);
+
             if (currentState == EnemyState.PostShot)
             {
                 if (Time.time < stateStartTime + postShotDelay) return;
 
-                if (!IsPlayerInsideDetection())
+                if (!isPlayerInsideDetection)
                 {
                     ChangeState(EnemyState.Waiting);
                     return;
@@ -134,7 +139,7 @@ namespace Enemies
 
             if (currentState == EnemyState.Waiting)
             {
-                if (IsPlayerInsideDetection())
+                if (isPlayerInsideDetection)
                 {
                     ChooseCombatState(distanceFromPlayer);
                     return;
@@ -145,7 +150,7 @@ namespace Enemies
                 return;
             }
 
-            if (!IsPlayerInsideDetection())
+            if (!isPlayerInsideDetection)
             {
                 if (currentState == EnemyState.Advancing || currentState == EnemyState.Shooting || currentState == EnemyState.Retreating)
                 {
