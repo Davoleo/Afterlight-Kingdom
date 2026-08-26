@@ -78,8 +78,8 @@ namespace Projectiles
 
                 if (enemyHealth != null)
                 {
-                    enemyHealth.TakeDamage(damage);
                     StickToEnemy(hitCollider.transform, transform.position);
+                    enemyHealth.TakeDamage(damage);
                     return true;
                 }
             }
@@ -93,8 +93,8 @@ namespace Projectiles
 
             if (enemyHealth != null)
             {
-                enemyHealth.TakeDamage(damage);
                 StickToEnemy(hit.collider.transform, hit.point);
+                enemyHealth.TakeDamage(damage);
                 return;
             }
 

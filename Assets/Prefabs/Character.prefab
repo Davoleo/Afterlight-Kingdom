@@ -156,6 +156,7 @@ MonoBehaviour:
   dashCooldown: 2
   dashCooldownTimer: 0
   knockbackDrag: 12
+  enemyTopSlideSpeed: 3
   triggers: 0
   CurrentLadderNormal: {x: 0, y: 0, z: 0}
 --- !u!114 &1968148925741943213
