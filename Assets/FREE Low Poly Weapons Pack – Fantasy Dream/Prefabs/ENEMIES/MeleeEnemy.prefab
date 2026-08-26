@@ -79,6 +79,7 @@ GameObject:
   - component: {fileID: -7386881669981752514}
   - component: {fileID: 7748937033531909475}
   - component: {fileID: 4473140629610821211}
+  - component: {fileID: 8031407537778634175}
   m_Layer: 8
   m_Name: MeleeEnemy
   m_TagString: Enemy
@@ -292,6 +293,26 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &8031407537778634175
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6595118272833061148}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eb539904352d405a8c458beef3957ce7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  hurts:
+  - {fileID: 8300000, guid: 1602883b8deaa544c9a354da0eecec6d, type: 3}
+  - {fileID: 8300000, guid: 62f577049b6737e45a359f765b7c2073, type: 3}
+  - {fileID: 8300000, guid: 4e510582ed0e79148af90f47da0fd3fd, type: 3}
+  deaths:
+  - {fileID: 8300000, guid: ea90b727167d81047abf7c156fde0679, type: 3}
+  - {fileID: 8300000, guid: 248976ceee807174e923374078d61ce3, type: 3}
+  - {fileID: 8300000, guid: 27754da130c5ae14b8fa02d32b484169, type: 3}
 --- !u!1 &6935543438647689131
 GameObject:
   m_ObjectHideFlags: 0

@@ -1,4 +1,5 @@
 using System;
+using UnityEngine;
 
 namespace Core
 {
@@ -11,12 +12,14 @@ namespace Core
         // player is currently in, use CurrentLevel for that.
         public const SceneNames NewGameStartLevel = SceneNames.Level1;
 
-        public static SceneNames CurrentLevel { get; private set; }
+        public static SceneNames CurrentLevel { get; private set; } = SceneNames.Core;
 
         public static event Action<SceneNames> LevelChanged;
 
         public static void SetCurrentLevel(SceneNames level)
         {
+            Debug.Log(CurrentLevel + " - " + level);
+
             if (CurrentLevel == level) return;
 
             CurrentLevel = level;

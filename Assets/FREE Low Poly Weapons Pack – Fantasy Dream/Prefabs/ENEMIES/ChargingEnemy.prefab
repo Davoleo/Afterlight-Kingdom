@@ -78,6 +78,7 @@ GameObject:
   - component: {fileID: 5791217069188861942}
   - component: {fileID: 372757731205036378}
   - component: {fileID: 9040016407344514266}
+  - component: {fileID: 7794821257788185255}
   m_Layer: 8
   m_Name: ChargingEnemy
   m_TagString: Enemy
@@ -273,6 +274,26 @@ NavMeshAgent:
   m_BaseOffset: 1
   m_WalkableMask: 4294967295
   m_ObstacleAvoidanceType: 4
+--- !u!114 &7794821257788185255
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2116302029063210296}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eb539904352d405a8c458beef3957ce7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  hurts:
+  - {fileID: 8300000, guid: 1602883b8deaa544c9a354da0eecec6d, type: 3}
+  - {fileID: 8300000, guid: 62f577049b6737e45a359f765b7c2073, type: 3}
+  - {fileID: 8300000, guid: 4e510582ed0e79148af90f47da0fd3fd, type: 3}
+  deaths:
+  - {fileID: 8300000, guid: ea90b727167d81047abf7c156fde0679, type: 3}
+  - {fileID: 8300000, guid: 248976ceee807174e923374078d61ce3, type: 3}
+  - {fileID: 8300000, guid: 27754da130c5ae14b8fa02d32b484169, type: 3}
 --- !u!1 &7633174519431943948
 GameObject:
   m_ObjectHideFlags: 0

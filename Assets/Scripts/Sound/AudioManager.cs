@@ -8,7 +8,26 @@ namespace Sound
 {
     public class AudioManager : MonoBehaviour
     {
-        public static AudioManager Instance { get; private set; }
+        private static AudioManager _instance;
+        public static AudioManager Instance
+        {
+            get
+            {
+                if (_instance is null)
+                {
+                    _instance = FindAnyObjectByType<AudioManager>();
+                    if (_instance is null)
+                    {
+                        var prefab = Resources.Load<AudioManager>("AudioSystems");
+                        _instance = prefab is not null ? Instantiate(prefab) : new GameObject("AudioSystems").AddComponent<AudioManager>();
+                    }
+                    DontDestroyOnLoad(_instance.gameObject);
+                }
+
+                return _instance;
+            }
+        }
+
         [SerializeField] private AudioSource globalSfxSource;
         [SerializeField] private AudioSource bgmSource;
 
@@ -18,13 +37,13 @@ namespace Sound
 
         private void Awake()
         {
-            if (Instance != null && Instance != this)
+            if (Instance is not null && Instance != this)
             {
                 Destroy(gameObject);
                 return;
             }
 
-            Instance = this;
+            _instance = this;
             DontDestroyOnLoad(gameObject);
 
             Sound.BGM.InitClips();
@@ -33,6 +52,14 @@ namespace Sound
                 { SceneNames.Level1, Sound.BGM.Forest },
                 { SceneNames.Level2, Sound.BGM.Village },
                 { SceneNames.Level3, Sound.BGM.Castle }
+            };
+            PlayBGM(GameSession.CurrentLevel);
+
+            GameSession.LevelChanged += newLevel =>
+            {
+                if (_bgmCoroutine is not null) StopBGM();
+
+                PlayBGM(newLevel);
             };
         }
 
@@ -61,31 +88,21 @@ namespace Sound
             globalSfxSource.PlayOneShot(pool[randomIndex], volumeMult);
         }
 
-        /// <summary>
-        /// Play BGM
-        /// </summary>
-        /// <param name="override">optional override scene BGM</param>
-        public void PlayBGM(BGM @override = null) => _bgmCoroutine = StartCoroutine(BGM(@override));
+        /// <param name="scene">scene from which the appropriate bgm should be played</param>
+        public void PlayBGM(SceneNames scene)
+        {
+            IndexedBgm.TryGetValue(scene, out var bgm);
+            if (bgm is null) return;
 
-        public IEnumerator BGM(BGM @override)
+            _bgmCoroutine = StartCoroutine(BGM(bgm));
+        }
+
+        public IEnumerator BGM(BGM bgm)
         {
             while (true)
             {
-                if (@override is not null)
-                {
-                    bgmSource.clip = @override.UseOne();
-                }
-                else
-                {
-                    IndexedBgm.TryGetValue(GameSession.LevelToLoad, out var bgm);
-                    //Scene with no music
-                    if (bgm is null) yield break;
-
-                    bgmSource.clip = bgm.UseOne();
-                }
-
+                bgmSource.clip = bgm.UseOne();
                 bgmSource.Play();
-
                 yield return new WaitForSeconds(60f);
             }
         }

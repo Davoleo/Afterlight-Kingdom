@@ -394,9 +394,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 86621ed96f9b4240b8c06473584e9770, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  hurt: {fileID: 8300000, guid: 05c4d471a5bebd043a4bea6887418737, type: 3}
+  climbSfx:
+  - {fileID: 8300000, guid: 9ad84319ec879324da3a77c9e71f6a7e, type: 3}
+  - {fileID: 8300000, guid: 3c06458333f29224b981eeb9363f8d53, type: 3}
+  - {fileID: 8300000, guid: cf1d9441b281ff24bb202bab99dcf319, type: 3}
   bowDraw: {fileID: 8300000, guid: 30d45064915e2c54cb6d02519ade2b45, type: 3}
   bowShoot: {fileID: 8300000, guid: ae33998bb30c38b4082489a173976793, type: 3}
-  climbSfx: []
 --- !u!1 &6557920474979051439
 GameObject:
   m_ObjectHideFlags: 0

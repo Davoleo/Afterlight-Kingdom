@@ -11,24 +11,19 @@ namespace Player
         private Dictionary<SurfaceType, AudioClip> footsteps = new();
         private Dictionary<SurfaceType, AudioClip> jumpLandings = new();
 
+        public AudioClip hurt;
+        [SerializeField]
+        public AudioClip[] climbSfx;
+
         [Header("Bow")]
         public AudioClip bowDraw;
         public AudioClip bowShoot;
-
-        [SerializeField]
-        public AudioClip[] climbSfx;
 
         private PlayerCharacterController _player;
 
         private void Start()
         {
             _player = GetComponent<PlayerCharacterController>();
-
-            climbSfx = new[] {
-                Resources.Load<AudioClip>("Sound/wooden_ladder_1"),
-                Resources.Load<AudioClip>("Sound/wooden_ladder_2"),
-                Resources.Load<AudioClip>("Sound/wooden_ladder_3"),
-            };
 
             foreach (SurfaceType surface in Enum.GetValues(typeof(SurfaceType)))
             {
@@ -60,5 +55,8 @@ namespace Player
         private void OnBowRelease() => AudioManager.Instance.PlaySfx(bowShoot, 0.7f);
 
         private void OnPlayerClimb() => AudioManager.Instance.PlayRandomSfx(climbSfx, 1.7f);
+
+        public void OnPlayerHurt() => AudioManager.Instance.PlaySfx(hurt);
+
     }
 }

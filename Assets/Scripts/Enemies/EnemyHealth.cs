@@ -9,8 +9,11 @@ namespace Enemies
         public int CurrentHealth => currentHealth;
         public bool IsDead => currentHealth <= 0;
 
+        private EnemySoundFXs _sfx;
+
         private void Start()
         {
+            _sfx = GetComponent<EnemySoundFXs>();
             ResetEnemy();
         }
 
@@ -23,10 +26,13 @@ namespace Enemies
 
             if (currentHealth <= 0)
                 Die();
+            else
+                _sfx.OnEnemyHurt();
         }
 
         private void Die()
         {
+            _sfx.OnEnemyDeath();
             gameObject.SetActive(false);
         }
 
