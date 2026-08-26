@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using Gameplay;
 using UnityEngine;
@@ -22,9 +23,9 @@ namespace Core
         {
             // 1. Determine which level to load: if a save exists, use the level the last
             // checkpoint was recorded in, otherwise use the one chosen from the menu (new game)
-            string levelName = GameSession.ResolveLevelToLoad();
+            string levelToLoad = GameSession.ResolveLevelToLoad();
 
-            if (levelName == SceneNames.Core.ToString())
+            if (levelToLoad == SceneNames.Core.ToString())
             {
                 // Never load Core as if it were a level,
                 // doing so would spawn a second Core scene with its own
@@ -35,15 +36,15 @@ namespace Core
 
             // If the level is already loaded (e.g. it was left open in the Editor's multi-scene
             // Hierarchy before pressing Play), don't load a second copy of it on top.
-            Scene existingScene = SceneManager.GetSceneByName(levelName);
+            Scene existingScene = SceneManager.GetSceneByName(levelToLoad);
             bool alreadyLoaded = existingScene.IsValid() && existingScene.isLoaded;
 
             if (!alreadyLoaded)
             {
-                AsyncOperation asyncLoad = SceneManager.LoadSceneAsync(levelName, LoadSceneMode.Additive);
+                AsyncOperation asyncLoad = SceneManager.LoadSceneAsync(levelToLoad, LoadSceneMode.Additive);
                 if (asyncLoad == null)
                 {
-                    Debug.LogError($"CoreLoader: couldn't load level '{levelName}' - is it added to Build Settings?");
+                    Debug.LogError($"CoreLoader: couldn't load level '{levelToLoad}' - is it added to Build Settings?");
                     yield break;
                 }
 
@@ -53,13 +54,14 @@ namespace Core
                     yield return null;
                 }
 
-                existingScene = SceneManager.GetSceneByName(levelName);
+                existingScene = SceneManager.GetSceneByName(levelToLoad);
             }
 
             // set the newly loaded level as the Active Scene
             // This ensures the level's lighting (skybox, fog) is applied
             // and that newly spawned objects end up in the level instead of in Core.
             SceneManager.SetActiveScene(existingScene);
+            GameSession.SetCurrentLevel(Enum.Parse<SceneNames>(levelToLoad));
 
             // 3. The level's colliders/geometry now genuinely exist - safe to position the player.
             GetComponent<CheckpointManager>().Respawn();
