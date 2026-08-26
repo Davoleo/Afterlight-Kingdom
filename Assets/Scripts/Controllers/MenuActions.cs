@@ -10,7 +10,7 @@ namespace Controllers
         private CheckpointManager _cpManager;
         private MenuManager _menuManager;
         private HealthManager _healthManager;
-
+        
         private void Start()
         {
             if (!gameObject.CompareTag("GameManager")) return;
@@ -36,7 +36,6 @@ namespace Controllers
 
         public void NewGame()
         {
-            GameSession.LevelToLoad = SceneNames.Level1;
             SaveManager.Delete();
             SceneLoader.LoadScene(SceneNames.Core);
         }

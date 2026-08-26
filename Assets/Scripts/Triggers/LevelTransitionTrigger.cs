@@ -44,6 +44,7 @@ namespace Triggers
             // 2. Make the new level the active scene (lighting, new spawns end up there, etc.)
             Scene targetScene = SceneManager.GetSceneByName(nextLevelName.ToString());
             SceneManager.SetActiveScene(targetScene);
+            GameSession.SetCurrentLevel(nextLevelName);
 
             // 3. Move the player to the new level's spawn point
             GameObject gm = GameObject.FindGameObjectWithTag("GameManager");
