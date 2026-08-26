@@ -120,7 +120,6 @@ namespace Enemies
 
             Vector3 horizontalDetectionPosition = transform.position;
             horizontalDetectionPosition.y = Target.Player.position.y;
-
             bool isPlayerInsideDetection = Target.IsInsideDetection(horizontalDetectionPosition);
 
             if (currentState == EnemyState.PostShot)

@@ -1,4 +1,5 @@
 using System.Collections;
+using Projectiles;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -120,11 +121,27 @@ namespace Enemies
              * with the enemy while the Death animation is playing.
              */
             SetCollidersEnabled(false);
+
+            // Remove all arrows stuck in the enemy.
+            RemoveAttachedArrows();
+
             animator.SetBool("IsHit", false);
             animator.SetBool("IsDead", true);
             
 
             StartCoroutine(DeathRoutine());
+        }
+
+        // Removes all arrows stuck in the enemy.
+        private void RemoveAttachedArrows()
+        {
+            Arrow[] arrows = GetComponentsInChildren<Arrow>(true);
+
+            foreach (Arrow arrow in arrows)
+            {
+                arrow.gameObject.SetActive(false);
+                Destroy(arrow.gameObject);
+            }
         }
 
         private IEnumerator DeathRoutine()
