@@ -130,6 +130,8 @@ MonoBehaviour:
   projectileSpawnOffset: 0.4
   postShotDelay: 1.01
   playerChestAimOffset: -0.2
+  castSphereCollider: {fileID: 5697387147017204799}
+  castSphereDuration: 1
   lostPlayerIdleDuration: 1
   returnPositionTolerance: 0.15
 --- !u!114 &7022476504449931981
