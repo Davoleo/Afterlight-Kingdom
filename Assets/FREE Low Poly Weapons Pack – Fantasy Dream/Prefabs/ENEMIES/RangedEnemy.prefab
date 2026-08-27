@@ -122,7 +122,7 @@ MonoBehaviour:
   advanceSpeed: 2
   retreatSpeed: 3
   minimumShootingDistance: 2
-  desiredShootingDistance: 7
+  desiredShootingDistance: 5
   retreatDistance: 3
   retreatNavMeshSampleRadius: 2
   shootCooldown: 1.5
@@ -250,7 +250,7 @@ GameObject:
   - component: {fileID: 3997500229718175534}
   - component: {fileID: 8307707812257618689}
   - component: {fileID: 5697387147017204799}
-  m_Layer: 8
+  m_Layer: 10
   m_Name: Cast_area
   m_TagString: Enemy
   m_Icon: {fileID: 0}
