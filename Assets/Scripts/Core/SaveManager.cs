@@ -26,6 +26,7 @@ namespace Core
         {
             var cpManager = gm.GetComponent<CheckpointManager>();
             var collManager = gm.GetComponent<CollectiblesManager>();
+            var doorManager = gm.GetComponent<DoorManager>();
             var abilityManager = gm.GetComponent<AbilityManager>();
             //var playerController = GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerCharacterController>();
                     
@@ -53,6 +54,7 @@ namespace Core
                 cameraRotation = cpManager.LastCheckPoint.Rotation,
 
                 collectedIds = collManager.collectedIds ?? new List<string>(),
+                openedDoorIds = doorManager.openedDoorIds ?? new List<string>(),
                 coins = collManager.coins,
                 keys = collManager.keys,
 
