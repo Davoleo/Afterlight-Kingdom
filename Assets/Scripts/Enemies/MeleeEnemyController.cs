@@ -29,9 +29,6 @@ namespace Enemies
         [SerializeField] private float attackRadius = 0.8f;
         [SerializeField] private int attackDamage = 1;
 
-        [Header("Animation")]
-        [SerializeField] private Animator animator;
-
         private EnemyState currentState;
 
         private bool isPreparingAttack;
@@ -41,8 +38,6 @@ namespace Enemies
         private float attackRecoveryEndTime;
         private Vector3 attackPosition;
         private bool hasLockedAttackPosition;
-
-        public Animator EnemyAnimator => animator;
 
         protected override void Start()
         {

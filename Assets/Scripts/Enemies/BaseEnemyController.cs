@@ -29,11 +29,15 @@ namespace Enemies
         [Header("Base NavMesh")]
         [SerializeField] protected float navMeshSampleRadius = 2f;
 
+        [Header("Animation")]
+        [SerializeField] protected Animator animator;
+
         protected Vector3 MovementDirection;
         protected Vector3 LookDirection;
 
         protected Vector3 SpawnPosition { get; private set; }
         protected EnemyTarget Target => target;
+        public Animator EnemyAnimator => animator;
 
         private EnemyGridNavigation gridNavigation;
 

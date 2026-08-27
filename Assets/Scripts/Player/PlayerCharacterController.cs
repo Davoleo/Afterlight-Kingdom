@@ -1,3 +1,4 @@
+using System;
 using Gameplay;
 using KinematicCharacterController;
 using Player.State;
@@ -42,7 +43,9 @@ namespace Player
         public PlayerInputs PlayerInputs;
         public PlayerTrigger triggers;
 
-        private Vector3 _currentGroundObjectPos;
+        [NonSerialized]
+        public GameObject CurrentGroundObject;
+        [NonSerialized]
         public Vector3 DigitalCharacterForward;
 
         public Vector3 CurrentLadderNormal;
@@ -258,8 +261,8 @@ namespace Player
         public void SnapPlayerLocation(float t)
         {
             var pos = transform.position;
-            var rX = _currentGroundObjectPos.x;
-            var rZ = _currentGroundObjectPos.z;
+            var rX = CurrentGroundObject.transform.position.x;
+            var rZ = CurrentGroundObject.transform.position.z;
 
             var lerpX = Mathf.Lerp(pos.x, rX, t);
             var lerpZ = Mathf.Lerp(pos.z, rZ, t);
@@ -275,7 +278,7 @@ namespace Player
             Vector3 hitPoint,
             ref HitStabilityReport hitStabilityReport)
         {
-            _currentGroundObjectPos = hitCollider.transform.position;
+            CurrentGroundObject = hitCollider.gameObject;
         }
 
         public void OnMovementHit(

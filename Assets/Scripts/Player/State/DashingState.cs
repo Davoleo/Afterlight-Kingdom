@@ -1,3 +1,4 @@
+using Sound;
 using UnityEngine;
 
 namespace Player.State
@@ -8,8 +9,13 @@ namespace Player.State
         private readonly float _dashDuration = 0.25f; // seconds
         private float  _dashDurationTimer = 0.2f;
         private Vector3 _dashDirection;
+
+        private AudioClip _sfx = Resources.Load<AudioClip>("Sound/dash");
+
         public override void OnEnter()
         {
+            AudioManager.Instance.PlaySfx(_sfx, 1.3f);
+
             _dashDirection = Ctx.ComputeMoveDirection();
             if (_dashDirection == Vector3.zero) _dashDirection = Ctx.motor.CharacterForward;
             _dashDurationTimer = _dashDuration;

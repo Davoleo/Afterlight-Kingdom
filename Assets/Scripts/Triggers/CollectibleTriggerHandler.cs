@@ -1,4 +1,5 @@
 using Gameplay;
+using Sound;
 using UnityEngine;
 
 namespace Triggers
@@ -29,6 +30,7 @@ namespace Triggers
 
             CollectibleType resolvedType = ResolveCollectibleType();
 
+            AudioManager.Instance.PlaySfx(_collectiblesManager.GetPickupSound(resolvedType));
             _collectiblesManager.Collect(resolvedType, Id);
 
             gameObject.SetActive(false);
