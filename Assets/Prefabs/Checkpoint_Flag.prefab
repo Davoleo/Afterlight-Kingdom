@@ -189,6 +189,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 03a4c8eae42d453da3131578550e2773, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  enterSfx: {fileID: 8300000, guid: 016b9848d9f2d1943af5170cf3299cc2, type: 3}
+  derivedCameraRotation: 0
 --- !u!65 &634893592790330502
 BoxCollider:
   m_ObjectHideFlags: 0

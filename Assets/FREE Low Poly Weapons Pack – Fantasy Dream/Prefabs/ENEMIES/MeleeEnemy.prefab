@@ -77,6 +77,7 @@ GameObject:
   - component: {fileID: -7386881669981752514}
   - component: {fileID: 7748937033531909475}
   - component: {fileID: 8031407537778634175}
+  - component: {fileID: 4787177343428794844}
   m_Layer: 8
   m_Name: MeleeEnemy
   m_TagString: Enemy
@@ -94,8 +95,8 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 8.54, y: 2.22, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
+  m_LocalScale: {x: 0.9, y: 0.9, z: 0.9}
+  m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 712155766100959174}
   - {fileID: 5808734525443025105}
@@ -131,6 +132,7 @@ MonoBehaviour:
   gridResolveSearchRadius: 3
   gridMaxExpandedNodes: 2048
   navMeshSampleRadius: 2
+  animator: {fileID: 4787177343428794844}
   chaseSpeed: 3
   attackRange: 2
   attackCooldown: 0.6
@@ -139,7 +141,6 @@ MonoBehaviour:
   attackPoint: {fileID: 5808734525443025105}
   attackRadius: 2.05
   attackDamage: 1
-  animator: {fileID: 629463424846005460}
 --- !u!114 &7752617487149093108
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -236,6 +237,32 @@ MonoBehaviour:
   - {fileID: 8300000, guid: ea90b727167d81047abf7c156fde0679, type: 3}
   - {fileID: 8300000, guid: 248976ceee807174e923374078d61ce3, type: 3}
   - {fileID: 8300000, guid: 27754da130c5ae14b8fa02d32b484169, type: 3}
+  attacks:
+  - {fileID: 8300000, guid: 98c228d34a79ea74b865b7525d9cbfa1, type: 3}
+  - {fileID: 8300000, guid: eafd7d44cccd18043aecf95d846dc53c, type: 3}
+  - {fileID: 8300000, guid: 6ee58641eeaddb14390d796ffe6ea575, type: 3}
+--- !u!95 &4787177343428794844
+Animator:
+  serializedVersion: 7
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6595118272833061148}
+  m_Enabled: 1
+  m_Avatar: {fileID: 9000000, guid: 6aa8f6756ec685443847b09fc4fc149c, type: 3}
+  m_Controller: {fileID: 9100000, guid: e5bf12a0719c34d12a4b7655d94edb04, type: 2}
+  m_CullingMode: 1
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_AnimatePhysics: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!1 &6935543438647689131
 GameObject:
   m_ObjectHideFlags: 0
@@ -651,7 +678,8 @@ PrefabInstance:
       propertyPath: m_ApplyRootMotion
       value: 0
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 95138170599221064, guid: f50a68efcef03a246b5ec7635f125d3d, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects:
     - targetCorrespondingSourceObject: {fileID: 4064493243422118, guid: f50a68efcef03a246b5ec7635f125d3d, type: 3}
@@ -659,11 +687,6 @@ PrefabInstance:
       addedObject: {fileID: 7944979259863498590}
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: f50a68efcef03a246b5ec7635f125d3d, type: 3}
---- !u!95 &629463424846005460 stripped
-Animator:
-  m_CorrespondingSourceObject: {fileID: 95138170599221064, guid: f50a68efcef03a246b5ec7635f125d3d, type: 3}
-  m_PrefabInstance: {fileID: 715423693889184668}
-  m_PrefabAsset: {fileID: 0}
 --- !u!4 &712155766100959174 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4406749274061914, guid: f50a68efcef03a246b5ec7635f125d3d, type: 3}
