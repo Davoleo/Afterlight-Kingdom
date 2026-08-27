@@ -37,9 +37,6 @@ namespace Enemies
         [SerializeField] private float obstacleCheckDepth = 1f;
         [SerializeField] private float obstacleCheckForwardOffset = 0.2f;
 
-        [Header("Animation")]
-        [SerializeField] private Animator animator;
-
         private EnemyState currentState;
 
         private Vector3 chargeDirection;
@@ -55,7 +52,6 @@ namespace Enemies
 
         // Allows EnemyHealth to use exactly the same Animator
         // used by this controller.
-        public Animator EnemyAnimator => animator;
 
         protected override void Update()
         {

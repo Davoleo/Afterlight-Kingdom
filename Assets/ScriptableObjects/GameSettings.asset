@@ -12,5 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c048f332c69342989996a5773469f40b, type: 3}
   m_Name: GameSettings
   m_EditorClassIdentifier: 
-  masterVolume: 0.53454995
-  fullscreen: 0
+  bgmVolume: 0.4
+  sfxVolume: 1
+  fullscreen: 1

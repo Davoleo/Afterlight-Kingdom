@@ -25,7 +25,17 @@ namespace Gameplay
         public int coins;
         public int keys;
 
-        public List<string> collectedIds = new List<string>();
+        public List<string> collectedIds;
+
+        private readonly Dictionary<CollectibleType, AudioClip> _sfx = new();
+
+        private void Start()
+        {
+            _sfx[CollectibleType.Coin] = Resources.Load<AudioClip>("Sound/coin_pickup");
+            _sfx[CollectibleType.Key] = Resources.Load<AudioClip>("Sound/key");
+        }
+
+        public AudioClip GetPickupSound(CollectibleType type) => _sfx[type];
 
         public void Collect(CollectibleType type, string id)
         {

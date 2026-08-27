@@ -40,9 +40,6 @@ namespace Enemies
         [Header("Return To Position")]
         [SerializeField] private float returnPositionTolerance = 0.15f;
 
-        [Header("Animation")]
-        [SerializeField] private Animator animator;
-
         private EnemyState currentState;
 
         private bool isPreparingShot;

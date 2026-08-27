@@ -2,6 +2,7 @@ using System.Collections;
 using Core;
 using Gameplay;
 using Player;
+using Sound;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 

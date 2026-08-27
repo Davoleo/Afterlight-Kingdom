@@ -16,6 +16,7 @@ namespace Player
 
         private ArrowLauncher _arrowLauncher;
         private PlayerCharacterController _characterController;
+        private PlayerSoundFXs _sfx;
 
         public int Health
         {
@@ -36,6 +37,7 @@ namespace Player
             GameObject gameManager = GameObject.FindGameObjectWithTag("GameManager");
             _arrowLauncher = GetComponent<ArrowLauncher>();
             _characterController = GetComponent<PlayerCharacterController>();
+            _sfx = GetComponent<PlayerSoundFXs>();
 
             if (gameManager)
                 _menuManager = gameManager.GetComponent<MenuManager>();
@@ -46,6 +48,7 @@ namespace Player
             if (_isDead) return;
 
             Health = Math.Max(Health - damage, 0);
+            _sfx.OnPlayerHurt();
         }
 
         public void Heal(int heal)

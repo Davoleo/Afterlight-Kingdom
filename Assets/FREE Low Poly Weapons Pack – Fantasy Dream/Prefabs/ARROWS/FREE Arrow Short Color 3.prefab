@@ -131,3 +131,4 @@ MonoBehaviour:
   damage: 1
   stuckLifetime: 15
   standingCollider: {fileID: 8636967674070207378}
+  arrowHit: {fileID: 8300000, guid: 3eac8030fddafb341990ea8972ee2753, type: 3}

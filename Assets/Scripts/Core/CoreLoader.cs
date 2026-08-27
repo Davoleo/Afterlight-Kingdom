@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using Gameplay;
+using Sound;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 

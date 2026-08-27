@@ -1,6 +1,7 @@
 using System.Collections;
 using Gameplay;
 using Player;
+using Sound;
 using UnityEngine;
 
 namespace Triggers
@@ -28,6 +29,8 @@ namespace Triggers
         [SerializeField] private Animator chestAnimator;
         [SerializeField] private string openTriggerName = "OpenChest";
         [SerializeField] private ParticleSystem particles;
+
+        [Header("SFX")] [SerializeField] private AudioClip chestOpenSfx;
 
         private bool _opened;
         private bool _playerInside;
@@ -93,6 +96,7 @@ namespace Triggers
             if (chestAnimator)
                 chestAnimator.SetTrigger(openTriggerName);
 
+            AudioManager.Instance.PlaySfx(chestOpenSfx, volumeMult: 1.5f);
             StartCoroutine(SpawnRewardRoutine());
         }
 

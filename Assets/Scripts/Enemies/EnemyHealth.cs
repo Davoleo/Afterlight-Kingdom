@@ -20,6 +20,7 @@ namespace Enemies
 
         private BaseEnemyController enemyController;
         private NavMeshAgent navMeshAgent;
+        private EnemySoundFXs _sfx;
 
         // All enemy colliders are stored so they can be disabled
         // immediately when the enemy dies.
@@ -43,6 +44,8 @@ namespace Enemies
             // been assigned manually in the Inspector.
             animator = GetComponentInChildren<Animator>();
 
+            _sfx = GetComponent<EnemySoundFXs>();
+
             ResetEnemy();
         }
 
@@ -59,6 +62,8 @@ namespace Enemies
                 Die();
                 return;
             }
+            else
+                _sfx.OnEnemyHurt();
 
             PlayHitAnimation();
         }
@@ -97,6 +102,7 @@ namespace Enemies
 
         private void Die()
         {
+            _sfx.OnEnemyDeath();
             // Stop a possible Hit animation before starting Death.
             if (hitAnimationCoroutine != null)
             {
@@ -127,7 +133,7 @@ namespace Enemies
 
             animator.SetBool("IsHit", false);
             animator.SetBool("IsDead", true);
-            
+
 
             StartCoroutine(DeathRoutine());
         }
@@ -180,7 +186,7 @@ namespace Enemies
 
             animator.SetBool("IsHit", false);
             animator.SetBool("IsDead", false);
-            
+
             // Re-enable colliders when the enemy is reset/respawned.
             SetCollidersEnabled(true);
 

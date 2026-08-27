@@ -1,5 +1,5 @@
 using Core;
-using Unity.VisualScripting;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -7,7 +7,12 @@ namespace Controllers
 {
     public class OptionsController : MonoBehaviour
     {
-        [SerializeField] private Slider volumeSlider;
+        [SerializeField] private Slider sfxVolumeSlider;
+        [SerializeField] private Slider bgmVolumeSlider;
+
+        [SerializeField] private TextMeshProUGUI sfxLabel;
+        [SerializeField] private TextMeshProUGUI bgmLabel;
+
         [SerializeField] private Toggle fullscreenToggle;
         [SerializeField] private GameSettings settings;
         
@@ -18,7 +23,16 @@ namespace Controllers
             _isInitializing = true;
     
             settings.Load();
-            volumeSlider.value = settings.masterVolume;
+
+            Debug.Log("SFX" + settings.sfxVolume + " BGM" + settings.bgmVolume);
+
+            var volSfx = settings.sfxVolume * 100;
+            sfxVolumeSlider.value = volSfx;
+            sfxLabel.text = $"SFX: {volSfx}%";
+            var volBGM = settings.bgmVolume * 100;
+            bgmVolumeSlider.value = volBGM;
+            bgmLabel.text = $"BGM: {volBGM}%";
+
             fullscreenToggle.isOn = settings.fullscreen;
     
             _isInitializing = false;
@@ -27,8 +41,12 @@ namespace Controllers
         public void OnAnyChange()
         {
             if (_isInitializing) return;
-    
-            settings.masterVolume = volumeSlider.value;
+
+            bgmLabel.text = $"BGM: {bgmVolumeSlider.value}%";
+            settings.bgmVolume = bgmVolumeSlider.value / 100f;
+            sfxLabel.text = $"SFX: {sfxVolumeSlider.value}%";
+            settings.sfxVolume = sfxVolumeSlider.value / 100f;
+
             settings.fullscreen = fullscreenToggle.isOn;
             settings.Apply();
         }

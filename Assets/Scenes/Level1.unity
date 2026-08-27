@@ -37719,7 +37719,7 @@ MonoBehaviour:
   radius: 400.5
   height: 120
   radialSegments: 64
-  verticalOffset: 30
+  verticalOffset: 80
   uTile: 8
   vTile: 1
 --- !u!1001 &231058321
@@ -63880,7 +63880,7 @@ MonoBehaviour:
   radius: 600
   height: 300
   radialSegments: 64
-  verticalOffset: -170
+  verticalOffset: -100
   uTile: 8
   vTile: 1
 --- !u!23 &406755726
@@ -68597,18 +68597,6 @@ PrefabInstance:
     m_TransformParent: {fileID: 1770850320}
     m_Modifications:
     - target: {fileID: 1262112077936708972, guid: a3427acae3a374b55955da936f3a1a99, type: 3}
-      propertyPath: m_LocalScale.x
-      value: 0.9
-      objectReference: {fileID: 0}
-    - target: {fileID: 1262112077936708972, guid: a3427acae3a374b55955da936f3a1a99, type: 3}
-      propertyPath: m_LocalScale.y
-      value: 0.9
-      objectReference: {fileID: 0}
-    - target: {fileID: 1262112077936708972, guid: a3427acae3a374b55955da936f3a1a99, type: 3}
-      propertyPath: m_LocalScale.z
-      value: 0.9
-      objectReference: {fileID: 0}
-    - target: {fileID: 1262112077936708972, guid: a3427acae3a374b55955da936f3a1a99, type: 3}
       propertyPath: m_LocalPosition.x
       value: 39
       objectReference: {fileID: 0}
@@ -68647,10 +68635,6 @@ PrefabInstance:
     - target: {fileID: 1262112077936708972, guid: a3427acae3a374b55955da936f3a1a99, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1262112077936708972, guid: a3427acae3a374b55955da936f3a1a99, type: 3}
-      propertyPath: m_ConstrainProportionsScale
-      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6595118272833061148, guid: a3427acae3a374b55955da936f3a1a99, type: 3}
       propertyPath: m_Name
@@ -70364,9 +70348,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   radius: 200
-  height: 150
+  height: 180
   radialSegments: 64
-  verticalOffset: -190
+  verticalOffset: -150
   uTile: 8
   vTile: 2
 --- !u!1001 &455308477
@@ -93363,7 +93347,7 @@ MonoBehaviour:
   radius: 200
   height: 80
   radialSegments: 64
-  verticalOffset: -40
+  verticalOffset: 30
   uTile: 8
   vTile: 1
 --- !u!1001 &586967946
@@ -135937,7 +135921,7 @@ MonoBehaviour:
   radius: 400
   height: 150
   radialSegments: 64
-  verticalOffset: -120
+  verticalOffset: -70
   uTile: 8
   vTile: 1
 --- !u!4 &863247316 stripped
@@ -255501,7 +255485,7 @@ MonoBehaviour:
   radius: 600.5
   height: 150
   radialSegments: 64
-  verticalOffset: 130
+  verticalOffset: 200
   uTile: 8
   vTile: 1
 --- !u!4 &1630700910 stripped
