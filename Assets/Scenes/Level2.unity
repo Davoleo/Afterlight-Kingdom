@@ -48172,6 +48172,10 @@ PrefabInstance:
     m_TransformParent: {fileID: 282475972}
     m_Modifications:
     - target: {fileID: 4253981393804280641, guid: bb56ede23dc95104db20e030690fa722, type: 3}
+      propertyPath: rewardId
+      value: Level2_Dash
+      objectReference: {fileID: 0}
+    - target: {fileID: 4253981393804280641, guid: bb56ede23dc95104db20e030690fa722, type: 3}
       propertyPath: abilityToUnlock
       value: 0
       objectReference: {fileID: 0}
@@ -58416,7 +58420,7 @@ MonoBehaviour:
   m_OverrideVoxelSize: 0
   m_VoxelSize: 0.033333335
   m_MinRegionArea: 2
-  m_NavMeshData: {fileID: 23800000, guid: ddc7e59b1bfd0ea32a7cfd5a7a106731, type: 2}
+  m_NavMeshData: {fileID: 23800000, guid: 99fd453fdc86320948a7f6782c6e791a, type: 2}
   m_BuildHeightMesh: 0
 --- !u!4 &2074940249
 Transform:

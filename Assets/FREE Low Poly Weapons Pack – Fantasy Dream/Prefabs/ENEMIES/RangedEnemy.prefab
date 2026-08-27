@@ -119,7 +119,7 @@ MonoBehaviour:
   advanceSpeed: 2
   retreatSpeed: 3
   minimumShootingDistance: 2
-  desiredShootingDistance: 4
+  desiredShootingDistance: 7
   retreatDistance: 3
   retreatNavMeshSampleRadius: 2
   shootCooldown: 1.5

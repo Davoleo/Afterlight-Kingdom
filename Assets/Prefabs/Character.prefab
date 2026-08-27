@@ -19,7 +19,6 @@ GameObject:
   - component: {fileID: 2395597984147212350}
   - component: {fileID: 3473989864665460555}
   - component: {fileID: 7720670380383919340}
-  - component: {fileID: 2729919358070443188}
   - component: {fileID: 8241502049495792556}
   - component: {fileID: 7629166111987709219}
   m_Layer: 6
@@ -265,64 +264,6 @@ MonoBehaviour:
   defaultKnockbackDistance: 1.2
   knockbackDuration: 0.18
   maxKnockbackDistance: 4
---- !u!114 &2729919358070443188
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 843450463001694474}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f88b358208b147648804ddb50a1e7825, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  archerAnimator: {fileID: 1391818940750820672}
-  animationToPlay: 0
-  bowstringLine: {fileID: 9106672909570668111}
-  limb01: {fileID: 5232663754740267118}
-  limb02: {fileID: 5609054294008293252}
-  tip01: {fileID: 3792902609072288444}
-  tip02: {fileID: 7890808178143944819}
-  nockPoint: {fileID: 7272284537428692005}
-  bowstringAnchorPoint: {fileID: 320006932882423259}
-  bowReleaseCurve:
-    serializedVersion: 2
-    m_Curve:
-    - serializedVersion: 3
-      time: 0
-      value: 0
-      inSlope: 2
-      outSlope: 2
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0
-    - serializedVersion: 3
-      time: 0.48491687
-      value: 0.48607805
-      inSlope: -0.70019096
-      outSlope: -0.70019096
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.34414038
-    - serializedVersion: 3
-      time: 1
-      value: 1
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
-  arrowInHand: {fileID: 0}
-  arrowToShoot: {fileID: 1225370512109555040, guid: cbc3e4e7ac66ec64390c6122adb2b2d7, type: 3}
-  bowSheathed: {fileID: 3056362131897343971}
-  bowInHand: {fileID: 3762022143017168961}
 --- !u!114 &8241502049495792556
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -336,7 +277,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   upperSpineBone: {fileID: 8965391954780132255}
-  aimOffset: {x: 0, y: 90, z: 0}
+  aimOffset: {x: 0, y: 60, z: 0}
 --- !u!114 &7629166111987709219
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -584,11 +525,6 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 1720574374864774334, guid: 3c0b66c1fb55cd34994e034186a852c1, type: 3}
   m_PrefabInstance: {fileID: 3721903554553135972}
   m_PrefabAsset: {fileID: 0}
---- !u!1 &3056362131897343971 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 1859066055596776583, guid: 3c0b66c1fb55cd34994e034186a852c1, type: 3}
-  m_PrefabInstance: {fileID: 3721903554553135972}
-  m_PrefabAsset: {fileID: 0}
 --- !u!4 &3408435590263203064 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 2084016041906186140, guid: 3c0b66c1fb55cd34994e034186a852c1, type: 3}
@@ -734,16 +670,6 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: e11ae5680dc07ca44a361f44196086a0, type: 3}
---- !u!4 &320006932882423259 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 6143064781533402429, guid: e11ae5680dc07ca44a361f44196086a0, type: 3}
-  m_PrefabInstance: {fileID: 5850290553993603302}
-  m_PrefabAsset: {fileID: 0}
---- !u!1 &3762022143017168961 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 7279236981667502247, guid: e11ae5680dc07ca44a361f44196086a0, type: 3}
-  m_PrefabInstance: {fileID: 5850290553993603302}
-  m_PrefabAsset: {fileID: 0}
 --- !u!4 &3792902609072288444 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 7319317587328457306, guid: e11ae5680dc07ca44a361f44196086a0, type: 3}
