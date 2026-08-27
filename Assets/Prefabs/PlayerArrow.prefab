@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 8636967674070207378}
   - component: {fileID: -5262092490464293359}
   m_Layer: 3
-  m_Name: FREE Arrow Short Color 3
+  m_Name: PlayerArrow
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
