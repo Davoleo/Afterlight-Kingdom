@@ -34,6 +34,10 @@ namespace Enemies
         [SerializeField] private float postShotDelay = 0.5f;
         [SerializeField] private float playerChestAimOffset = -0.2f;
 
+        [Header("Cast Sphere")]
+        [SerializeField] private Collider castSphereCollider;
+        [SerializeField] private float castSphereDuration = 1f;
+
         [Header("Lost Player")]
         [SerializeField] private float lostPlayerIdleDuration = 1f;
 
@@ -48,6 +52,7 @@ namespace Enemies
         private float shotStartTime;
         private float lastShotTime;
         private float stateStartTime;
+        private float castSphereDisableTime;
 
         private Vector3 retreatDestination;
         private Vector3 originalPosition;
@@ -56,6 +61,8 @@ namespace Enemies
         protected override void Update()
         {
             base.Update();
+
+            UpdateCastSphereCollider();
 
             if (!HasPlayer() || IsPlayerDead()) return;
 
@@ -80,6 +87,8 @@ namespace Enemies
 
             if (originalForward.sqrMagnitude > 0.01f) originalForward.Normalize();
 
+            SetCastSphereCollider(false);
+
             ChangeState(startsActive ? EnemyState.Patrolling : EnemyState.Sleeping);
         }
 
@@ -90,8 +99,11 @@ namespace Enemies
 
             shotStartTime = 0f;
             lastShotTime = Time.time;
+            castSphereDisableTime = 0f;
 
             retreatDestination = Vector3.zero;
+
+            SetCastSphereCollider(false);
 
             animator.SetBool("IsPatrolling", false);
             animator.SetBool("IsRetreating", false);
@@ -216,7 +228,11 @@ namespace Enemies
             isPreparingShot = true;
             shotStartTime = Time.time;
 
-            if (animator != null) animator.SetTrigger("Shoot");
+            // Enable the Cast Sphere collider for one second. Avoid compenetration during spellcast animation
+            SetCastSphereCollider(true);
+            castSphereDisableTime = Time.time + castSphereDuration;
+
+            animator.SetTrigger("Shoot");
         }
 
         private void UpdateShot()
@@ -240,8 +256,6 @@ namespace Enemies
 
         private void Shoot()
         {
-            if (shootPoint == null || projectilePrefab == null) return;
-
             Vector3 targetPosition = Target.Player.position + Vector3.up * playerChestAimOffset;
             Vector3 shootDirection = targetPosition - shootPoint.position;
 
@@ -265,6 +279,21 @@ namespace Enemies
             }
 
             enemyProjectile.Launch(shootDirection);
+        }
+
+        private void SetCastSphereCollider(bool enabled)
+        {
+            if (castSphereCollider == null) return;
+
+            castSphereCollider.enabled = enabled;
+        }
+
+        private void UpdateCastSphereCollider()
+        {
+            if (castSphereCollider == null || !castSphereCollider.enabled) return;
+            if (Time.time < castSphereDisableTime) return;
+
+            SetCastSphereCollider(false);
         }
 
         private Vector3 GetAdvanceDirection()

@@ -22,6 +22,7 @@ namespace Core
         public float cameraRotation;
 
         public List<string> collectedIds;
+        public List<string> openedDoorIds;
 
         public int coins;
         public int keys;
