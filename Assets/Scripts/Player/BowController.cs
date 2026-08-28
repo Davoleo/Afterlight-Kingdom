@@ -38,9 +38,15 @@ namespace Player
         private static readonly int ShootHash = Animator.StringToHash("Shoot");
         // Drawn animation hash
         private static readonly int DrawnStateHash = Animator.StringToHash("Drawn");
+        private static readonly int DrawingStateHash = Animator.StringToHash("Drawing");
 
         public bool IsDrawing { get; private set; }
-        
+
+        // Draw-progress gauge for the HUD. Fed from the same animator-state checks used to
+        // gate Shoot() below, so the ring and the "can I shoot" logic can never disagree.
+        private readonly AbilityGauge _drawGauge = new();
+        public AbilityGauge DrawGauge => _drawGauge;
+
         private void Start()
         {
             _animator = GetComponent<Animator>();
@@ -67,6 +73,8 @@ namespace Player
         {
             _wasDrawingLastFrame = false;
             IsDrawing = false;
+            _drawGauge.IsEngaged = false;
+            _drawGauge.Set(0f, true);
 
             _bowVisuals.CancelLoadBow(0f, 0f);
             _bowVisuals.HideArrow();
@@ -99,7 +107,16 @@ namespace Player
              * It is necessary to check whether the shoot animation is occurring and let the mask be active,
              * otherwise the shoot animation will be ignored.*/
             _stateInfo = _animator.GetCurrentAnimatorStateInfo(_upperBodyLayerIndex);
-            
+
+            if (_stateInfo.shortNameHash == DrawnStateHash)
+                _drawGauge.Set(1f, true);
+            else if (_stateInfo.shortNameHash == DrawingStateHash)
+                _drawGauge.Set(_stateInfo.normalizedTime, false);
+            else
+                // Idle (not drawing, not drawn): nothing pending, so "ready" here means
+                // "nothing to show" rather than "fully charged"
+                _drawGauge.Set(0f, true);
+
             float targetWeight =
                 (_playerCharacterController.PlayerInputs.DrawInput || _stateInfo.shortNameHash == ShootHash) ? 1f : 0f;
             
@@ -109,7 +126,8 @@ namespace Player
             bool wantsToDraw = _playerCharacterController.PlayerInputs.DrawInput;
 
             IsDrawing = wantsToDraw;
-            
+            _drawGauge.IsEngaged = wantsToDraw;
+
             switch (wantsToDraw)
             {
                 case true when !_wasDrawingLastFrame:

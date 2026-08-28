@@ -1,4 +1,5 @@
 using System;
+using Core;
 using Gameplay;
 using KinematicCharacterController;
 using Player.State;
@@ -19,8 +20,8 @@ namespace Player
         [SerializeField] public float climbJumpStrength = 3f;
 
         [Header("Dash")]
-        [SerializeField] private float dashCooldown = 2f;
-        public float dashCooldownTimer;
+        [SerializeField] private Cooldown dashCooldown = new(2f);
+        public Cooldown DashCooldown => dashCooldown;
 
         [Header("External Knockback")]
         [SerializeField] private float knockbackDrag = 12f;
@@ -199,7 +200,7 @@ namespace Player
         {
             HandleDashInput();
 
-            dashCooldownTimer = Mathf.Max(0f, dashCooldownTimer - deltaTime);
+            dashCooldown.Tick(deltaTime);
         }
 
         private void HandleDashInput()
@@ -213,7 +214,7 @@ namespace Player
                 return;
             }
 
-            if (dashCooldownTimer > 0f)
+            if (!dashCooldown.IsReady)
             {
                 CommandUtils.Off(ref triggers, PlayerTrigger.Dash);
                 return;
@@ -225,7 +226,7 @@ namespace Player
                 return;
             }
 
-            dashCooldownTimer = dashCooldown;
+            dashCooldown.Trigger();
             CommandUtils.Off(ref triggers, PlayerTrigger.Dash);
             StateMachine.TransitionToState(StateMachine.DashingState);
         }
