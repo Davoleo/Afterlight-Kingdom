@@ -45,7 +45,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e80444a1c22fe425fbf6955893e8f922, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  platformPart: {fileID: 3765870374464243920}
+  platformPart: {fileID: 8623302204450173207}
   platformCollider: {fileID: 6956488378316312005}
   openDelay: 0.6
   openDuration: 0.2
