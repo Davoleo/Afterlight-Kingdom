@@ -26,7 +26,7 @@ namespace Gameplay
         private void Start()
         {
             var player = GameObject.FindGameObjectWithTag("Player");
-            LastCheckPoint = new Checkpoint(player.transform.position, player.transform.rotation.y);
+            LastCheckPoint = new Checkpoint(player.transform.position, player.transform.rotation.eulerAngles.y);
 
             _playerController = player.GetComponent<PlayerCharacterController>();
             _cameraController = GameObject.FindWithTag("MainCamera").GetComponentInParent<PlayerCameraController>();
