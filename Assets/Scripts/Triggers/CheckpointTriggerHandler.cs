@@ -4,6 +4,7 @@ using HUD;
 using Player;
 using Sound;
 using UnityEngine;
+using VisualEffects;
 
 namespace Triggers
 {
@@ -12,6 +13,8 @@ namespace Triggers
         public AudioClip enterSfx;
 
         public float derivedCameraRotation;
+
+        [SerializeField] private CheckpointRingEffect checkpointRingEffect;
 
         private GameObject _gm;
         private HealthManager _healthManager;
@@ -48,6 +51,9 @@ namespace Triggers
                 transform.position.y + 2f,
                 transform.position.z
             );
+
+            checkpointRingEffect?.Play();
+
             //set camera position and checkpoint position, then save
             _cpManager.SetCheckpoint(offsetPos, derivedCameraRotation);
             SaveManager.Save(_gm);
