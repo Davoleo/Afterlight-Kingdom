@@ -45,7 +45,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e80444a1c22fe425fbf6955893e8f922, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  platformPart: {fileID: 8623302204450173207}
+  platformPart: {fileID: 3765870374464243920}
   platformCollider: {fileID: 6956488378316312005}
   openDelay: 0.6
   openDuration: 0.2
@@ -62,6 +62,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 3765870374464243920}
     m_Modifications:
+    - target: {fileID: 67975456064848088, guid: f6ffaf296e311084387f64d49ba79860, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: c88de8c8d493d4497a4a3a7a0a6a070e, type: 2}
     - target: {fileID: 1205367717950864311, guid: f6ffaf296e311084387f64d49ba79860, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -106,6 +110,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: HJD_FP_Bridge_01
       objectReference: {fileID: 0}
+    - target: {fileID: 2816306782310249490, guid: f6ffaf296e311084387f64d49ba79860, type: 3}
+      propertyPath: m_Mesh
+      value: 
+      objectReference: {fileID: 4202785618911453332, guid: f3c8d08a539684b2d98adee71a429530, type: 3}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
