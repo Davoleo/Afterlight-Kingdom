@@ -17,6 +17,7 @@ namespace Player
         private ArrowLauncher _arrowLauncher;
         private PlayerCharacterController _characterController;
         private PlayerSoundFXs _sfx;
+        private PlayerDamageFeedback _damageFeedback;
 
         public int Health
         {
@@ -38,6 +39,7 @@ namespace Player
             _arrowLauncher = GetComponent<ArrowLauncher>();
             _characterController = GetComponent<PlayerCharacterController>();
             _sfx = GetComponent<PlayerSoundFXs>();
+            _damageFeedback = GetComponent<PlayerDamageFeedback>();
 
             if (gameManager)
                 _menuManager = gameManager.GetComponent<MenuManager>();
@@ -45,10 +47,29 @@ namespace Player
 
         public void TakeDamage(int damage)
         {
-            if (_isDead) return;
+            TakeDamage(damage, Vector3.zero, false);
+        }
+
+        public bool TakeDamage(int damage, Vector3 knockbackDirection, bool applyKnockback, float customKnockbackDistance = -1f)
+        {
+            if (_isDead)
+                return false;
+
+            if (_damageFeedback != null && _damageFeedback.IsInvincible)
+                return false;
 
             Health = Math.Max(Health - damage, 0);
             _sfx.OnPlayerHurt();
+
+            if (_isDead)
+            {
+                _damageFeedback.StopAllDamageFeedback();
+                return true;
+            }
+
+            _damageFeedback.PlayDamageFeedback(knockbackDirection, applyKnockback, customKnockbackDistance);
+
+            return true;
         }
 
         public void Heal(int heal)
@@ -68,7 +89,7 @@ namespace Player
             //flush the inputs
             _characterController.ResetInputs();
             // avoid character to keep momentum after respawn
-            _characterController.motor.BaseVelocity  = Vector3.zero;
+            _characterController.motor.BaseVelocity = Vector3.zero;
 
             // Let systems holding transient state (animator, bow visuals...) reset themselves
             GameStateManager.NotifyRespawned();

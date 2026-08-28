@@ -15,36 +15,18 @@ namespace Enemies
             if (hitCollider == null)
                 return false;
 
-            PlayerDamageFeedback damageFeedback =
-                hitCollider.GetComponentInParent<PlayerDamageFeedback>();
-
-            if (damageFeedback != null)
-            {
-                if (knockbackDistance > 0f)
-                {
-                    return damageFeedback.TryTakeDamage(
-                        damage,
-                        knockbackDirection,
-                        useKnockback,
-                        knockbackDistance
-                    );
-                }
-
-                return damageFeedback.TryTakeDamage(
-                    damage,
-                    knockbackDirection,
-                    useKnockback
-                );
-            }
-
             HealthManager health =
                 hitCollider.GetComponentInParent<HealthManager>();
 
             if (health == null)
                 return false;
 
-            health.TakeDamage(damage);
-            return true;
+            return health.TakeDamage(
+                damage,
+                knockbackDirection,
+                useKnockback,
+                knockbackDistance
+            );
         }
 
         public static bool TryDamageFirstInSphere(

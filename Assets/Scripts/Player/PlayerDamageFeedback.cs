@@ -32,46 +32,21 @@ namespace Player
         private bool isInvincible;
         private Coroutine overlayCoroutine;
         private Coroutine invincibilityCoroutine;
-        private HealthManager healthManager;
         private PlayerCharacterController playerController;
+        public bool IsInvincible => isInvincible;
 
         private void Start()
         {
-            healthManager = GetComponent<HealthManager>();
-
             playerController = GetComponent<PlayerCharacterController>();
 
             StopAllDamageFeedback();
         }
 
-        private void Update()
+        public void PlayDamageFeedback(Vector3 knockbackDirection, bool applyKnockback, float customKnockbackDistance = -1f)
         {
-            if (healthManager.Health <= 0)
-                StopAllDamageFeedback();
-        }
-
-        public bool TryTakeDamage(
-            int damage,
-            Vector3 knockbackDirection,
-            bool applyKnockback,
-            float customKnockbackDistance = -1f)
-        {
-            if (isInvincible)
-                return false;
-
-            healthManager.TakeDamage(damage);
-
-            if (healthManager.Health <= 0)
-            {
-                StopAllDamageFeedback();
-                return true;
-            }
-
             if (applyKnockback)
             {
-                float finalDistance = customKnockbackDistance > 0f
-                    ? customKnockbackDistance
-                    : defaultKnockbackDistance;
+                float finalDistance = customKnockbackDistance > 0f ? customKnockbackDistance : defaultKnockbackDistance;
 
                 finalDistance = GetControlledKnockbackDistance(finalDistance);
 
@@ -80,8 +55,6 @@ namespace Player
 
             PlayDamageOverlay();
             StartInvincibility();
-
-            return true;
         }
 
         public void StopAllDamageFeedback()
@@ -105,11 +78,7 @@ namespace Player
         private float GetControlledKnockbackDistance(float requestedDistance)
         {
             //clamp the requested knockback, but do not force it to be always weak
-            float controlledDistance = Mathf.Clamp(
-                requestedDistance,
-                0f,
-                maxKnockbackDistance
-            );
+            float controlledDistance = Mathf.Clamp(requestedDistance, 0f, maxKnockbackDistance);
 
             return controlledDistance;
         }
@@ -130,11 +99,7 @@ namespace Player
             //this prevents knockback stacking
             playerController.StopExternalKnockback();
 
-            playerController.ApplyExternalKnockback(
-                direction,
-                distance,
-                knockbackDuration
-            );
+            playerController.ApplyExternalKnockback(direction, distance, knockbackDuration);
         }
 
         private void StartInvincibility()
