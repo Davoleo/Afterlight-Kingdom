@@ -9,6 +9,10 @@ namespace HUD
         [SerializeField] private TextMeshProUGUI savedMessage;
         
         public void ShowSavedMessage() => StartCoroutine(FadeSavedMessage());
+        private void Start()
+        {
+            savedMessage.alpha = 0f;
+        }
         
         private IEnumerator FadeSavedMessage()
         {

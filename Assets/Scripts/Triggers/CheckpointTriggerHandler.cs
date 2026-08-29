@@ -15,11 +15,14 @@ namespace Triggers
         public float derivedCameraRotation;
 
         [SerializeField] private CheckpointRingEffect checkpointRingEffect;
+        [SerializeField] private float activationCooldown = 2f;
 
         private GameObject _gm;
         private HealthManager _healthManager;
         private CheckpointManager _cpManager;
         private CheckPointHUD _checkPointHUD;
+        private float _lastActivationTime = -Mathf.Infinity;
+        private bool _ignoreUntilExit;
 
         private void Start()
         {
@@ -29,6 +32,10 @@ namespace Triggers
             _cpManager = _gm.GetComponent<CheckpointManager>();
             //TODO: Maybe FindFirstObjectByType is not the best solution
             _checkPointHUD = FindFirstObjectByType<CheckPointHUD>();
+            Collider checkpointCollider = GetComponent<Collider>();
+            Collider playerCollider = player.GetComponent<Collider>();
+            if (playerCollider != null && checkpointCollider.bounds.Intersects(playerCollider.bounds))
+                _ignoreUntilExit = true;
         }
 
         private void OnTriggerEnter(Collider other)
@@ -41,16 +48,15 @@ namespace Triggers
             // the save. Ignore the trigger; it'll fire again once the player moves
             // through it during real play.
             if (GameStateManager.Current != GameState.Playing) return;
+            if (_ignoreUntilExit) return;
+            if (Time.time < _lastActivationTime + activationCooldown) return;
+            _lastActivationTime = Time.time;
 
             AudioManager.Instance.PlaySfx(enterSfx, 0.7f);
 
             _healthManager.Heal(HealthManager.MaxHealth);
 
-            Vector3 offsetPos = new Vector3(
-                transform.position.x,
-                transform.position.y + 2f,
-                transform.position.z
-            );
+            Vector3 offsetPos = new Vector3(transform.position.x, transform.position.y + 2f, transform.position.z);
 
             checkpointRingEffect?.Play();
 
@@ -59,6 +65,11 @@ namespace Triggers
             SaveManager.Save(_gm);
 
             _checkPointHUD.ShowSavedMessage();
+        }
+        private void OnTriggerExit(Collider other)
+        {
+            if (!other.CompareTag("Player")) return;
+            _ignoreUntilExit = false;
         }
     }
 }
