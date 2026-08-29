@@ -31102,46 +31102,11 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 982667284609586249, guid: 67c35b8bcfe5c664ba81a4d9d9706c0f, type: 3}
   m_PrefabInstance: {fileID: 1286306017}
   m_PrefabAsset: {fileID: 0}
---- !u!1 &1117014233 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 3457411126880951599, guid: 4e9233c1aced21208ab070261d1c37a4, type: 3}
+--- !u!95 &1117014237 stripped
+Animator:
+  m_CorrespondingSourceObject: {fileID: 3982868607085477357, guid: 4e9233c1aced21208ab070261d1c37a4, type: 3}
   m_PrefabInstance: {fileID: 1232055371}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &1117014235
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1117014233}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 545796a6af9a4185bd048c404c673434, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  gateOpenClip: {fileID: 7400000, guid: 41617bbaced8406448f0b12650085356, type: 2}
---- !u!95 &1117014237
-Animator:
-  serializedVersion: 7
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1117014233}
-  m_Enabled: 1
-  m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 0}
-  m_CullingMode: 0
-  m_UpdateMode: 0
-  m_ApplyRootMotion: 0
-  m_LinearVelocityBlending: 0
-  m_StabilizeFeet: 0
-  m_AnimatePhysics: 0
-  m_WarningMessage: 
-  m_HasTransformHierarchy: 1
-  m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorStateOnDisable: 0
-  m_WriteDefaultValuesOnDisable: 0
 --- !u!1001 &1118874288
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -34012,10 +33977,6 @@ PrefabInstance:
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: 1448392580194061194, guid: 4e9233c1aced21208ab070261d1c37a4, type: 3}
-      propertyPath: m_LocalScale.y
-      value: 0.69
-      objectReference: {fileID: 0}
-    - target: {fileID: 1448392580194061194, guid: 4e9233c1aced21208ab070261d1c37a4, type: 3}
       propertyPath: m_LocalPosition.x
       value: -0.377
       objectReference: {fileID: 0}
@@ -34059,16 +34020,14 @@ PrefabInstance:
       propertyPath: m_Name
       value: CastleGate
       objectReference: {fileID: 0}
+    - target: {fileID: 8483629694748290615, guid: 4e9233c1aced21208ab070261d1c37a4, type: 3}
+      propertyPath: animator
+      value: 
+      objectReference: {fileID: 1117014237}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 3457411126880951599, guid: 4e9233c1aced21208ab070261d1c37a4, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 1117014235}
-    - targetCorrespondingSourceObject: {fileID: 3457411126880951599, guid: 4e9233c1aced21208ab070261d1c37a4, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 1117014237}
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 4e9233c1aced21208ab070261d1c37a4, type: 3}
 --- !u!1001 &1238746987
 PrefabInstance:

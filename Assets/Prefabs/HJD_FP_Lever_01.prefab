@@ -170,3 +170,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 62ab7c0d7f834e00846e0a6afba2cc82, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  switchClip: {fileID: 8300000, guid: 4f534f99498fd164b960d1cddcbb6953, type: 3}

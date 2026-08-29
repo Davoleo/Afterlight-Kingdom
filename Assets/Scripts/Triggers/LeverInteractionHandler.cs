@@ -1,5 +1,6 @@
 ﻿using System;
 using Player;
+using Sound;
 using UnityEngine;
 
 namespace Triggers
@@ -15,6 +16,8 @@ namespace Triggers
         private Animator _leverAnimator;
 
         public static event Action<bool> LeverStateChanged;
+
+        public AudioClip switchClip;
 
         public bool WasActivated() => flicked;
 
@@ -35,6 +38,7 @@ namespace Triggers
                 CommandUtils.Off(ref _player.triggers, PlayerTrigger.Interact);
 
                 LeverStateChanged?.Invoke(flicked);
+                AudioManager.Instance.PlaySfx(switchClip);
             }
 
             _leverAnimator.SetBool(FlickedHash, flicked);

@@ -1,4 +1,5 @@
-﻿using Triggers;
+﻿using Sound;
+using Triggers;
 using UnityEngine;
 using UnityEngine.Playables;
 
@@ -7,19 +8,22 @@ namespace Gameplay
     public class Level2GateController : MonoBehaviour
     {
         [SerializeField] private AnimationClip gateOpenClip;
+        [SerializeField] private AudioClip gateOpenAudio;
+        [SerializeField] private Animator animator;
         private PlayableGraph _graph;
 
         private int _leversFlicked;
 
-        private void OpenGate()
-        {
-            if (_graph.IsValid()) _graph.Destroy();
-            AnimationPlayableUtilities.PlayClip(GetComponent<Animator>(), gateOpenClip, out _graph);
-        }
-
         private void Start()
         {
             LeverInteractionHandler.LeverStateChanged += OnLeverStatusChange;
+        }
+
+        private void OpenGate()
+        {
+            if (_graph.IsValid()) _graph.Destroy();
+            AnimationPlayableUtilities.PlayClip(animator, gateOpenClip, out _graph);
+            AudioManager.Instance.PlaySfx(gateOpenAudio);
         }
 
         private void OnLeverStatusChange(bool active)
