@@ -1,24 +1,41 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using Triggers;
+﻿using Triggers;
 using UnityEngine;
+using UnityEngine.Playables;
 
 namespace Gameplay
 {
     public class Level2GateController : MonoBehaviour
     {
-        private List<LeverInteractionHandler> levers;
+        [SerializeField] private AnimationClip gateOpenClip;
+        private PlayableGraph _graph;
+
+        private int _leversFlicked;
+
+        private void OpenGate()
+        {
+            if (_graph.IsValid()) _graph.Destroy();
+            AnimationPlayableUtilities.PlayClip(GetComponent<Animator>(), gateOpenClip, out _graph);
+        }
 
         private void Start()
         {
-            levers = FindObjectsByType<LeverInteractionHandler>(FindObjectsSortMode.None).ToList();
+            LeverInteractionHandler.LeverStateChanged += OnLeverStatusChange;
         }
 
-        private void Update()
+        private void OnLeverStatusChange(bool active)
         {
-            bool gateOpenReqs = levers.All(lever => lever.WasActivated());
-            Debug.Log( "active levers: "+ levers.Count(lever => lever.WasActivated()) + "/" + levers.Count);
-            if (gateOpenReqs) gameObject.SetActive(false);
+            // gate should be already open levers are now dead switches
+            if (_leversFlicked == 3) return;
+
+            _leversFlicked += active ? 1 : -1;
+
+            // first time 3 levers are on contemporarily -> open gate
+            if (_leversFlicked == 3) OpenGate();
+        }
+
+        private void OnDestroy()
+        {
+            if (_graph.IsValid()) _graph.Destroy();
         }
     }
 }

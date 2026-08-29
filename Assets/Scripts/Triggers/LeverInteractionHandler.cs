@@ -14,7 +14,7 @@ namespace Triggers
         private PlayerCharacterController _player;
         private Animator _leverAnimator;
 
-        public event Action<bool> LeverStateChanged;
+        public static event Action<bool> LeverStateChanged;
 
         public bool WasActivated() => flicked;
 
