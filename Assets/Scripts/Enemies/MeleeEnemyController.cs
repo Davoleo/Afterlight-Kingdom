@@ -9,7 +9,8 @@ namespace Enemies
             Sleeping,
             Patrolling,
             Chasing,
-            Attacking
+            Attacking,
+            Hit
         }
 
         [Header("Melee Movement")]
@@ -29,7 +30,10 @@ namespace Enemies
         [SerializeField] private float attackRadius = 0.8f;
         [SerializeField] private int attackDamage = 1;
 
+        private const float HitStopDuration = 1f;
+
         private EnemyState currentState;
+        private EnemyState stateBeforeHit;
 
         private bool isPreparingAttack;
         private float attackStartTime;
@@ -38,6 +42,11 @@ namespace Enemies
         private float attackRecoveryEndTime;
         private Vector3 attackPosition;
         private bool hasLockedAttackPosition;
+
+        private bool wasHit;
+        private float hitStopEndTime;
+        private Vector3 hitPosition;
+        private bool hasLockedHitPosition;
 
         protected override void Start()
         {
@@ -51,6 +60,9 @@ namespace Enemies
             base.Update();
 
             if (!HasPlayer() || IsPlayerDead())
+                return;
+
+            if (HandleHitState())
                 return;
 
             UpdateState();
@@ -73,6 +85,12 @@ namespace Enemies
 
         private void LateUpdate()
         {
+            if (currentState == EnemyState.Hit)
+            {
+                KeepHitPosition();
+                return;
+            }
+
             if (currentState != EnemyState.Attacking)
                 return;
 
@@ -105,18 +123,93 @@ namespace Enemies
             hasLockedAttackPosition = false;
             attackPosition = Vector3.zero;
 
+            wasHit = false;
+            hitStopEndTime = 0f;
+            hasLockedHitPosition = false;
+            hitPosition = Vector3.zero;
+            stateBeforeHit = EnemyState.Sleeping;
+
             // Remove any attack still pending when the player dies.
 
             animator.ResetTrigger("Attack");
             animator.SetBool("IsMoving", false);
             animator.Play("Idle", 0, 0f);
             animator.Update(0f);
-   
         }
 
         protected override float GetCurrentSpeed()
         {
             return currentState == EnemyState.Chasing ? chaseSpeed : patrolSpeed;
+        }
+
+        /*
+         * Hit completely overrides the normal melee state machine.
+         * The enemy remains locked for at least one second before
+         * being allowed to enter another state.
+         */
+        private bool HandleHitState()
+        {
+            if (animator == null)
+                return false;
+
+            bool isHit = animator.GetBool("IsHit");
+
+            // Detect the moment the enemy receives damage.
+            if (isHit && !wasHit)
+            {
+                wasHit = true;
+
+                if (currentState != EnemyState.Hit)
+                    stateBeforeHit = currentState;
+
+                hitStopEndTime = Time.time + HitStopDuration;
+                hitPosition = transform.position;
+                hasLockedHitPosition = true;
+
+                isPreparingAttack = false;
+                isRecoveringAttack = false;
+                hasLockedAttackPosition = false;
+
+                MovementDirection = Vector3.zero;
+                LookDirection = Vector3.zero;
+
+                animator.ResetTrigger("Attack");
+                animator.SetBool("IsMoving", false);
+
+                ChangeState(EnemyState.Hit);
+            }
+
+            if (!isHit)
+                wasHit = false;
+
+            if (currentState != EnemyState.Hit)
+                return false;
+
+            KeepHitPosition();
+
+            /*
+             * The enemy cannot leave Hit before one full second
+             * has elapsed and the Hit animation has finished.
+             */
+            if (Time.time < hitStopEndTime || isHit)
+                return true;
+
+            hasLockedHitPosition = false;
+
+            if (stateBeforeHit == EnemyState.Sleeping)
+            {
+                ChangeState(EnemyState.Sleeping);
+            }
+            else if (IsPlayerInsideDetection())
+            {
+                ChangeState(EnemyState.Chasing);
+            }
+            else
+            {
+                ChangeState(EnemyState.Patrolling);
+            }
+
+            return false;
         }
 
         private void UpdateState()
@@ -200,6 +293,7 @@ namespace Enemies
             hasLockedAttackPosition = true;
 
             StopMovementImmediately();
+
             if (attackDirection.sqrMagnitude > 0.01f)
                 transform.rotation = Quaternion.LookRotation(attackDirection, Vector3.up);
 
@@ -275,6 +369,31 @@ namespace Enemies
 
         /*
          * Keeps the enemy exactly at the position
+         * where the hit started.
+         */
+        private void KeepHitPosition()
+        {
+            MovementDirection = Vector3.zero;
+            LookDirection = Vector3.zero;
+
+            if (!hasLockedHitPosition)
+                return;
+
+            if (navMeshAgent == null || !navMeshAgent.enabled || !navMeshAgent.isOnNavMesh)
+            {
+                transform.position = hitPosition;
+                return;
+            }
+
+            navMeshAgent.isStopped = true;
+            navMeshAgent.velocity = Vector3.zero;
+
+            if ((transform.position - hitPosition).sqrMagnitude > 0.000001f)
+                navMeshAgent.Warp(hitPosition);
+        }
+
+        /*
+         * Keeps the enemy exactly at the position
          * where the attack started.
          */
         private void KeepAttackPosition()
@@ -315,6 +434,20 @@ namespace Enemies
                 hasLockedAttackPosition = false;
                 isRecoveringAttack = false;
 
+                if (newState != EnemyState.Hit &&
+                    navMeshAgent.enabled &&
+                    navMeshAgent.isOnNavMesh)
+                {
+                    navMeshAgent.velocity = Vector3.zero;
+                    navMeshAgent.isStopped = false;
+                }
+            }
+
+            if (newState == EnemyState.Hit)
+                StopMovementImmediately();
+
+            if (currentState == EnemyState.Hit && newState != EnemyState.Hit)
+            {
                 if (navMeshAgent.enabled && navMeshAgent.isOnNavMesh)
                 {
                     navMeshAgent.velocity = Vector3.zero;
@@ -347,6 +480,12 @@ namespace Enemies
 
                 case EnemyState.Attacking:
                     // No movement or continuous rotation during attack.
+                    MovementDirection = Vector3.zero;
+                    LookDirection = Vector3.zero;
+                    break;
+
+                case EnemyState.Hit:
+                    // No movement while the Hit state is active.
                     MovementDirection = Vector3.zero;
                     LookDirection = Vector3.zero;
                     break;

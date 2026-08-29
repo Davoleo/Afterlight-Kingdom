@@ -33,6 +33,8 @@ namespace Enemies
         [SerializeField] private float projectileSpawnOffset = 0.4f;
         [SerializeField] private float postShotDelay = 0.5f;
         [SerializeField] private float playerChestAimOffset = -0.2f;
+        [SerializeField] private LayerMask environmentLayer;
+        [SerializeField] private float shotClearanceRadius = 0.15f;
 
         [Header("Cast Sphere")]
         [SerializeField] private Collider castSphereCollider;
@@ -225,6 +227,9 @@ namespace Enemies
             if (Time.time < lastShotTime + shootCooldown) return;
             if (!IsCenteredOnGrid()) return;
 
+            // Do not start the cast animation if the projectile path is blocked.
+            if (!HasClearShot()) return;
+
             isPreparingShot = true;
             shotStartTime = Time.time;
 
@@ -253,9 +258,23 @@ namespace Enemies
             Shoot();
             ChangeState(EnemyState.PostShot);
         }
+        private bool HasClearShot()
+        {
+            Vector3 targetPosition = Target.Player.position + Vector3.up * playerChestAimOffset;
+            Vector3 shootDirection = targetPosition - shootPoint.position;
+
+            if (shootDirection.sqrMagnitude < 0.01f) return false;
+
+            float shootDistance = shootDirection.magnitude;
+            shootDirection.Normalize();
+
+            return !Physics.SphereCast( shootPoint.position, shotClearanceRadius, shootDirection, out _, shootDistance, environmentLayer, QueryTriggerInteraction.Ignore);
+        }
 
         private void Shoot()
         {
+            // Check again in case the path became blocked during the cast animation.
+            if (!HasClearShot()) return;
             Vector3 targetPosition = Target.Player.position + Vector3.up * playerChestAimOffset;
             Vector3 shootDirection = targetPosition - shootPoint.position;
 
