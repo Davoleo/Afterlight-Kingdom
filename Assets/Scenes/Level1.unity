@@ -70551,7 +70551,7 @@ MonoBehaviour:
   radius: 200
   height: 180
   radialSegments: 64
-  verticalOffset: -150
+  verticalOffset: -180
   uTile: 8
   vTile: 2
 --- !u!1001 &455308477
@@ -93553,7 +93553,7 @@ MonoBehaviour:
   radius: 200
   height: 80
   radialSegments: 64
-  verticalOffset: 30
+  verticalOffset: 0
   uTile: 8
   vTile: 1
 --- !u!1001 &586967946

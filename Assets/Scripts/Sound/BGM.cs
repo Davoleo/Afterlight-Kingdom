@@ -8,11 +8,13 @@ namespace Sound
         public static BGM Village;
         public static BGM Castle;
 
+        private static AudioClip LoadClip(string path) => Resources.Load<AudioClip>(path);
+
         public static void InitClips()
         {
-            Forest = new(Resources.Load<AudioClip>("Sound/BGM/forest1"));
-            Village = new(Resources.Load<AudioClip>("Sound/bgm/village"));
-            Castle = new(Resources.Load<AudioClip>("Sound/bgm/castle"));
+            Forest = new(LoadClip("Sound/bgm/forest1"), LoadClip("Sound/bgm/forest2"));
+            Village = new(LoadClip("Sound/bgm/village1"), LoadClip("Sound/bgm/village2"));
+            Castle = new(LoadClip("Sound/bgm/castle1"), LoadClip("Sound/bgm/castle2"));
         }
 
 
