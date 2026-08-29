@@ -3,7 +3,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-namespace Controllers
+namespace UI
 {
     public class MainMenuController : MonoBehaviour
     {

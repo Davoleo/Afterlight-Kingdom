@@ -3,7 +3,7 @@ using Gameplay;
 using Player;
 using UnityEngine;
 
-namespace Controllers
+namespace UI
 {
     public class MenuActions : MonoBehaviour
     {

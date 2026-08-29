@@ -3,7 +3,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
 
-namespace Controllers
+namespace UI
 {
     public class MenuManager : MonoBehaviour
     {

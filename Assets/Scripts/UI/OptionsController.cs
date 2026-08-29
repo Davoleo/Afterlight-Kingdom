@@ -3,7 +3,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace Controllers
+namespace UI
 {
     public class OptionsController : MonoBehaviour
     {

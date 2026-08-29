@@ -1,7 +1,7 @@
 using System;
-using Controllers;
 using Core;
 using Projectiles;
+using UI;
 using UnityEngine;
 
 namespace Player
