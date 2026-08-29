@@ -20,7 +20,8 @@ namespace HUD
 
         private IAbilityCooldownSource _source;
         private CanvasGroup _canvasGroup;
-        private float _readySince = -1f;
+        private bool _wasShownLastFrame;
+        private float _hideAt = -1f;
 
         private void Awake()
         {
@@ -40,19 +41,24 @@ namespace HUD
             fillRing.fillAmount = _source.Progress01;
             fillRing.color = _source.IsReady ? readyColor : chargingColor;
 
-            bool shouldShow = _source.IsEngaged || !_source.IsReady;
+            bool wantsVisible = _source.IsEngaged || !_source.IsReady;
 
-            if (shouldShow)
+            if (wantsVisible)
             {
-                _readySince = -1f;
+                // Actively charging/engaged - no linger pending.
+                _hideAt = -1f;
             }
-            else
+            else if (_wasShownLastFrame && _hideAt < 0f)
             {
-                if (_readySince < 0f)
-                    _readySince = Time.time;
+                // Just transitioned from shown to ready+idle - start the linger window.
+                // Only do this on that transition, not whenever we happen to observe
+                // "ready" (e.g. on the very first frame with no ability unlocked at all,
+                // which must hide immediately, not linger)
+                _hideAt = Time.time + hideDelayAfterReady;
+            }
 
-                shouldShow = Time.time - _readySince < hideDelayAfterReady;
-            }
+            bool shouldShow = wantsVisible || (_hideAt >= 0f && Time.time < _hideAt);
+            _wasShownLastFrame = shouldShow;
 
             _canvasGroup.alpha = shouldShow ? 1f : 0f;
             _canvasGroup.blocksRaycasts = shouldShow;
