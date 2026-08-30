@@ -7,6 +7,7 @@ namespace Triggers
     public class AssistTriggerZone : MonoBehaviour
     {
         [SerializeField] private FeatureAssistData feature;
+        [SerializeField] private bool ephemeral = false;
 
         private void Reset() => GetComponent<Collider>().isTrigger = true;
 
@@ -14,8 +15,8 @@ namespace Triggers
         {
             if (other.CompareTag("Player"))
                 TutorialAssistManager.Instance.ShowAssist(feature);
-
-            TutorialAssistManager.Instance.DisableFeatureAssist(feature);
+            
+            if (ephemeral) TutorialAssistManager.Instance.DisableFeatureAssist(feature);
         }
     }
 }
