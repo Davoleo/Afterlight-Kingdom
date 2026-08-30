@@ -271,7 +271,23 @@ namespace Player
             motor.SetPosition(new Vector3(lerpX, pos.y, lerpZ));
         }
 
-        public bool IsColliderValidForCollisions(Collider coll) => true;
+        public bool IsColliderValidForCollisions(Collider coll)
+        {
+            //Layer 3 = Arrow
+            if (coll.gameObject.layer == 3)
+            {
+                Debug.Log(coll.bounds.max.y + " " + motor.Capsule.bounds.min.y);
+
+                if (motor.Capsule.bounds.min.y < coll.bounds.max.y - 0.05f)
+                {
+                    Debug.Log("collider valid FALSE");
+                    return false;
+                }
+            }
+
+            Debug.Log("collider valid TRUE");
+            return true;
+        }
 
         public void OnGroundHit(
             Collider hitCollider,

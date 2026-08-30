@@ -125,10 +125,10 @@ namespace Gameplay
             _hingePivot.rotation = to;
         }
 
-        private void SetCollision(bool enabled)
+        private void SetCollision(bool active)
         {
             foreach (Collider platformCollider in _colliders)
-                platformCollider.enabled = enabled;
+                platformCollider.enabled = active;
         }
 
         private Quaternion GetDownwardOpenRotation()
@@ -182,8 +182,6 @@ namespace Gameplay
             {
                 TrapdoorSide.Left => platformCollider.transform.forward,
                 TrapdoorSide.Right => platformCollider.transform.forward,
-                TrapdoorSide.Front => platformCollider.transform.right,
-                TrapdoorSide.Back => platformCollider.transform.right,
                 _ => platformCollider.transform.right
             };
         }
