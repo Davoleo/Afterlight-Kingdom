@@ -29,7 +29,6 @@ namespace Triggers
 
         private void Awake()
         {
-            GetComponent<Collider>().isTrigger = true;
             _promptText = GetComponentInChildren<TextMeshProUGUI>(includeInactive: true);
             _promptText?.gameObject.SetActive(false);
         }
