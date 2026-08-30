@@ -7,20 +7,18 @@ namespace HUD
 {
     public class HealthHUD : MonoBehaviour
     {
-        [SerializeField]
-        private HealthManager healthManager;
+        [SerializeField] // UI elements
+        private Image[] hearts;
         
-        private Dictionary<HeartEnum, Sprite> heartSprites = new();
+        private readonly Dictionary<HeartEnum, Sprite> _heartSprites = new();
 
-        // UI elements
-        private Image[] _hearts;
+        private HealthManager _healthManager;
 
         private void Start()
         {
-            _hearts = gameObject.GetComponentsInChildren<Image>();
-            
-            heartSprites.Add(HeartEnum.Empty, Resources.Load<Sprite>("Sprites/heart_empty"));
-            heartSprites.Add(HeartEnum.Full, Resources.Load<Sprite>("Sprites/heart_full"));
+            _healthManager =  GameObject.FindGameObjectWithTag("Player").GetComponent<HealthManager>();
+            _heartSprites.Add(HeartEnum.Empty, Resources.Load<Sprite>("Sprites/Heart Empty"));
+            _heartSprites.Add(HeartEnum.Full, Resources.Load<Sprite>("Sprites/Heart Full"));
         }
 
         private void Update()
@@ -28,7 +26,7 @@ namespace HUD
             int heart = 0;
             while (heart < HealthManager.MaxHealth)
             {
-                _hearts[heart].sprite = heart < healthManager.Health ? heartSprites[HeartEnum.Full] : heartSprites[HeartEnum.Empty];
+                hearts[heart].sprite = heart < _healthManager.Health ? _heartSprites[HeartEnum.Full] : _heartSprites[HeartEnum.Empty];
                 heart++;
             }
         }
