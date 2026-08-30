@@ -13,7 +13,7 @@ namespace HUD.Assist
         [Tooltip("Player's Speech Bubble instance")] [SerializeField]
         private SpeechBubble playerSpeechBubble;
 
-        private readonly HashSet<AssistFeatureData> completedFeatures = new();
+        private readonly HashSet<FeatureAssistData> disabledHints = new();
 
         private void Awake()
         {
@@ -26,17 +26,17 @@ namespace HUD.Assist
             Instance = this;
         }
 
-        public bool IsFeatureCompleted(AssistFeatureData feature) => completedFeatures.Contains(feature);
+        public bool IsAssistDisabled(FeatureAssistData feature) => disabledHints.Contains(feature);
 
         /// <summary>
         /// Marks a certain feature as completed disabling the assist tutorial trigger for it.
         /// </summary>
         /// <param name="feature">The completed feature</param>
-        public void MarkFeatureCompleted(AssistFeatureData feature) => completedFeatures.Add(feature);
+        public void DisableFeatureAssist(FeatureAssistData feature) => disabledHints.Add(feature);
 
-        public void ShowAssist(AssistFeatureData feature)
+        public void ShowAssist(FeatureAssistData feature)
         {
-            if (feature == null || IsFeatureCompleted(feature)) return;
+            if (feature == null || IsAssistDisabled(feature)) return;
 
             technicalOverlay.Show(feature.TechicalPrompt, feature.DisplayDuration);
             playerSpeechBubble.Show(feature.NarrativePrompt, feature.DisplayDuration);

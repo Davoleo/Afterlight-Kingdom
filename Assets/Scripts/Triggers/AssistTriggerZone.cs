@@ -6,7 +6,7 @@ namespace Triggers
     [RequireComponent(typeof(Collider))]
     public class AssistTriggerZone : MonoBehaviour
     {
-        [SerializeField] private AssistFeatureData feature;
+        [SerializeField] private FeatureAssistData feature;
 
         private void Reset() => GetComponent<Collider>().isTrigger = true;
 
@@ -15,7 +15,7 @@ namespace Triggers
             if (other.CompareTag("Player"))
                 TutorialAssistManager.Instance.ShowAssist(feature);
 
-            TutorialAssistManager.Instance.MarkFeatureCompleted(feature);
+            TutorialAssistManager.Instance.DisableFeatureAssist(feature);
         }
     }
 }

@@ -3,7 +3,7 @@
 namespace HUD.Assist
 {
     [CreateAssetMenu(fileName = "NewHintFeature", menuName = "Kingdom-Afterlight/Hints/Feature Data")]
-    public class AssistFeatureData : ScriptableObject
+    public class FeatureAssistData : ScriptableObject
     {
         [Tooltip("Needed to persist completion in a save file; unused otherwise.")] [SerializeField]
         private string id;
