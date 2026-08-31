@@ -1492,9 +1492,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5ad2b3b5de9d2ad4baefe4f45b123ed8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  coins: 0
-  keys: 0
-  collectedIds: []
 --- !u!114 &1007707250
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1538,6 +1535,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   bow: {fileID: 374858701}
   quiver: {fileID: 1864766332}
+  theLastHeart: {fileID: 978030153}
 --- !u!114 &1007707254
 MonoBehaviour:
   m_ObjectHideFlags: 0
