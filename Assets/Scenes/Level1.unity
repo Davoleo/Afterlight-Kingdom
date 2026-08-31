@@ -338963,6 +338963,18 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 6486519835210638025, guid: bb56ede23dc95104db20e030690fa722, type: 3}
+      propertyPath: InitialModule.startColor.maxColor.b
+      value: 0.4509804
+      objectReference: {fileID: 0}
+    - target: {fileID: 6486519835210638025, guid: bb56ede23dc95104db20e030690fa722, type: 3}
+      propertyPath: InitialModule.startColor.maxColor.g
+      value: 0.34901962
+      objectReference: {fileID: 0}
+    - target: {fileID: 6486519835210638025, guid: bb56ede23dc95104db20e030690fa722, type: 3}
+      propertyPath: InitialModule.startColor.maxColor.r
+      value: 0.9490196
+      objectReference: {fileID: 0}
     - target: {fileID: 7360139639386825666, guid: bb56ede23dc95104db20e030690fa722, type: 3}
       propertyPath: m_Name
       value: Chest
