@@ -10,9 +10,10 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: a361eb3134cc4e53accffdd93cd2dbc7, type: 3}
-  m_Name: RotateCamera
+  m_Name: UseDash
   m_EditorClassIdentifier: 
   id: 
-  technical: Press {RotateCameraLeft} or {RotateCameraRight} to rotate the camera
-  narrative: Where do I go?
+  technical: Press {Dash} to dash horizontally for a certain amount of space.
+  narrative: I can use the potion I've just found here.
   duration: 4
+  ephemeral: 0

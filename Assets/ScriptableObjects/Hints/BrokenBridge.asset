@@ -16,4 +16,5 @@ MonoBehaviour:
   technical: 
   narrative: The bridge collapsed. It looks like I can't jump over the ledge... Maybe
     I can use my bow in some way
-  duration: 7
+  duration: 6
+  ephemeral: 0

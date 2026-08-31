@@ -14,5 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: 
   technical: Press A/D to move the character
-  narrative: Alright, first steps in this realm
+  narrative: Alright, first steps in this realm.
   duration: 4
+  ephemeral: 1

@@ -2,7 +2,7 @@
 
 namespace HUD.Assist
 {
-    [CreateAssetMenu(fileName = "NewHintFeature", menuName = "Kingdom-Afterlight/Hints/Feature Data")]
+    [CreateAssetMenu(fileName = "NewHintFeature", menuName = "Kingdom-Afterlight/Assist Data")]
     public class FeatureAssistData : ScriptableObject
     {
         [Tooltip("Needed to persist completion in a save file; unused otherwise.")] [SerializeField]
@@ -17,10 +17,16 @@ namespace HUD.Assist
         [Header("Timing")] [Tooltip("Duration in seconds of the prompts")] [SerializeField]
         private float duration = 4f;
 
+        [Header("Ephemeral Hint")]
+        [Tooltip("will make this hint disappear forever after being displayed one time")]
+        [SerializeField]
+        private bool ephemeral;
+
         public string Id => id;
         public string TechicalPrompt => technical;
         public string NarrativePrompt => narrative;
         public float DisplayDuration => duration;
+        public bool Ephemeral => ephemeral;
 
     }
 }

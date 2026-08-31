@@ -1747,7 +1747,7 @@ GameObject:
   - component: {fileID: 76703921}
   - component: {fileID: 76703920}
   m_Layer: 0
-  m_Name: FirstLever (path 2)
+  m_Name: Lever (path 2)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1780,8 +1780,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1147c27f289a4051a6767245bb252d88, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  feature: {fileID: 11400000, guid: 224f9e6a577be332b8c0c39f5b382304, type: 2}
-  ephemeral: 1
+  features:
+  - {fileID: 11400000, guid: 224f9e6a577be332b8c0c39f5b382304, type: 2}
+  - {fileID: 11400000, guid: bd9703e45cbf1a145a92630cc0661413, type: 2}
+  - {fileID: 11400000, guid: 07d0a9126557b0c41a8bb51374f03e1d, type: 2}
+  ensureDisplay: 0
 --- !u!65 &76703921
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -4543,6 +4546,77 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 4912681820858793123, guid: b35799adf40bff54cbe1d6606915c30e, type: 3}
   m_PrefabInstance: {fileID: 162010694}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &167762880
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 167762881}
+  - component: {fileID: 167762883}
+  - component: {fileID: 167762882}
+  m_Layer: 0
+  m_Name: Lever (path 3)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &167762881
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 167762880}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -8, y: 6, z: 17}
+  m_LocalScale: {x: 1, y: 1, z: 3}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1650876230}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &167762882
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 167762880}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1147c27f289a4051a6767245bb252d88, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  features:
+  - {fileID: 11400000, guid: 224f9e6a577be332b8c0c39f5b382304, type: 2}
+  - {fileID: 11400000, guid: bd9703e45cbf1a145a92630cc0661413, type: 2}
+  - {fileID: 11400000, guid: 07d0a9126557b0c41a8bb51374f03e1d, type: 2}
+  ensureDisplay: 0
+--- !u!65 &167762883
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 167762880}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 1, y: 1, z: 1}
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!4 &179345997 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 5232049371400387876, guid: 9fe8d765cc281bea88efb7d3c478d71e, type: 3}
@@ -19510,8 +19584,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 2, y: 1, z: 1}
-  m_Center: {x: 0, y: 0, z: 0}
+  m_Size: {x: 3, y: 1, z: 1}
+  m_Center: {x: 0.5, y: 0, z: 0}
 --- !u!114 &606656270
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -19524,8 +19598,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1147c27f289a4051a6767245bb252d88, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  feature: {fileID: 11400000, guid: 342c57d39b96a2448b13fefd6b07ccf7, type: 2}
-  ephemeral: 0
+  features:
+  - {fileID: 11400000, guid: 342c57d39b96a2448b13fefd6b07ccf7, type: 2}
+  - {fileID: 11400000, guid: c0f10b22815818543b340c8ce1f232b6, type: 2}
+  ensureDisplay: 1
 --- !u!1001 &607069481
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -32871,7 +32947,7 @@ GameObject:
   - component: {fileID: 1081669459}
   - component: {fileID: 1081669458}
   m_Layer: 0
-  m_Name: FirstLever (path 1)
+  m_Name: Lever (path 1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -32904,8 +32980,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1147c27f289a4051a6767245bb252d88, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  feature: {fileID: 11400000, guid: 224f9e6a577be332b8c0c39f5b382304, type: 2}
-  ephemeral: 1
+  features:
+  - {fileID: 11400000, guid: 224f9e6a577be332b8c0c39f5b382304, type: 2}
+  - {fileID: 11400000, guid: bd9703e45cbf1a145a92630cc0661413, type: 2}
+  - {fileID: 11400000, guid: 07d0a9126557b0c41a8bb51374f03e1d, type: 2}
+  ensureDisplay: 0
 --- !u!65 &1081669459
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -51620,6 +51699,7 @@ Transform:
   - {fileID: 606656268}
   - {fileID: 1081669457}
   - {fileID: 76703919}
+  - {fileID: 167762881}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &1651082662

@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Core;
+using HUD.Assist;
 using Player;
 using UnityEngine;
 
@@ -11,6 +12,8 @@ namespace Gameplay
         [SerializeField] public GameObject bow;
         [SerializeField] public GameObject quiver;
         [SerializeField] public GameObject theLastHeart;
+
+        [SerializeField] public FeatureAssistData dashLocked;
         
         public ISet<AbilityType> UnlockedAbilities = new HashSet<AbilityType>();
         private HealthManager _healthManager;
@@ -62,6 +65,12 @@ namespace Gameplay
                 _healthManager.Heal(HealthManager.MaxHealth);
                 theLastHeart.SetActive(true);
             }
+
+            if (HasAbility(AbilityType.Dash))
+            {
+                TutorialAssistManager.Instance.DisableFeatureAssist(dashLocked);
+            }
+
         }
     }
 }

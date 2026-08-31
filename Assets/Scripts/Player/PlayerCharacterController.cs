@@ -1,6 +1,7 @@
 using System;
 using Core;
 using Gameplay;
+using HUD.Assist;
 using KinematicCharacterController;
 using Player.State;
 using UnityEngine;
@@ -10,6 +11,7 @@ namespace Player
     public class PlayerCharacterController : MonoBehaviour, ICharacterController
     {
         private AbilityManager _abilityManager;
+        private AssistEvents _assistEvents;
 
         [Header("References")]
         public KinematicCharacterMotor motor;
@@ -65,7 +67,9 @@ namespace Player
 
         private void Start()
         {
-            _abilityManager = GameObject.FindGameObjectWithTag("GameManager").GetComponent<AbilityManager>();
+            var gm = GameObject.FindGameObjectWithTag("GameManager");
+            _abilityManager = gm.GetComponent<AbilityManager>();
+            _assistEvents = gm.GetComponent<AssistEvents>();
 
             if (_abilityManager == null)
                 Debug.LogError("AbilityManager component missing on GameManager", this);
@@ -220,6 +224,9 @@ namespace Player
                 return;
             }
 
+            //Disable dash hints
+            _assistEvents.OnPlayerDash();
+
             if (CurrentState == StateMachine.DashingState)
             {
                 CommandUtils.Off(ref triggers, PlayerTrigger.Dash);
@@ -276,16 +283,14 @@ namespace Player
             //Layer 3 = Arrow
             if (coll.gameObject.layer == 3)
             {
-                Debug.Log(coll.bounds.max.y + " " + motor.Capsule.bounds.min.y);
+                //Debug.Log(coll.bounds.max.y + " " + motor.Capsule.bounds.min.y);
 
                 if (motor.Capsule.bounds.min.y < coll.bounds.max.y - 0.05f)
                 {
-                    Debug.Log("collider valid FALSE");
                     return false;
                 }
             }
 
-            Debug.Log("collider valid TRUE");
             return true;
         }
 
