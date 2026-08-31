@@ -34,8 +34,10 @@ namespace Triggers
             _checkPointHUD = FindFirstObjectByType<CheckPointHUD>();
             Collider checkpointCollider = GetComponent<Collider>();
             Collider playerCollider = player.GetComponent<Collider>();
+            //ignore checkpoint activation if the player already starts inside it
             if (playerCollider != null && checkpointCollider.bounds.Intersects(playerCollider.bounds))
                 _ignoreUntilExit = true;
+            GameStateManager.Respawned += HandleRespawn;
         }
 
         private void OnTriggerEnter(Collider other)
@@ -70,6 +72,14 @@ namespace Triggers
         {
             if (!other.CompareTag("Player")) return;
             _ignoreUntilExit = false;
+        }
+        private void HandleRespawn()
+        {
+            Vector3 checkpointPosition = new Vector3(transform.position.x, transform.position.y + 2f, transform.position.z);
+
+            //only the checkpoint used for the respawn ignores the next trigger activation
+            if (Vector3.Distance(checkpointPosition, _cpManager.LastCheckPoint.Position) < 0.1f)
+                _ignoreUntilExit = true;
         }
     }
 }
