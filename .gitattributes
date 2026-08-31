@@ -7,6 +7,9 @@
 # YAML
 *.{yml,yaml} linguist-detectable
 
+# External
+/Assets/External/** linguist-vendored
+
 * text=auto
 
 # Unity files

@@ -1,7 +1,7 @@
 using System;
-using Controllers;
 using Core;
 using Projectiles;
+using UI;
 using UnityEngine;
 
 namespace Player
@@ -12,7 +12,7 @@ namespace Player
         private int _health;
         private bool _isDead;
 
-        public const int MaxHealth = 6;
+        public static int MaxHealth {get; private set; } = 4;
 
         private ArrowLauncher _arrowLauncher;
         private PlayerCharacterController _characterController;
@@ -55,7 +55,7 @@ namespace Player
             if (_isDead)
                 return false;
 
-            if (_damageFeedback != null && _damageFeedback.IsInvincible)
+            if (_damageFeedback is not null && _damageFeedback.IsInvincible)
                 return false;
 
             Health = Math.Max(Health - damage, 0);
@@ -79,6 +79,8 @@ namespace Player
 
             Health = Math.Min(Health + heal, MaxHealth);
         }
+
+        public static void UpgradeHealth() => MaxHealth = 5;
 
         /// reset all params after death
         public void ResetAfterRespawn()

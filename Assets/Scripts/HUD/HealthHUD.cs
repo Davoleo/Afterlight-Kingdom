@@ -1,50 +1,50 @@
 using System.Collections.Generic;
 using Player;
 using UnityEngine;
-using UnityEngine.UI;
 
 namespace HUD
 {
     public class HealthHUD : MonoBehaviour
     {
-        [SerializeField]
-        private HealthManager healthManager;
-        
-        private Dictionary<HeartEnum, Sprite> heartSprites = new();
+        internal static readonly Dictionary<HeartEnum, Sprite> HeartSprites = new();
 
-        // UI elements
-        private Image[] _hearts;
+        [SerializeField] private HealthManager healthManager;
+
+        private Heart[] _hearts;
+        private int _prevHealth;
 
         private void Start()
         {
-            _hearts = gameObject.GetComponentsInChildren<Image>();
-            
-            heartSprites.Add(HeartEnum.Empty, Resources.Load<Sprite>("Sprites/heart_empty"));
-            heartSprites.Add(HeartEnum.Half, Resources.Load<Sprite>("Sprites/heart_half"));
-            heartSprites.Add(HeartEnum.Full, Resources.Load<Sprite>("Sprites/heart_full"));
+            _hearts = gameObject.GetComponentsInChildren<Heart>();
+            HeartSprites.Add(HeartEnum.Empty, Resources.Load<Sprite>("Sprites/Heart Empty"));
+            HeartSprites.Add(HeartEnum.Full, Resources.Load<Sprite>("Sprites/Heart Full"));
         }
 
         private void Update()
         {
-            int fullHearts = (healthManager.Health / 2);
-            for (int i = 0; i < fullHearts; i++)
+            if (_prevHealth == healthManager.Health)
+                return;
+
+            var log = "";
+
+            int heart = 0;
+            while (heart < HealthManager.MaxHealth)
             {
-                _hearts[i].sprite = heartSprites[HeartEnum.Full];
+                log += heart < healthManager.Health ? 'o' : 'x';
+
+                _hearts[heart].SetState(heart < healthManager.Health ? HeartEnum.Full : HeartEnum.Empty);
+                heart++;
             }
 
-            if (healthManager.Health < 6)
-            {
-                // odd health value = half-heart | even health value = full heart
-                int lastFullness = healthManager.Health % 2;
-                _hearts[fullHearts].sprite = heartSprites[(HeartEnum) lastFullness];
-            }
+            Debug.Log(log);
+
+            _prevHealth = healthManager.Health;
         }
     }
 
     internal enum HeartEnum
     {
         Empty = 0,
-        Half = 1,
         Full = 2
     }
 }

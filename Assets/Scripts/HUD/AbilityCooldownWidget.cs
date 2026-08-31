@@ -15,6 +15,9 @@ namespace HUD
         [SerializeField] private Color chargingColor = Color.white;
         [SerializeField] private Color readyColor = Color.green;
 
+        [Tooltip("Camera to billboard against. Empty to use main camera.")] [SerializeField]
+        private Camera targetCamera;
+
         [Tooltip("Seconds to keep showing the overlay after it becomes ready (while not engaged). 0 = hide immediately.")]
         [SerializeField] private float hideDelayAfterReady;
 
@@ -63,6 +66,15 @@ namespace HUD
             _canvasGroup.alpha = shouldShow ? 1f : 0f;
             _canvasGroup.blocksRaycasts = shouldShow;
             _canvasGroup.interactable = shouldShow;
+        }
+
+        private void LateUpdate()
+        {
+            Camera cam = targetCamera ?? Camera.main;
+            if (cam is null) return;
+
+            //billboard
+            transform.rotation = cam.transform.rotation;
         }
     }
 }

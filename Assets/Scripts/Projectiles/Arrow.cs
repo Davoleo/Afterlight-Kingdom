@@ -1,4 +1,6 @@
+using System.Linq;
 using Enemies;
+using KinematicCharacterController;
 using Sound;
 using UnityEngine;
 
@@ -27,10 +29,11 @@ namespace Projectiles
         private bool _launched;
         private bool _stuck;
 
-        private void Awake()
+        private void Start()
         {
-            if (standingCollider != null)
-                standingCollider.enabled = false;
+            if (standingCollider == null)
+                standingCollider = GetComponent<Collider>();
+            standingCollider.enabled = false;
         }
 
         private void Update()
@@ -76,7 +79,7 @@ namespace Projectiles
             {
                 EnemyHealth enemyHealth = hitCollider.GetComponentInParent<EnemyHealth>();
 
-                if (enemyHealth != null)
+                if (enemyHealth is not null)
                 {
                     StickToEnemy(hitCollider.transform, transform.position);
                     enemyHealth.TakeDamage(damage);
@@ -91,7 +94,7 @@ namespace Projectiles
         {
             EnemyHealth enemyHealth = hit.collider.GetComponentInParent<EnemyHealth>();
 
-            if (enemyHealth != null)
+            if (enemyHealth is not null)
             {
                 StickToEnemy(hit.collider.transform, hit.point);
                 enemyHealth.TakeDamage(damage);
@@ -112,8 +115,6 @@ namespace Projectiles
 
             transform.SetParent(enemyTransform, true);
 
-            DisableAllColliders();
-
             Destroy(gameObject, stuckLifetime);
         }
 
@@ -125,22 +126,11 @@ namespace Projectiles
             transform.position = hitPoint - _direction * tipOffset;
             transform.forward = _direction;
 
-            if (standingCollider != null)
-            {
-                standingCollider.enabled = true;
-                standingCollider.isTrigger = false;
-            }
+            standingCollider.enabled = true;
+            standingCollider.isTrigger = false;
 
             enabled = false;
             Destroy(gameObject, stuckLifetime);
-        }
-
-        private void DisableAllColliders()
-        {
-            Collider[] colliders = GetComponentsInChildren<Collider>();
-
-            foreach (Collider collider in colliders)
-                collider.enabled = false;
         }
 
         public void Launch(Vector3 direction)
@@ -150,8 +140,7 @@ namespace Projectiles
             _launched = true;
             _stuck = false;
 
-            if (standingCollider != null)
-                standingCollider.enabled = false;
+            standingCollider.enabled = false;
         }
     }
 }
