@@ -19,7 +19,7 @@ namespace Enemies
         [Header("Melee Attack")]
         [SerializeField] private float attackRange = 1.5f;
         [SerializeField] private float attackCooldown = 1.2f;
-        [SerializeField] private float attackWindup = 0.5f;
+        [SerializeField] private float attackWindup = 0.35f;
 
         // Time during which the enemy remains completely still
         // after performing the attack.
@@ -117,6 +117,7 @@ namespace Enemies
             isPreparingAttack = false;
             isRecoveringAttack = false;
 
+            attackStartTime = 0f;
             lastAttackTime = Time.time;
             attackRecoveryEndTime = 0f;
 
@@ -130,7 +131,6 @@ namespace Enemies
             stateBeforeHit = EnemyState.Sleeping;
 
             // Remove any attack still pending when the player dies.
-
             animator.ResetTrigger("Attack");
             animator.SetBool("IsMoving", false);
             animator.Play("Idle", 0, 0f);
@@ -149,9 +149,6 @@ namespace Enemies
          */
         private bool HandleHitState()
         {
-            if (animator == null)
-                return false;
-
             bool isHit = animator.GetBool("IsHit");
 
             // Detect the moment the enemy receives damage.
@@ -359,9 +356,6 @@ namespace Enemies
         {
             MovementDirection = Vector3.zero;
 
-            if (navMeshAgent == null || !navMeshAgent.enabled || !navMeshAgent.isOnNavMesh)
-                return;
-
             navMeshAgent.isStopped = true;
             navMeshAgent.velocity = Vector3.zero;
             navMeshAgent.ResetPath();
@@ -434,9 +428,7 @@ namespace Enemies
                 hasLockedAttackPosition = false;
                 isRecoveringAttack = false;
 
-                if (newState != EnemyState.Hit &&
-                    navMeshAgent.enabled &&
-                    navMeshAgent.isOnNavMesh)
+                if (newState != EnemyState.Hit && navMeshAgent.enabled && navMeshAgent.isOnNavMesh)
                 {
                     navMeshAgent.velocity = Vector3.zero;
                     navMeshAgent.isStopped = false;
@@ -494,11 +486,7 @@ namespace Enemies
 
         private void UpdateAnimation()
         {
-            if (animator == null)
-                return;
-
             bool isMoving = currentState != EnemyState.Attacking && MovementDirection.sqrMagnitude > 0.01f;
-
             animator.SetBool("IsMoving", isMoving);
         }
 
