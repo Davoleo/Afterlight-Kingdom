@@ -25,7 +25,7 @@ namespace Triggers
             if (!other.gameObject.CompareTag("Player"))
                 return;
 
-            if (_collectiblesManager.collectedIds.Contains(Id))
+            if (_collectiblesManager.CollectedIds.Contains(Id))
                 return;
 
             CollectibleType resolvedType = ResolveCollectibleType();

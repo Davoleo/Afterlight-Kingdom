@@ -322,6 +322,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 8ce87987104a2cf4ba4197732c67eb26, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1973673542692706980}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 8ce87987104a2cf4ba4197732c67eb26, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: -6679106573072216179}
   m_SourcePrefab: {fileID: 100100000, guid: 8ce87987104a2cf4ba4197732c67eb26, type: 3}
 --- !u!4 &1556688953048904978 stripped
 Transform:
@@ -348,6 +351,7 @@ MonoBehaviour:
   enterSfx: {fileID: 8300000, guid: 016b9848d9f2d1943af5170cf3299cc2, type: 3}
   derivedCameraRotation: 0
   checkpointRingEffect: {fileID: 3999184601525785304}
+  activationCooldown: 2
 --- !u!65 &634893592790330502
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -390,3 +394,38 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 0.72809196, y: 1, z: 0.77598166}
   m_Center: {x: 0.0076765716, y: 0, z: 0.014775783}
+--- !u!114 &-6679106573072216179
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2220741867714211752}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ca501aa103ee46b4ad97c5bbabb25562, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  rewardId: HEART
+  abilityToUnlock: 2
+  rewardPrefab: {fileID: 0}
+  rewardSpawnPoint: {fileID: 0}
+  rewardSpawnDelay: 0.5
+  rewardRiseHeight: 0.8
+  animationDuration: 0.6
+  scaleMult: 2.5
+  openAutomaticallyOnPlayerEnter: 0
+  closedVisual: {fileID: 0}
+  openedVisual: {fileID: 0}
+  chestAnimator: {fileID: 0}
+  openTriggerName: OpenChest
+  particles: {fileID: 0}
+  chestOpenSfx: {fileID: 0}
+  coinCost: 40
+  coinVisualPrefab: {fileID: 0}
+  coinVisualCount: 4
+  coinStartHeight: 1.2
+  coinStartSpread: 0.3
+  coinStaggerRatio: 0.3
+  coinAcceptScaleMult: 1.4
+  coinDelay: 0.5

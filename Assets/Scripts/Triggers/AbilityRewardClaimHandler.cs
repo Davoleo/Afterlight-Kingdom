@@ -11,7 +11,6 @@ namespace Triggers
     public class AbilityRewardClaimHandler : MonoBehaviour
     {
         [Header("Reward")]
-        [SerializeField] private string rewardId;
         [SerializeField] private AbilityType abilityToUnlock = AbilityType.Bow;
 
         [Header("Rotation")]
@@ -55,7 +54,7 @@ namespace Triggers
             _isGamepadActive = InputUtils.IsGamepadActive();
             RefreshPromptText();
 
-            if (_collectiblesManager.IsCollected(rewardId))
+            if (_abilityManager.HasAbility(abilityToUnlock))
                 gameObject.SetActive(false);
         }
 
@@ -75,11 +74,7 @@ namespace Triggers
                 ClaimReward();
         }
 
-        public void Configure(string id, AbilityType ability)
-        {
-            rewardId = id;
-            abilityToUnlock = ability;
-        }
+        public void Configure(AbilityType ability) => abilityToUnlock = ability;
 
         private void OnTriggerEnter(Collider other)
         {
@@ -102,7 +97,6 @@ namespace Triggers
             enabled = false;
 
             _abilityManager.UnlockAbility(abilityToUnlock);
-            _collectiblesManager.RegisterCollectedId(rewardId);
             _promptText?.gameObject.SetActive(false);
             gameObject.SetActive(false);
         }

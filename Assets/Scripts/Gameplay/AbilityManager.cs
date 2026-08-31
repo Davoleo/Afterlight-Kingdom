@@ -7,12 +7,13 @@ namespace Gameplay
 {
     public class AbilityManager : MonoBehaviour
     {
-        [Header("GameObjects to disable")] 
+        [Header("Ability GameObjects")]
         [SerializeField] public GameObject bow;
         [SerializeField] public GameObject quiver;
+        [SerializeField] public GameObject theLastHeart;
         
         public ISet<AbilityType> UnlockedAbilities = new HashSet<AbilityType>();
-        private GameObject _player;
+        private HealthManager _healthManager;
         private BowController _bowController;
         private BowVisualsController _bowVisuals;
 
@@ -20,9 +21,10 @@ namespace Gameplay
         {
             // Access the scripts to disable if the ability isn't unlocked, needed
             // regardless of whether a save exists (e.g. a fresh New Game).
-            _player = GameObject.FindGameObjectsWithTag("Player")[0];
-            _bowController = _player.GetComponent<BowController>();
-            _bowVisuals = _player.GetComponent<BowVisualsController>();
+            var player = GameObject.FindGameObjectWithTag("Player");
+            _healthManager = player.GetComponent<HealthManager>();
+            _bowController = player.GetComponent<BowController>();
+            _bowVisuals = player.GetComponent<BowVisualsController>();
 
             var save = SaveManager.Load();
 
@@ -40,8 +42,10 @@ namespace Gameplay
 
         public bool HasAbility(AbilityType ability) => UnlockedAbilities.Contains(ability);
 
-        // Applies the current ability set to the bow, instead of polling every frame in Update()
-        // for something that only ever changes right here or once at boot.
+        /// <summary>
+        /// Applies the current ability set to the bow, instead of polling every frame in Update()
+        /// for something that only ever changes right here or once at boot.
+        /// </summary>
         private void RefreshAbilityState()
         {
             bool hasBow = HasAbility(AbilityType.Bow);
@@ -50,6 +54,14 @@ namespace Gameplay
             _bowVisuals.enabled = hasBow;
             bow.SetActive(hasBow);
             quiver.SetActive(hasBow);
+
+            var hasHealthUpgrade = HasAbility(AbilityType.Heart);
+            if (hasHealthUpgrade)
+            {
+                HealthManager.UpgradeHealth();
+                _healthManager.Heal(HealthManager.MaxHealth);
+                theLastHeart.SetActive(true);
+            }
         }
     }
 }

@@ -53,10 +53,10 @@ namespace Core
                 checkpointZ = cpManager.LastCheckPoint.Position.z,
                 cameraRotation = cpManager.LastCheckPoint.Rotation,
 
-                collectedIds = collManager.collectedIds ?? new List<string>(),
+                collectedIds = collManager.CollectedIds ?? new List<string>(),
                 openedDoorIds = doorManager.openedDoorIds ?? new List<string>(),
-                coins = collManager.coins,
-                keys = collManager.keys,
+                coins = collManager.Coins,
+                keys = collManager.Keys,
 
                 unlockedAbilities = new List<AbilityType>(abilityManager.UnlockedAbilities ?? new HashSet<AbilityType>()),
 

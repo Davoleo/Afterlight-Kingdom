@@ -5,18 +5,10 @@ namespace HUD
 {
     public class Heart : MonoBehaviour
     {
-        private Image image;
+        private Image _image;
 
-        private void Start()
-        {
-            image = GetComponent<Image>();
-            //image.sprite = HealthHUD.HeartSprites[HeartEnum.Full];
-        }
+        private void Start() => _image = GetComponent<Image>();
 
-        internal void SetState(HeartEnum state)
-        {
-            image.sprite = HealthHUD.HeartSprites[state];
-
-        }
+        internal void SetState(HeartEnum state) => _image.sprite = HealthHUD.HeartSprites[state];
     }
 }

@@ -1,0 +1,183 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &155340161034079366
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 8209392313155940926}
+  m_Layer: 7
+  m_Name: RewardSpawnPoint
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &8209392313155940926
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 155340161034079366}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0.365, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 4121995149261122424}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1001 &6246784869846503178
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 7263916615960084168, guid: 665472638cdd3aa408cd365ba0af8ece, type: 3}
+      propertyPath: m_Name
+      value: CoinAltar
+      objectReference: {fileID: 0}
+    - target: {fileID: 7263916615960084168, guid: 665472638cdd3aa408cd365ba0af8ece, type: 3}
+      propertyPath: m_Layer
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 8035913780005954674, guid: 665472638cdd3aa408cd365ba0af8ece, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 0.30000004
+      objectReference: {fileID: 0}
+    - target: {fileID: 8035913780005954674, guid: 665472638cdd3aa408cd365ba0af8ece, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 0.3
+      objectReference: {fileID: 0}
+    - target: {fileID: 8035913780005954674, guid: 665472638cdd3aa408cd365ba0af8ece, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 0.30000004
+      objectReference: {fileID: 0}
+    - target: {fileID: 8035913780005954674, guid: 665472638cdd3aa408cd365ba0af8ece, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -17.06
+      objectReference: {fileID: 0}
+    - target: {fileID: 8035913780005954674, guid: 665472638cdd3aa408cd365ba0af8ece, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 21
+      objectReference: {fileID: 0}
+    - target: {fileID: 8035913780005954674, guid: 665472638cdd3aa408cd365ba0af8ece, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -42.967
+      objectReference: {fileID: 0}
+    - target: {fileID: 8035913780005954674, guid: 665472638cdd3aa408cd365ba0af8ece, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0.9170737
+      objectReference: {fileID: 0}
+    - target: {fileID: 8035913780005954674, guid: 665472638cdd3aa408cd365ba0af8ece, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8035913780005954674, guid: 665472638cdd3aa408cd365ba0af8ece, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0.39871788
+      objectReference: {fileID: 0}
+    - target: {fileID: 8035913780005954674, guid: 665472638cdd3aa408cd365ba0af8ece, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8035913780005954674, guid: 665472638cdd3aa408cd365ba0af8ece, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8035913780005954674, guid: 665472638cdd3aa408cd365ba0af8ece, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: -46.996
+      objectReference: {fileID: 0}
+    - target: {fileID: 8035913780005954674, guid: 665472638cdd3aa408cd365ba0af8ece, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8035913780005954674, guid: 665472638cdd3aa408cd365ba0af8ece, type: 3}
+      propertyPath: m_ConstrainProportionsScale
+      value: 1
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects:
+    - targetCorrespondingSourceObject: {fileID: 8035913780005954674, guid: 665472638cdd3aa408cd365ba0af8ece, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 8209392313155940926}
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 7263916615960084168, guid: 665472638cdd3aa408cd365ba0af8ece, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 5395558893990942135}
+    - targetCorrespondingSourceObject: {fileID: 7263916615960084168, guid: 665472638cdd3aa408cd365ba0af8ece, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 6101925492573927054}
+  m_SourcePrefab: {fileID: 100100000, guid: 665472638cdd3aa408cd365ba0af8ece, type: 3}
+--- !u!1 &3638789833920868802 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 7263916615960084168, guid: 665472638cdd3aa408cd365ba0af8ece, type: 3}
+  m_PrefabInstance: {fileID: 6246784869846503178}
+  m_PrefabAsset: {fileID: 0}
+--- !u!135 &5395558893990942135
+SphereCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3638789833920868802}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Radius: 6
+  m_Center: {x: 0.8, y: 0.9099943, z: 0.8}
+--- !u!114 &6101925492573927054
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3638789833920868802}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ca501aa103ee46b4ad97c5bbabb25562, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  rewardId: HEART
+  abilityToUnlock: 2
+  rewardPrefab: {fileID: 2870663190868213460, guid: ce2af9b22867a8d4dacd0a7c5de65f1a, type: 3}
+  rewardSpawnPoint: {fileID: 8209392313155940926}
+  rewardSpawnDelay: 0.5
+  rewardRiseHeight: 0.8
+  animationDuration: 0.6
+  scaleMult: 2.5
+  openAutomaticallyOnPlayerEnter: 0
+  chestAnimator: {fileID: 0}
+  openTriggerName: 
+  particles: {fileID: 0}
+  sfx: {fileID: 0}
+  coinCost: 40
+  coinVisualPrefab: {fileID: 2061149779994215493, guid: f6a4b917ac39ab74ca806164bbd1ed99, type: 3}
+  coinVisualCount: 4
+  coinStartHeight: 1.2
+  coinStartSpread: 0.3
+  coinStaggerRatio: 0.3
+  coinAcceptScaleMult: 1.4
+  coinDelay: 0.5
+--- !u!4 &4121995149261122424 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 8035913780005954674, guid: 665472638cdd3aa408cd365ba0af8ece, type: 3}
+  m_PrefabInstance: {fileID: 6246784869846503178}
+  m_PrefabAsset: {fileID: 0}

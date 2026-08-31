@@ -15,7 +15,7 @@ namespace HUD
 
         private void Start()
         {
-            _hearts = gameObject.GetComponentsInChildren<Heart>();
+            _hearts = gameObject.GetComponentsInChildren<Heart>(true);
             HeartSprites.Add(HeartEnum.Empty, Resources.Load<Sprite>("Sprites/Heart Empty"));
             HeartSprites.Add(HeartEnum.Full, Resources.Load<Sprite>("Sprites/Heart Full"));
         }
@@ -25,7 +25,7 @@ namespace HUD
             if (_prevHealth == healthManager.Health)
                 return;
 
-            var log = "";
+            var log = "Health: ";
 
             int heart = 0;
             while (heart < HealthManager.MaxHealth)

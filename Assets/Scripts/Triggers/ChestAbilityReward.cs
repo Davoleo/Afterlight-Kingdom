@@ -3,40 +3,38 @@ using Gameplay;
 using Player;
 using Sound;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Triggers
 {
     public class ChestAbilityReward : MonoBehaviour
     {
         [Header("Reward")]
-        [SerializeField] private string rewardId = "Level2_Bow";
         [SerializeField] private AbilityType abilityToUnlock = AbilityType.Bow;
         [SerializeField] private GameObject rewardPrefab;
-        [SerializeField] private Transform rewardSpawnPoint;
+        [SerializeField] protected Transform rewardSpawnPoint;
 
         [Header("Reward Animation")]
-        [SerializeField] private float rewardSpawnDelay = 0.5f;
+        [SerializeField] protected float rewardSpawnDelay = 0.5f;
         [SerializeField] private float rewardRiseHeight = 0.8f;
         [SerializeField] private float animationDuration = 0.6f;
         [SerializeField] private float scaleMult = 2.5f;
 
         [Header("Chest Opening")]
         [SerializeField] private bool openAutomaticallyOnPlayerEnter = true;
-        [SerializeField] private GameObject closedVisual;
-        [SerializeField] private GameObject openedVisual;
 
         [Header("Animation")]
         [SerializeField] private Animator chestAnimator;
         [SerializeField] private string openTriggerName = "OpenChest";
         [SerializeField] private ParticleSystem particles;
 
-        [Header("SFX")] [SerializeField] private AudioClip chestOpenSfx;
+        [FormerlySerializedAs("chestOpenSfx")] [Header("SFX")] [SerializeField] private AudioClip sfx;
 
-        private bool _opened;
         private bool _playerInside;
 
-        private CollectiblesManager _collectiblesManager;
-        private PlayerCharacterController _characterController;
+        protected bool Opened;
+        protected PlayerCharacterController CharacterController;
+        protected CollectiblesManager Collectibles;
 
         private void Awake()
         {
@@ -46,21 +44,22 @@ namespace Triggers
         private void Start()
         {
             var gameManager = GameObject.FindGameObjectWithTag("GameManager");
+            var abilityManager = gameManager.GetComponent<AbilityManager>();
+            Collectibles = gameManager.GetComponent<CollectiblesManager>();
 
-            _characterController = GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerCharacterController>();
-            _collectiblesManager = gameManager.GetComponent<CollectiblesManager>();
+            CharacterController = GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerCharacterController>();
 
-            if (_collectiblesManager.IsCollected(rewardId))
-                _opened = true;
+            if (abilityManager.HasAbility(abilityToUnlock))
+                Opened = true;
         }
 
         private void Update()
         {
-            if (!_playerInside || _opened) return;
+            if (!_playerInside || Opened) return;
 
             if (openAutomaticallyOnPlayerEnter) return;
 
-            if (CommandUtils.IsUp(_characterController.triggers, PlayerTrigger.Interact))
+            if (CommandUtils.IsUp(CharacterController.triggers, PlayerTrigger.Interact))
             {
                 OpenChest();
                 //CommandUtils.Off(ref _characterController.triggers, PlayerTrigger.Interact);
@@ -86,17 +85,26 @@ namespace Triggers
             _playerInside = false;
         }
 
-        private void OpenChest()
+        protected virtual bool CanActivate() => true;
+
+        protected virtual void PlayActivationEffect()
         {
-            if (_opened)
-                return;
-
-            _opened = true;
-
             if (chestAnimator)
                 chestAnimator.SetTrigger(openTriggerName);
+        }
 
-            AudioManager.Instance.PlaySfx(chestOpenSfx, volumeMult: 1.5f);
+        private void OpenChest()
+        {
+            if (!CanActivate()) return;
+
+            if (Opened) return;
+
+            Opened = true;
+
+            PlayActivationEffect();
+
+            if (sfx) AudioManager.Instance.PlaySfx(sfx, volumeMult: 1.5f);
+
             StartCoroutine(SpawnRewardRoutine());
         }
 
@@ -105,10 +113,10 @@ namespace Triggers
             if (!rewardPrefab || !rewardSpawnPoint)
                 yield break;
 
-            if (CommandUtils.IsUp(_characterController.triggers, PlayerTrigger.Interact))
+            if (CommandUtils.IsUp(CharacterController.triggers, PlayerTrigger.Interact))
                 yield return new WaitForSeconds(rewardSpawnDelay);
 
-            particles.Play();
+            if (particles) particles?.Play();
 
             Vector3 startPosition = rewardSpawnPoint.position;
             Vector3 endPosition = startPosition + Vector3.up * rewardRiseHeight;
@@ -125,7 +133,7 @@ namespace Triggers
             if (!claimHandler)
                 claimHandler = reward.AddComponent<AbilityRewardClaimHandler>();
 
-            claimHandler.Configure(rewardId, abilityToUnlock);
+            claimHandler.Configure(abilityToUnlock);
 
             float elapsed = 0f;
 

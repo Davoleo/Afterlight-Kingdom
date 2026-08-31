@@ -22,10 +22,11 @@ namespace Gameplay
     {
         public Collectibles Collectibles;
 
-        public int coins;
-        public int keys;
+        public int Coins { get; private set; }
+        public int Keys { get; private set; }
 
-        public List<string> collectedIds;
+        [NonSerialized]
+        public List<string> CollectedIds;
 
         private readonly Dictionary<CollectibleType, AudioClip> _sfx = new();
 
@@ -47,11 +48,11 @@ namespace Gameplay
             switch (type)
             {
                 case CollectibleType.Coin:
-                    coins++;
+                    Coins++;
                     break;
 
                 case CollectibleType.Key:
-                    keys++;
+                    Keys++;
                     break;
             }
         }
@@ -61,47 +62,49 @@ namespace Gameplay
             if (string.IsNullOrWhiteSpace(id))
                 return false;
 
-            collectedIds ??= new List<string>();
+            CollectedIds ??= new List<string>();
 
-            if (collectedIds.Contains(id))
+            if (CollectedIds.Contains(id))
                 return false;
 
-            collectedIds.Add(id);
+            CollectedIds.Add(id);
             return true;
         }
 
         public bool IsCollected(string id)
         {
-            return collectedIds != null && collectedIds.Contains(id);
+            return CollectedIds != null && CollectedIds.Contains(id);
         }
 
         public int GetCount(CollectibleType type)
         {
             return type switch
             {
-                CollectibleType.Coin => coins,
-                CollectibleType.Key => keys,
+                CollectibleType.Coin => Coins,
+                CollectibleType.Key => Keys,
                 _ => throw new ArgumentOutOfRangeException(nameof(type), type, null)
             };
         }
 
         public bool UseKey()
         {
-            if (keys <= 0)
+            if (Keys <= 0)
                 return false;
 
-            keys--;
+            Keys--;
             return true;
         }
+
+        public void SpendCoins(int amount) => Coins -= amount;
 
         // Called explicitly by CoreLoader once the level has actually finished loading and
         // become the active scene - same reasoning as CheckpointManager.Respawn(): the level's
         // Coin/Key objects don't exist yet while this GameObject is still booting inside Core.
         public void RestoreFromSave(SaveData save)
         {
-            coins = save.coins;
-            keys = save.keys;
-            collectedIds = save.collectedIds != null ? new List<string>(save.collectedIds) : new List<string>();
+            Coins = save.coins;
+            Keys = save.keys;
+            CollectedIds = save.collectedIds != null ? new List<string>(save.collectedIds) : new List<string>();
 
             RefreshCollectibleReferences();
             RestoreCollectedState();

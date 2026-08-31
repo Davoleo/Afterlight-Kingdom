@@ -23,7 +23,7 @@ namespace Triggers
         {
             if (!other.CompareTag("Player")) return;
             
-            _messageText.text = $"Finished!\nCoins collected: {_collectibles.coins} / {_collectibles.Collectibles.Coins.Count}";
+            _messageText.text = $"Finished!\nCoins collected: {_collectibles.Coins} / {_collectibles.Collectibles.Coins.Count}";
             _messageText.gameObject.SetActive(true);
         }
 
