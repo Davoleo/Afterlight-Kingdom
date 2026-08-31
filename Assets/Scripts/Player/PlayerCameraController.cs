@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using HUD.Assist;
+using UnityEngine;
 
 namespace Player
 {
@@ -19,6 +20,8 @@ namespace Player
 
         [Header("Distance")]
         [SerializeField] private float cameraDistance = 5f;
+
+        [SerializeField] private FeatureAssistData assist;
 
         private PlayerCharacterController _player;
         private int _currentDirection;
@@ -56,6 +59,8 @@ namespace Player
 
             if (_isRotating || pendingRotationInput == 0)
                 return;
+
+            TutorialAssistManager.Instance.DisableFeatureAssist(assist);
 
             _targetYAngle += stepAngle * pendingRotationInput;
             _targetYAngle %= 360;

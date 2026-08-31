@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: FirstLever
   m_EditorClassIdentifier: 
   id: 
-  technical: 
-  narrative: This seems to be the lever he told me, I should try to lift it
+  technical: Press {Interact} to operate the lever.
+  narrative: This seems to be the lever he told me, I should try to operate it
   duration: 4
+  ephemeral: 1

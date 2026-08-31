@@ -13,6 +13,6 @@ MonoBehaviour:
   m_Name: RotateCamera
   m_EditorClassIdentifier: 
   id: 
-  technical: Press {RotateCamera} to rotate the camera
+  technical: Press {RotateCameraLeft} or {RotateCameraRight} to rotate the camera
   narrative: Where do I go?
   duration: 4

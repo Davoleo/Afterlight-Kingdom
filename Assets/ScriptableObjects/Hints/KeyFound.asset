@@ -16,3 +16,4 @@ MonoBehaviour:
   technical: 
   narrative: Nice! let's go back to the door now
   duration: 4
+  ephemeral: 1

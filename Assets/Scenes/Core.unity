@@ -1279,6 +1279,7 @@ MonoBehaviour:
   stepAngle: 90
   rotationDuration: 0.3
   cameraDistance: 6
+  assist: {fileID: 11400000, guid: a8ec641f2f5e8f793926195e95904d1c, type: 2}
 --- !u!1 &978030153
 GameObject:
   m_ObjectHideFlags: 0
@@ -1434,6 +1435,7 @@ GameObject:
   - component: {fileID: 1007707252}
   - component: {fileID: 1007707254}
   - component: {fileID: 1007707255}
+  - component: {fileID: 1007707256}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: GameManager
@@ -1536,6 +1538,7 @@ MonoBehaviour:
   bow: {fileID: 374858701}
   quiver: {fileID: 1864766332}
   theLastHeart: {fileID: 978030153}
+  dashLocked: {fileID: 11400000, guid: 342c57d39b96a2448b13fefd6b07ccf7, type: 2}
 --- !u!114 &1007707254
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1564,6 +1567,21 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   technicalOverlay: {fileID: 1958398371}
   playerSpeechBubble: {fileID: 1535240063}
+--- !u!114 &1007707256
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1007707245}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4a2dbe69e264255ac01109f9a99e02d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  jumpFeature: {fileID: 11400000, guid: c5df356e593a48028bd59d0c49d55fd5, type: 2}
+  shootFeature: {fileID: 11400000, guid: e95513df97e28184eaf2826161fe1163, type: 2}
+  dashFeature: {fileID: 11400000, guid: c0f10b22815818543b340c8ce1f232b6, type: 2}
 --- !u!1 &1049100623
 GameObject:
   m_ObjectHideFlags: 0
