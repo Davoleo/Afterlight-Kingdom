@@ -16,8 +16,10 @@ namespace HUD
         private void Start()
         {
             _hearts = gameObject.GetComponentsInChildren<Heart>(true);
-            HeartSprites.Add(HeartEnum.Empty, Resources.Load<Sprite>("Sprites/Heart Empty"));
-            HeartSprites.Add(HeartEnum.Full, Resources.Load<Sprite>("Sprites/Heart Full"));
+            // Indexer, not Add(): HeartSprites is static and outlives this scene, so a
+            // re-entry from the menu would hit "key already added" with Add().
+            HeartSprites[HeartEnum.Empty] = Resources.Load<Sprite>("Sprites/Heart Empty");
+            HeartSprites[HeartEnum.Full] = Resources.Load<Sprite>("Sprites/Heart Full");
         }
 
         private void Update()

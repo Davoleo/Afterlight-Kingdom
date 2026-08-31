@@ -37,13 +37,12 @@ namespace UI
         public void NewGame()
         {
             SaveManager.Delete();
-            SceneLoader.LoadScene(SceneNames.Core);
+            LoadingScreen.Instance.StartCoroutine(SceneTransitions.EnterGame());
         }
 
         public void Continue()
         {
-            GameStateManager.SetState(GameState.Playing);
-            SceneLoader.LoadScene(SceneNames.Core);
+            LoadingScreen.Instance.StartCoroutine(SceneTransitions.EnterGame());
         }
 
         public void QuitGame()

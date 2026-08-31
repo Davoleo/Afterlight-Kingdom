@@ -1432,7 +1432,6 @@ GameObject:
   - component: {fileID: 1007707250}
   - component: {fileID: 1007707251}
   - component: {fileID: 1007707252}
-  - component: {fileID: 1007707253}
   - component: {fileID: 1007707254}
   - component: {fileID: 1007707255}
   m_Layer: 0
@@ -1523,7 +1522,7 @@ MonoBehaviour:
   deathPanel: {fileID: 692558687}
   deathFirstSelected: {fileID: 1971367907}
   pausePanel: {fileID: 1234294519}
-  pauseFirstSelected: {fileID: 0}
+  pauseFirstSelected: {fileID: 1613532023}
   pauseAction: {fileID: 5622814498832608624, guid: 052faaac586de48259a63d0c4782560b, type: 3}
 --- !u!114 &1007707252
 MonoBehaviour:
@@ -1539,19 +1538,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   bow: {fileID: 374858701}
   quiver: {fileID: 1864766332}
-  theLastHeart: {fileID: 978030153}
---- !u!114 &1007707253
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1007707245}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fa7b0f4730c240798b6de94bab322a4a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &1007707254
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2632,6 +2618,17 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 4641871204004409760, guid: 35a7d06b8faec62b68f6ebbcb1b76e0a, type: 3}
   m_PrefabInstance: {fileID: 1757447156}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1613532023 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 7539046888093614276, guid: 35a7d06b8faec62b68f6ebbcb1b76e0a, type: 3}
+  m_PrefabInstance: {fileID: 1757447156}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1617732655 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 3056362131897343971, guid: 6725f11bb9e0ba4d783b8acbdb1c66e1, type: 3}

@@ -24,7 +24,12 @@ namespace UI
             pausePanel.SetActive(false);
         }
 
-        private void OnEnable()  => pauseAction.action.performed += OnPausePressed;
+        private void OnEnable()
+        {
+            pauseAction.action.performed -= OnPausePressed;
+            pauseAction.action.performed += OnPausePressed;
+        }
+
         private void OnDisable() => pauseAction.action.performed -= OnPausePressed;
 
         private void OnPausePressed(InputAction.CallbackContext _)
@@ -39,7 +44,7 @@ namespace UI
             deathPanel.SetActive(true);
             pausePanel.SetActive(false);
             GameStateManager.SetState(GameState.Dead);
-            deathFirstSelected.Select();
+            if (deathFirstSelected) deathFirstSelected.Select();
         }
 
         public void CloseAllMenus()
@@ -53,7 +58,7 @@ namespace UI
         {
             pausePanel.SetActive(true);
             GameStateManager.SetState(GameState.Paused);
-            pauseFirstSelected.Select();
+            if (pauseFirstSelected) pauseFirstSelected.Select();
         }
 
         private void HidePauseMenu()

@@ -17,13 +17,23 @@ namespace HUD.Assist
 
         private void Awake()
         {
-            if (Instance is not null && Instance != this)
+            // Unity-aware null check (not `is not null`): a scene reload leaves the static
+            // Instance pointing at the destroyed GameManager from the previous session.
+            // `is not null` would see that stale managed reference as live and destroy the
+            // NEW GameManager; `!= null` runs Unity's lifecycle check and treats it as null.
+            if (Instance != null && Instance != this)
             {
                 Destroy(gameObject);
                 return;
             }
 
             Instance = this;
+        }
+
+        private void OnDestroy()
+        {
+            if (Instance == this)
+                Instance = null;
         }
 
         public bool IsAssistDisabled(FeatureAssistData feature) => disabledHints.Contains(feature);
