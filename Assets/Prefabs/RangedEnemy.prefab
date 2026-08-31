@@ -130,6 +130,10 @@ MonoBehaviour:
   projectileSpawnOffset: 0.4
   postShotDelay: 1.01
   playerChestAimOffset: -0.2
+  environmentLayer:
+    serializedVersion: 2
+    m_Bits: 128
+  shotClearanceRadius: 0.15
   castSphereCollider: {fileID: 5697387147017204799}
   castSphereDuration: 1
   lostPlayerIdleDuration: 1
