@@ -1,34 +1,44 @@
 using System.Collections.Generic;
 using Player;
 using UnityEngine;
-using UnityEngine.UI;
 
 namespace HUD
 {
     public class HealthHUD : MonoBehaviour
     {
-        [SerializeField] // UI elements
-        private Image[] hearts;
-        
-        private readonly Dictionary<HeartEnum, Sprite> _heartSprites = new();
+        internal static readonly Dictionary<HeartEnum, Sprite> HeartSprites = new();
 
-        private HealthManager _healthManager;
+        [SerializeField] private HealthManager healthManager;
+
+        private Heart[] _hearts;
+        private int _prevHealth;
 
         private void Start()
         {
-            _healthManager =  GameObject.FindGameObjectWithTag("Player").GetComponent<HealthManager>();
-            _heartSprites.Add(HeartEnum.Empty, Resources.Load<Sprite>("Sprites/Heart Empty"));
-            _heartSprites.Add(HeartEnum.Full, Resources.Load<Sprite>("Sprites/Heart Full"));
+            _hearts = gameObject.GetComponentsInChildren<Heart>();
+            HeartSprites.Add(HeartEnum.Empty, Resources.Load<Sprite>("Sprites/Heart Empty"));
+            HeartSprites.Add(HeartEnum.Full, Resources.Load<Sprite>("Sprites/Heart Full"));
         }
 
         private void Update()
         {
+            if (_prevHealth == healthManager.Health)
+                return;
+
+            var log = "";
+
             int heart = 0;
             while (heart < HealthManager.MaxHealth)
             {
-                hearts[heart].sprite = heart < _healthManager.Health ? _heartSprites[HeartEnum.Full] : _heartSprites[HeartEnum.Empty];
+                log += heart < healthManager.Health ? 'o' : 'x';
+
+                _hearts[heart].SetState(heart < healthManager.Health ? HeartEnum.Full : HeartEnum.Empty);
                 heart++;
             }
+
+            Debug.Log(log);
+
+            _prevHealth = healthManager.Health;
         }
     }
 
