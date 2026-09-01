@@ -1,4 +1,5 @@
-﻿using Core;
+﻿using System;
+using Core;
 using Gameplay;
 using HUD;
 using Player;
@@ -21,8 +22,9 @@ namespace Triggers
         private HealthManager _healthManager;
         private CheckpointManager _cpManager;
         private CheckPointHUD _checkPointHUD;
-        private float _lastActivationTime = -Mathf.Infinity;
-        private bool _ignoreUntilExit;
+
+        private const float MaxCooldown = 2f;
+        private float _cooldown;
 
         private void Start()
         {
@@ -32,13 +34,16 @@ namespace Triggers
             _cpManager = _gm.GetComponent<CheckpointManager>();
             //TODO: Maybe FindFirstObjectByType is not the best solution
             _checkPointHUD = FindFirstObjectByType<CheckPointHUD>();
-            Collider checkpointCollider = GetComponent<Collider>();
-            Collider playerCollider = player.GetComponent<Collider>();
-            //ignore checkpoint activation if the player already starts inside it
-            if (playerCollider != null && checkpointCollider.bounds.Intersects(playerCollider.bounds))
-                _ignoreUntilExit = true;
-            GameStateManager.Respawned += HandleRespawn;
+            _cooldown = MaxCooldown;
+            GameStateManager.Respawned += OnPlayerRespawn;
         }
+
+        private void OnPlayerRespawn()
+        {
+            _cooldown = MaxCooldown;
+        }
+
+        private void Update() => _cooldown = Mathf.Max(_cooldown-Time.deltaTime, 0f);
 
         private void OnTriggerEnter(Collider other)
         {
@@ -50,9 +55,11 @@ namespace Triggers
             // the save. Ignore the trigger; it'll fire again once the player moves
             // through it during real play.
             if (GameStateManager.Current != GameState.Playing) return;
-            if (_ignoreUntilExit) return;
-            if (Time.time < _lastActivationTime + activationCooldown) return;
-            _lastActivationTime = Time.time;
+            //if (_ignoreUntilExit) return;
+            // if (Time.time < _lastActivationTime + activationCooldown) return;
+            // _lastActivationTime = Time.time;
+
+            if (_cooldown > 0f) return;
 
             AudioManager.Instance.PlaySfx(enterSfx, 0.7f);
 
@@ -68,18 +75,11 @@ namespace Triggers
 
             _checkPointHUD.ShowSavedMessage();
         }
-        private void OnTriggerExit(Collider other)
+
+        private void OnTriggerStay(Collider other)
         {
             if (!other.CompareTag("Player")) return;
-            _ignoreUntilExit = false;
-        }
-        private void HandleRespawn()
-        {
-            Vector3 checkpointPosition = new Vector3(transform.position.x, transform.position.y + 2f, transform.position.z);
-
-            //only the checkpoint used for the respawn ignores the next trigger activation
-            if (Vector3.Distance(checkpointPosition, _cpManager.LastCheckPoint.Position) < 0.1f)
-                _ignoreUntilExit = true;
+            _cooldown = MaxCooldown;
         }
     }
 }
