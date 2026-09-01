@@ -26,6 +26,8 @@ namespace HUD.Assist
 
         public void Show(string text, float duration) => _prompt.Show(text, duration);
 
+        public void ShowHeld(string text) => _prompt.ShowHeld(text);
+
         public void Hide() => _prompt.Hide();
     }
 

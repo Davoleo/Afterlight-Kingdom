@@ -1,3 +1,4 @@
+using HUD.Assist;
 using Player;
 using Player.State;
 using UnityEngine;
@@ -10,17 +11,24 @@ namespace Triggers
         private PlayerCharacterController _controller;
         private PlayerStateMachine _stateMachine;
 
+        [SerializeField] private FeatureAssistData ladderHint;
+
         private void Start()
         {
             _controller = GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerCharacterController>();
             _stateMachine = _controller.StateMachine;
-            
         }
 
         private void OnTriggerEnter(Collider other)
         {
             if (other.gameObject.CompareTag("Player"))
             {
+                if (ladderHint is not null && !TutorialAssistManager.I.IsAssistDisabled(ladderHint))
+                {
+                    TutorialAssistManager.I.ShowAssist(ladderHint);
+                    TutorialAssistManager.I.DisableFeatureAssist(ladderHint);
+                }
+
                 if (_stateMachine.CurrentState != _stateMachine.ClimbingState)
                 {
                     _controller.CurrentLadderNormal = -transform.right.normalized;

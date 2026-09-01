@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -5,6 +6,8 @@ namespace Projectiles
 {
     public class ArrowLauncher : MonoBehaviour
     {
+        public static event Action OnShoot;
+
         [SerializeField] private GameObject arrowPrefab;
         [SerializeField] private Vector3 spawnOffset = new Vector3(0f, 0f, 0.5f);
         [SerializeField] private int maxArrowsInWorld = 3;
@@ -23,6 +26,7 @@ namespace Projectiles
             GameObject arrow = Instantiate(arrowPrefab, spawnPos, Quaternion.LookRotation(direction));
             arrow.GetComponent<Arrow>().Launch(direction);
             _activeArrows.Enqueue(arrow);
+            OnShoot?.Invoke();
         }
 
         private void PurgeDestroyedArrows()

@@ -27,6 +27,13 @@ namespace HUD.Assist
             _activeRoutine = StartCoroutine(ShowRoutine(text, holdDuration));
         }
 
+        public void ShowHeld(string text)
+        {
+            if (_activeRoutine is not null) StopCoroutine(_activeRoutine);
+            _label.text = text;
+            _activeRoutine = StartCoroutine(FadeRoutine(_canvasGroup.alpha, 1f, fadeIn));
+        }
+
         public void Hide()
         {
             if (_activeRoutine is not null) StopCoroutine(_activeRoutine);

@@ -14,5 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: 
   technical: 
-  narrative: This door is closed, maybe the key is somewhere nearby
+  narrative: This door is closed, maybe the key is somewhere nearby.
+  dismissMode: 0
   duration: 6
+  ephemeral: 0

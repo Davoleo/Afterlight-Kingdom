@@ -19,12 +19,12 @@ namespace Triggers
             foreach (var feature in features)
             {
                 // skip all disabled hints
-                if (TutorialAssistManager.Instance.IsAssistDisabled(feature))
+                if (TutorialAssistManager.I.IsAssistDisabled(feature))
                     continue;
 
-                TutorialAssistManager.Instance.ShowAssist(feature);
+                TutorialAssistManager.I.ShowAssist(feature);
 
-                if (feature.Ephemeral) TutorialAssistManager.Instance.DisableFeatureAssist(feature);
+                if (feature.Ephemeral) TutorialAssistManager.I.DisableFeatureAssist(feature);
 
                 // just display the first non-disabled hint
                 return;
@@ -32,7 +32,7 @@ namespace Triggers
 
             if (features.Length > 0 && ensureDisplay)
             {
-                TutorialAssistManager.Instance.EnsureSeen(features[^1]);
+                TutorialAssistManager.I.EnsureSeen(features[^1]);
             }
         }
     }

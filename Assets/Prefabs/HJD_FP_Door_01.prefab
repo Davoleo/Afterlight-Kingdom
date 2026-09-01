@@ -137,3 +137,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 48b33d0b842c4827984c64ceaed449cc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  doorUnlockingHint: {fileID: 11400000, guid: 403357438420ac64bb3f940eb9b9542b, type: 2}

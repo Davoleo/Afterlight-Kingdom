@@ -5,7 +5,7 @@ namespace HUD.Assist
 {
     public class TutorialAssistManager : MonoBehaviour
     {
-        public static TutorialAssistManager Instance { get; private set; }
+        public static TutorialAssistManager I { get; private set; }
 
         [Tooltip("screen-space Fading prompt for technical info [anchored bottom-center]")] [SerializeField]
         private FadingPrompt technicalOverlay;
@@ -22,19 +22,19 @@ namespace HUD.Assist
             // Instance pointing at the destroyed GameManager from the previous session.
             // `is not null` would see that stale managed reference as live and destroy the
             // NEW GameManager; `!= null` runs Unity's lifecycle check and treats it as null.
-            if (Instance != null && Instance != this)
+            if (I != null && I != this)
             {
                 Destroy(gameObject);
                 return;
             }
 
-            Instance = this;
+            I = this;
         }
 
         private void OnDestroy()
         {
-            if (Instance == this)
-                Instance = null;
+            if (I == this)
+                I = null;
         }
 
         public bool IsAssistDisabled(FeatureAssistData feature) => _disabledHints.Contains(feature);
@@ -43,7 +43,18 @@ namespace HUD.Assist
         /// Marks a certain feature as completed disabling the assist tutorial trigger for it.
         /// </summary>
         /// <param name="feature">The completed feature</param>
-        public void DisableFeatureAssist(FeatureAssistData feature) => _disabledHints.Add(feature);
+        public void DisableFeatureAssist(FeatureAssistData feature)
+        {
+            if (IsAssistDisabled(feature))
+                return;
+
+            _disabledHints.Add(feature);
+            if (feature.DismissMode == AssistDismissMode.OnAction)
+            {
+                technicalOverlay.Hide();
+                playerSpeechBubble.Hide();
+            }
+        }
 
         public bool HasBeenSeen(FeatureAssistData feature) => _seenHints.Contains(feature);
 
@@ -62,8 +73,17 @@ namespace HUD.Assist
         private void Display(FeatureAssistData feature)
         {
             _seenHints.Add(feature);
-            technicalOverlay.Show(feature.TechicalPrompt, feature.DisplayDuration);
-            playerSpeechBubble.Show(feature.NarrativePrompt, feature.DisplayDuration);
+
+            if (feature.DismissMode == AssistDismissMode.Timer)
+            {
+                technicalOverlay.Show(feature.TechicalPrompt, feature.DisplayDuration);
+                playerSpeechBubble.Show(feature.NarrativePrompt, feature.DisplayDuration);
+            }
+            else
+            {
+                technicalOverlay.ShowHeld(feature.TechicalPrompt);
+                playerSpeechBubble.ShowHeld(feature.NarrativePrompt);
+            }
         }
 
     }
