@@ -135895,6 +135895,10 @@ PrefabInstance:
       value: 0.9
       objectReference: {fileID: 0}
     - target: {fileID: 6101925492573927054, guid: c465768a3521e3f438e175d24c76d382, type: 3}
+      propertyPath: coinVisualPrefab
+      value: 
+      objectReference: {fileID: 2061149779994215493, guid: 0901afc3e63ad6b438fb2f5ba6dea764, type: 3}
+    - target: {fileID: 6101925492573927054, guid: c465768a3521e3f438e175d24c76d382, type: 3}
       propertyPath: rewardRiseHeight
       value: 1.4
       objectReference: {fileID: 0}
