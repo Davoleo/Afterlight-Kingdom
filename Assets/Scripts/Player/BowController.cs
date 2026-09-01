@@ -2,6 +2,8 @@ using Core;
 using Gameplay;
 using Projectiles;
 using UnityEngine;
+using UnityEngine.EventSystems;
+using LayerMask = UnityEngine.LayerMask;
 
 namespace Player
 {
@@ -123,12 +125,12 @@ namespace Player
             float currentWeight = _animator.GetLayerWeight(_upperBodyLayerIndex);
             float newWeight = Mathf.Lerp(currentWeight, targetWeight, Time.deltaTime * LayerBlendSpeed);
             
-            bool wantsToDraw = _playerCharacterController.PlayerInputs.DrawInput;
+            bool drawInput = _playerCharacterController.PlayerInputs.DrawInput;
 
-            IsDrawing = wantsToDraw;
-            _drawGauge.IsEngaged = wantsToDraw;
+            IsDrawing = drawInput;
+            _drawGauge.IsEngaged = drawInput;
 
-            switch (wantsToDraw)
+            switch (drawInput)
             {
                 case true when !_wasDrawingLastFrame:
                     _bowVisuals.LoadBow(0f, BowDrawDuration);
@@ -138,7 +140,7 @@ namespace Player
                 case false when _wasDrawingLastFrame:
                 {
                     // character needs to fully draw the bow to shoot (wait until the animator enters the drawn state)
-                    if (_stateInfo.shortNameHash == DrawnStateHash) Shoot();
+                    if (_stateInfo.shortNameHash == DrawnStateHash && IsDistanceFromWallEnough()) Shoot();
                     else
                     {
                         // Released too soon (Cancel)
@@ -149,9 +151,9 @@ namespace Player
                     break;
                 }
             }
-            _wasDrawingLastFrame = wantsToDraw;
+            _wasDrawingLastFrame = drawInput;
 
-            _animator.SetBool(DrawHash, wantsToDraw);
+            _animator.SetBool(DrawHash, drawInput);
             _animator.SetLayerWeight(_upperBodyLayerIndex, newWeight);
         }
 
@@ -160,6 +162,28 @@ namespace Player
             _animator.SetTrigger(ShootHash);
             _arrowLauncher.Shoot(_playerCharacterController.DigitalCharacterForward);
             _bowVisuals.ShootArrow(0f, BowShootDuration);
+        }
+
+        /// <summary>
+        /// Checks if the distance from the wall is enough to shoot an arrow
+        /// </summary>
+        /// <returns>whether it's illegal to shoot an arrow at the current distance from the wall</returns>
+        private bool IsDistanceFromWallEnough()
+        {
+            //Raycast mask -> 1<<7 only check the World layer [enemies should be able to be shot point-blank]
+            bool anyHit = Physics.Raycast(_playerCharacterController.motor.TransientPosition,
+                _playerCharacterController.motor.CharacterForward, out var hit, 3, 1 << 7);
+
+            if (!anyHit)
+            {
+                Debug.Log("no fucking hit");
+                return true;
+            }
+
+            float distance = Vector3.Distance(hit.point, _playerCharacterController.motor.TransientPosition);
+            Debug.Log($"Distance from wall: {distance}");
+
+            return distance >= 1;
         }
     }
 }
