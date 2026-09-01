@@ -9,20 +9,22 @@ namespace Gameplay
     {
         [SerializeField] private AnimationClip gateOpenClip;
         [SerializeField] private AudioClip gateOpenAudio;
-        [SerializeField] private Animator animator;
+
+        private Animator _animator;
         private PlayableGraph _graph;
 
         private int _leversFlicked;
 
         private void Start()
         {
+            _animator = GetComponent<Animator>();
             LeverInteractionHandler.LeverStateChanged += OnLeverStatusChange;
         }
 
         private void OpenGate()
         {
             if (_graph.IsValid()) _graph.Destroy();
-            AnimationPlayableUtilities.PlayClip(animator, gateOpenClip, out _graph);
+            AnimationPlayableUtilities.PlayClip(_animator, gateOpenClip, out _graph);
             AudioManager.Instance.PlaySfx(gateOpenAudio);
         }
 
