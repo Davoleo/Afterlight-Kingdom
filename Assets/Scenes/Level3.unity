@@ -6414,10 +6414,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: MeleeEnemy
       objectReference: {fileID: 0}
-    - target: {fileID: 6595118272833061148, guid: a3427acae3a374b55955da936f3a1a99, type: 3}
-      propertyPath: m_Layer
-      value: 7
-      objectReference: {fileID: 0}
     - target: {fileID: 6935543438647689131, guid: a3427acae3a374b55955da936f3a1a99, type: 3}
       propertyPath: m_Layer
       value: 7
@@ -12221,10 +12217,6 @@ PrefabInstance:
     - target: {fileID: 8757712320787616610, guid: 97d6a27fc167743fdbe026ebc4c88591, type: 3}
       propertyPath: m_Name
       value: RangedEnemy
-      objectReference: {fileID: 0}
-    - target: {fileID: 8757712320787616610, guid: 97d6a27fc167743fdbe026ebc4c88591, type: 3}
-      propertyPath: m_Layer
-      value: 7
       objectReference: {fileID: 0}
     - target: {fileID: 8820982119305377766, guid: 97d6a27fc167743fdbe026ebc4c88591, type: 3}
       propertyPath: m_Layer
