@@ -16,19 +16,33 @@ namespace HUD.Assist
 
         private void Awake()
         {
-            _label = GetComponent<TMP_Text>();
+            _label = GetComponentInChildren<TMP_Text>(true);
             _canvasGroup = GetComponent<CanvasGroup>();
             _canvasGroup.alpha = 0f;
         }
 
         public void Show(string text, float holdDuration)
         {
+            // No text for this half of the hint: don't surface an empty bubble.
+            if (string.IsNullOrWhiteSpace(text))
+            {
+                Hide();
+                return;
+            }
+
             if (_activeRoutine is not null) StopCoroutine(_activeRoutine);
             _activeRoutine = StartCoroutine(ShowRoutine(text, holdDuration));
         }
 
         public void ShowHeld(string text)
         {
+            // No text for this half of the hint: don't surface an empty bubble.
+            if (string.IsNullOrWhiteSpace(text))
+            {
+                Hide();
+                return;
+            }
+
             if (_activeRoutine is not null) StopCoroutine(_activeRoutine);
             _label.text = text;
             _activeRoutine = StartCoroutine(FadeRoutine(_canvasGroup.alpha, 1f, fadeIn));
