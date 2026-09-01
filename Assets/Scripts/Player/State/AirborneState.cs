@@ -10,6 +10,15 @@ namespace Player.State
 
         public override void UpdateVelocity(ref Vector3 vel, float dt)
         {
+            // Coyote jump: honour a jump press for a short grace period after walking off a ledge.
+            if (CommandUtils.IsUp(Ctx.triggers, PlayerTrigger.Jump) && Ctx.CanCoyoteJump)
+            {
+                vel += (Ctx.jumpUpSpeed * Ctx.motor.CharacterUp)
+                       - Vector3.Project(vel, Ctx.motor.CharacterUp);
+                Ctx.ConsumeCoyote();
+                InvokeJumpEvent();
+            }
+
             // Partial air control: player can steer but not instantly change direction.
             if (Ctx.PlayerInputs.MoveInput.sqrMagnitude > 0.01f)
             {
