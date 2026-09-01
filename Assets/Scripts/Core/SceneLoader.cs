@@ -1,3 +1,4 @@
+using UnityEngine;
 using UnityEditor;
 using UnityEngine.SceneManagement;
 
@@ -28,7 +29,7 @@ namespace Core
             EditorApplication.isPlaying = false;
 #else
             // compiled only in final build
-                    Application.Quit();
+            Application.Quit();
 #endif
         }
     }
