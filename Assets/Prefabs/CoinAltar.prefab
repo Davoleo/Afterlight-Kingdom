@@ -188,6 +188,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   textToDisplay: Press {Interact} to sacrifice your coins
+  canInteractForever: 1
   onInteract:
     m_PersistentCalls:
       m_Calls:
