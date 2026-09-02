@@ -1382,10 +1382,10 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7582119821942889555}
-  - component: {fileID: 434876260554885189}
   - component: {fileID: 5217791587766647655}
   - component: {fileID: 6995126583253357494}
   - component: {fileID: 6003702153048473824}
+  - component: {fileID: 4343996170826653389}
   m_Layer: 0
   m_Name: NPC
   m_TagString: Untagged
@@ -1412,28 +1412,6 @@ Transform:
   - {fileID: 4825252066880493504}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!95 &434876260554885189
-Animator:
-  serializedVersion: 7
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5694193430329758640}
-  m_Enabled: 1
-  m_Avatar: {fileID: 9000000, guid: de76d67d0ab88dc439b10b32370775ea, type: 3}
-  m_Controller: {fileID: 9100000, guid: fecf6d756e0aaae41ada7c746eed59b9, type: 2}
-  m_CullingMode: 1
-  m_UpdateMode: 0
-  m_ApplyRootMotion: 1
-  m_LinearVelocityBlending: 0
-  m_StabilizeFeet: 0
-  m_AnimatePhysics: 0
-  m_WarningMessage: 
-  m_HasTransformHierarchy: 1
-  m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorStateOnDisable: 0
-  m_WriteDefaultValuesOnDisable: 0
 --- !u!136 &5217791587766647655
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -1493,6 +1471,23 @@ MonoBehaviour:
   sequence: {fileID: 11400000, guid: 55f5ec4b20fd837049ceb6a464d0cb92, type: 2}
   bubble: {fileID: 7571163071255106470}
   prompt: '!'
+--- !u!114 &4343996170826653389
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5694193430329758640}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 40fc16381b2e45c6be5cf3a927956273, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  textToDisplay: Press {Interact} to talk/continue
+  canInteractForever: 1
+  onInteract:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &6030429408887233404
 GameObject:
   m_ObjectHideFlags: 0

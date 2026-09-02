@@ -21,35 +21,17 @@ namespace Triggers
 
         private void Start()
         {
-
-            _player = GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerCharacterController>();
             _leverAnimator = GetComponent<Animator>();
         }
 
-        private void Update()
+        public void Pull()
         {
-            if (!_playerInRange) return;
+            flicked = !flicked;
 
-            if (CommandUtils.IsUp(_player.triggers, PlayerTrigger.Interact))
-            {
-                flicked = !flicked;
-                CommandUtils.Off(ref _player.triggers, PlayerTrigger.Interact);
-
-                LeverStateChanged?.Invoke(flicked);
-                AudioManager.Instance.PlaySfx(switchClip);
-            }
-
+            LeverStateChanged?.Invoke(flicked);
+            AudioManager.Instance.PlaySfx(switchClip);
+            
             _leverAnimator.SetBool(FlickedHash, flicked);
-        }
-
-        private void OnTriggerEnter(Collider other)
-        {
-            if (other.CompareTag("Player")) _playerInRange = true;
-        }
-
-        private void OnTriggerExit(Collider other)
-        {
-            if (other.CompareTag("Player")) _playerInRange = false;
         }
     }
 }

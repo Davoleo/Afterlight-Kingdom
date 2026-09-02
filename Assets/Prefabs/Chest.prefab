@@ -45,6 +45,7 @@ GameObject:
   - component: {fileID: 4253981393804280641}
   - component: {fileID: 5286247316908417998}
   - component: {fileID: 1188809159073143038}
+  - component: {fileID: 2740618024719257343}
   m_Layer: 0
   m_Name: Chest
   m_TagString: Untagged
@@ -148,7 +149,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 40c3c677479f24a44a9d6426a9fb8314, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  rewardId: Level2_Bow
   abilityToUnlock: 1
   rewardPrefab: {fileID: 1935170665073443475, guid: 95f3e43bd46d242ec8df94874d742cae, type: 3}
   rewardSpawnPoint: {fileID: 5727998235256960585}
@@ -157,12 +157,10 @@ MonoBehaviour:
   animationDuration: 0.6
   scaleMult: 2.5
   openAutomaticallyOnPlayerEnter: 0
-  closedVisual: {fileID: 3741117609438898670}
-  openedVisual: {fileID: 3741117609438898670}
   chestAnimator: {fileID: 0}
   openTriggerName: OpenChest
   particles: {fileID: 6486519835210638025}
-  chestOpenSfx: {fileID: 8300000, guid: 2f6077dd3a557e94daf0c8bc37ebd00b, type: 3}
+  sfx: {fileID: 8300000, guid: 2f6077dd3a557e94daf0c8bc37ebd00b, type: 3}
 --- !u!95 &5286247316908417998
 Animator:
   serializedVersion: 7
@@ -198,6 +196,34 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   material: 3
+--- !u!114 &2740618024719257343
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7360139639386825666}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 40fc16381b2e45c6be5cf3a927956273, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  textToDisplay: Press {Interact} to open
+  onInteract:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 4253981393804280641}
+        m_TargetAssemblyTypeName: Triggers.ChestAbilityReward, Assembly-CSharp
+        m_MethodName: OpenChest
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &8435093323876567026
 GameObject:
   m_ObjectHideFlags: 0
@@ -5205,11 +5231,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   material: 3
---- !u!1 &3741117609438898670 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 2420228232520082691, guid: 33bffdaf8d6fc4841b0c6ed2136d350f, type: 3}
-  m_PrefabInstance: {fileID: 1332360040638270701}
-  m_PrefabAsset: {fileID: 0}
 --- !u!4 &3741117609438898671 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 2420228232520082690, guid: 33bffdaf8d6fc4841b0c6ed2136d350f, type: 3}

@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 1714493265210789285}
   - component: {fileID: 4682122880822448208}
   - component: {fileID: 5581866305538192570}
+  - component: {fileID: -7942288839852980476}
   m_Layer: 0
   m_Name: ArrowReward
   m_TagString: Untagged
@@ -122,10 +123,37 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 44c278ba17a764604b35de4bd641ba5f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  rewardId: Level2_Bow
   abilityToUnlock: 1
   rotate: 1
   rotationSpeed: 120
+--- !u!114 &-7942288839852980476
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1935170665073443475}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 40fc16381b2e45c6be5cf3a927956273, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  textToDisplay: Press {Interact} to obtain the bow
+  onInteract:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 5581866305538192570}
+        m_TargetAssemblyTypeName: Triggers.AbilityRewardClaimHandler, Assembly-CSharp
+        m_MethodName: ClaimReward
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &5415867123514676719
 GameObject:
   m_ObjectHideFlags: 0

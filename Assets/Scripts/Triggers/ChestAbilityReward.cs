@@ -53,38 +53,6 @@ namespace Triggers
                 Opened = true;
         }
 
-        private void Update()
-        {
-            if (!_playerInside || Opened) return;
-
-            if (openAutomaticallyOnPlayerEnter) return;
-
-            if (CommandUtils.IsUp(CharacterController.triggers, PlayerTrigger.Interact))
-            {
-                OpenChest();
-                //CommandUtils.Off(ref _characterController.triggers, PlayerTrigger.Interact);
-            }
-        }
-
-        private void OnTriggerEnter(Collider other)
-        {
-            if (!other.CompareTag("Player"))
-                return;
-
-            _playerInside = true;
-
-            if (openAutomaticallyOnPlayerEnter)
-                OpenChest();
-        }
-
-        private void OnTriggerExit(Collider other)
-        {
-            if (!other.CompareTag("Player"))
-                return;
-
-            _playerInside = false;
-        }
-
         protected virtual bool CanActivate() => true;
 
         protected virtual void PlayActivationEffect()
@@ -93,7 +61,7 @@ namespace Triggers
                 chestAnimator.SetTrigger(openTriggerName);
         }
 
-        private void OpenChest()
+        public void OpenChest()
         {
             if (!CanActivate()) return;
 
@@ -127,13 +95,6 @@ namespace Triggers
                 rewardSpawnPoint.rotation
             );
             Vector3 initialScale = reward.transform.localScale;
-
-            AbilityRewardClaimHandler claimHandler = reward.GetComponent<AbilityRewardClaimHandler>();
-
-            if (!claimHandler)
-                claimHandler = reward.AddComponent<AbilityRewardClaimHandler>();
-
-            claimHandler.Configure(abilityToUnlock);
 
             float elapsed = 0f;
 

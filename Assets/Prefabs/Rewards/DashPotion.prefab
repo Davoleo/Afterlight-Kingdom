@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 4405133741599901261}
   - component: {fileID: 3369127851380145094}
   - component: {fileID: 3627714292632465999}
+  - component: {fileID: -473725873747240104}
   m_Layer: 0
   m_Name: DashPotion
   m_TagString: Untagged
@@ -69,10 +70,37 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 44c278ba17a764604b35de4bd641ba5f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  rewardId: DASH
   abilityToUnlock: 0
   rotate: 1
   rotationSpeed: 120
+--- !u!114 &-473725873747240104
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7859597006823311159}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 40fc16381b2e45c6be5cf3a927956273, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  textToDisplay: Press {Interact} to drink the potion
+  onInteract:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 3627714292632465999}
+        m_TargetAssemblyTypeName: Triggers.AbilityRewardClaimHandler, Assembly-CSharp
+        m_MethodName: ClaimReward
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1001 &960596529106389305
 PrefabInstance:
   m_ObjectHideFlags: 0

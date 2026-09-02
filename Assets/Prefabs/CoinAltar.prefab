@@ -116,6 +116,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 7263916615960084168, guid: 665472638cdd3aa408cd365ba0af8ece, type: 3}
       insertIndex: -1
       addedObject: {fileID: 6101925492573927054}
+    - targetCorrespondingSourceObject: {fileID: 7263916615960084168, guid: 665472638cdd3aa408cd365ba0af8ece, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 4717891363554801071}
   m_SourcePrefab: {fileID: 100100000, guid: 665472638cdd3aa408cd365ba0af8ece, type: 3}
 --- !u!1 &3638789833920868802 stripped
 GameObject:
@@ -155,7 +158,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ca501aa103ee46b4ad97c5bbabb25562, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  rewardId: HEART
   abilityToUnlock: 2
   rewardPrefab: {fileID: 2870663190868213460, guid: ce2af9b22867a8d4dacd0a7c5de65f1a, type: 3}
   rewardSpawnPoint: {fileID: 8209392313155940926}
@@ -172,10 +174,35 @@ MonoBehaviour:
   coinVisualPrefab: {fileID: 2061149779994215493, guid: f6a4b917ac39ab74ca806164bbd1ed99, type: 3}
   coinVisualCount: 4
   coinStartHeight: 1.2
-  coinStartSpread: 0.3
-  coinStaggerRatio: 0.3
   coinAcceptScaleMult: 1.4
-  coinDelay: 0.5
+--- !u!114 &4717891363554801071
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3638789833920868802}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 40fc16381b2e45c6be5cf3a927956273, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  textToDisplay: Press {Interact} to sacrifice your coins
+  onInteract:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 6101925492573927054}
+        m_TargetAssemblyTypeName: Triggers.AltarHealthReward, Assembly-CSharp
+        m_MethodName: OpenChest
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!4 &4121995149261122424 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 8035913780005954674, guid: 665472638cdd3aa408cd365ba0af8ece, type: 3}

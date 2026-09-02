@@ -109,6 +109,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 0521400cb1ef35948b4aeaba7bdc4fd2, type: 3}
       insertIndex: -1
       addedObject: {fileID: 8210676397197484015}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 0521400cb1ef35948b4aeaba7bdc4fd2, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: -4482086021934236849}
   m_SourcePrefab: {fileID: 100100000, guid: 0521400cb1ef35948b4aeaba7bdc4fd2, type: 3}
 --- !u!1 &238240900397903898 stripped
 GameObject:
@@ -171,3 +174,32 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   switchClip: {fileID: 8300000, guid: 4f534f99498fd164b960d1cddcbb6953, type: 3}
+--- !u!114 &-4482086021934236849
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 238240900397903898}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 40fc16381b2e45c6be5cf3a927956273, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  textToDisplay: Press {Interact} to pull the lever
+  canInteractForever: 1
+  onInteract:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 8210676397197484015}
+        m_TargetAssemblyTypeName: Triggers.LeverInteractionHandler, Assembly-CSharp
+        m_MethodName: Pull
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2

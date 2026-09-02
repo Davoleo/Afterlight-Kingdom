@@ -72,6 +72,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 5b80c6f55b6a98748a6ecb70f32da7c3, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1106526025483711281}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 5b80c6f55b6a98748a6ecb70f32da7c3, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: -7509943070132845758}
   m_SourcePrefab: {fileID: 100100000, guid: 5b80c6f55b6a98748a6ecb70f32da7c3, type: 3}
 --- !u!1 &2870663190868213460 stripped
 GameObject:
@@ -4981,3 +4984,31 @@ MonoBehaviour:
   abilityToUnlock: 2
   rotate: 1
   rotationSpeed: 120
+--- !u!114 &-7509943070132845758
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2870663190868213460}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 40fc16381b2e45c6be5cf3a927956273, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  textToDisplay: Press {Interact} to claim the power within
+  onInteract:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 1106526025483711281}
+        m_TargetAssemblyTypeName: Triggers.AbilityRewardClaimHandler, Assembly-CSharp
+        m_MethodName: ClaimReward
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
