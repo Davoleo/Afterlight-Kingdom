@@ -6,6 +6,6 @@ namespace HUD.Assist
     {
         public FeatureAssistData feature;
 
-        private void OnTriggerEnter(Collider other) => TutorialAssistManager.Instance.DisableFeatureAssist(feature);
+        private void OnTriggerEnter(Collider other) => TutorialAssistManager.I.DisableFeatureAssist(feature);
     }
 }

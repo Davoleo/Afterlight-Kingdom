@@ -1,4 +1,5 @@
 ﻿using Player.State;
+using Projectiles;
 using UnityEngine;
 
 namespace HUD.Assist
@@ -12,22 +13,22 @@ namespace HUD.Assist
         private void Start()
         {
             PlayerState.OnJumped += OnPlayerJump;
-            PlayerState.OnShoot += OnPlayerShoot;
+            ArrowLauncher.OnShoot += OnPlayerShoot;
         }
 
         private void OnPlayerJump()
         {
-            TutorialAssistManager.Instance.DisableFeatureAssist(jumpFeature);
+            TutorialAssistManager.I.DisableFeatureAssist(jumpFeature);
         }
 
         private void OnPlayerShoot()
         {
-            TutorialAssistManager.Instance.DisableFeatureAssist(shootFeature);
+            TutorialAssistManager.I.DisableFeatureAssist(shootFeature);
         }
 
         public void OnPlayerDash()
         {
-            TutorialAssistManager.Instance.DisableFeatureAssist(dashFeature);
+            TutorialAssistManager.I.DisableFeatureAssist(dashFeature);
         }
     }
 }

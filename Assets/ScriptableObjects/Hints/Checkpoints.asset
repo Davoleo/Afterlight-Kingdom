@@ -15,5 +15,6 @@ MonoBehaviour:
   id: 
   technical: Checkpoints save your progress throughout your adventure.
   narrative: I can go back here if i'm in danger.
-  duration: 4
+  dismissMode: 0
+  duration: 6
   ephemeral: 1

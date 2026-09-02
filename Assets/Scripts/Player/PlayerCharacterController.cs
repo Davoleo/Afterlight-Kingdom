@@ -21,6 +21,17 @@ namespace Player
 
         [SerializeField] public float climbJumpStrength = 3f;
 
+        [Tooltip("Grace period after leaving the ground (without jumping) during which a jump is still allowed.")]
+        [SerializeField] private float coyoteTime = 0.12f;
+
+        private float _coyoteTimer;
+
+        // True while the player just walked off a ledge and is still inside the coyote window.
+        public bool CanCoyoteJump => _coyoteTimer > 0f;
+
+        // Closes the coyote window so a single press can never produce more than one jump.
+        public void ConsumeCoyote() => _coyoteTimer = 0f;
+
         [Header("Dash")]
         [SerializeField] private Cooldown dashCooldown = new(2f);
         public Cooldown DashCooldown => dashCooldown;
@@ -205,6 +216,11 @@ namespace Player
             HandleDashInput();
 
             dashCooldown.Tick(deltaTime);
+
+            // Refill the window every grounded frame; drain it once airborne. A jump that
+            // originates from the ground calls ConsumeCoyote() to zero it out immediately,
+            // so this only stays positive when the player leaves the ground by walking off.
+            _coyoteTimer = IsGrounded ? coyoteTime : _coyoteTimer - deltaTime;
         }
 
         private void HandleDashInput()

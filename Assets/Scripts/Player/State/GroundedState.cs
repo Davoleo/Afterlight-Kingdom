@@ -17,6 +17,9 @@ namespace Player.State
                 Ctx.motor.ForceUnground();  // tells KCC to stop snapping to ground this frame
                 vel += (Ctx.jumpUpSpeed * Ctx.motor.CharacterUp)
                                    - Vector3.Project(vel, Ctx.motor.CharacterUp);
+                // this frame is still grounded; prevent a phantom coyote jump next frame
+                // (avoid doubling the jump height).
+                Ctx.ConsumeCoyote();
                 InvokeJumpEvent();
                 // State transition to Airborne happens in PostGroundingUpdate automatically.
                 return;

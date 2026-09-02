@@ -60,7 +60,7 @@ namespace Player
             if (_isRotating || pendingRotationInput == 0)
                 return;
 
-            TutorialAssistManager.Instance.DisableFeatureAssist(assist);
+            TutorialAssistManager.I.DisableFeatureAssist(assist);
 
             _targetYAngle += stepAngle * pendingRotationInput;
             _targetYAngle %= 360;

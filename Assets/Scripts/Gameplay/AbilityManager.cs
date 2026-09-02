@@ -68,7 +68,7 @@ namespace Gameplay
 
             if (HasAbility(AbilityType.Dash))
             {
-                TutorialAssistManager.Instance.DisableFeatureAssist(dashLocked);
+                TutorialAssistManager.I.DisableFeatureAssist(dashLocked);
             }
 
         }

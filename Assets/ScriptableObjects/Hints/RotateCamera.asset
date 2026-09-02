@@ -15,4 +15,6 @@ MonoBehaviour:
   id: 
   technical: Press {RotateCameraLeft} or {RotateCameraRight} to rotate the camera
   narrative: Where do I go?
+  dismissMode: 1
   duration: 4
+  ephemeral: 0

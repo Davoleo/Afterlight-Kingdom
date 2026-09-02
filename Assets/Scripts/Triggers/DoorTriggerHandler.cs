@@ -1,4 +1,5 @@
 using Gameplay;
+using HUD.Assist;
 using Player;
 using UnityEngine;
 
@@ -6,6 +7,8 @@ namespace Triggers
 {
     public class DoorTriggerHandler : MonoBehaviour
     {
+        [SerializeField] private FeatureAssistData doorUnlockingHint;
+
         public string Id =>
             $"{transform.position.x}_{transform.position.y}_{transform.position.z}";
 
@@ -31,7 +34,12 @@ namespace Triggers
             CommandUtils.Off(ref _controller.triggers, PlayerTrigger.Interact);
             
             if (!_collectiblesManager.UseKey()) return;
-            
+
+            if (!TutorialAssistManager.I.IsAssistDisabled(doorUnlockingHint))
+            {
+                TutorialAssistManager.I.DisableFeatureAssist(doorUnlockingHint);
+            }
+
             _doorManager.RegisterOpenedDoor(Id);
             gameObject.SetActive(false);
         }

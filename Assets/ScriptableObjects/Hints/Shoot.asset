@@ -16,4 +16,6 @@ MonoBehaviour:
   technical: Hold {Shoot} to draw the arrow, then release it at the right time to
     shoot
   narrative: Let's see how it shoots!
-  duration: 6
+  dismissMode: 1
+  duration: 8
+  ephemeral: 0
