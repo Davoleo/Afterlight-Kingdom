@@ -16,6 +16,9 @@ namespace Enemies
         [Header("Melee Movement")]
         [SerializeField] private float chaseSpeed = 4f;
 
+        [Header("Melee Detection")]
+        [SerializeField] private float verticalDetectionMargin = 1f;
+
         [Header("Melee Attack")]
         [SerializeField] private float attackRange = 1.5f;
         [SerializeField] private float attackCooldown = 1.2f;
@@ -140,6 +143,40 @@ namespace Enemies
         protected override float GetCurrentSpeed()
         {
             return currentState == EnemyState.Chasing ? chaseSpeed : patrolSpeed;
+        }
+        //cilindric detection range, with normal radius and +- 1 block detection
+        protected override bool IsPlayerInsideDetection()
+        {
+            if (!HasPlayer())
+                return false;
+
+            float detectionBottom = transform.position.y - verticalDetectionMargin;
+            float detectionTop = transform.position.y + navMeshAgent.height + verticalDetectionMargin;
+
+            if (Target.Player.position.y < detectionBottom || Target.Player.position.y > detectionTop)
+                return false;
+
+            Vector3 difference = Target.Player.position - transform.position;
+            difference.y = 0f;
+
+            return difference.sqrMagnitude <= Target.DetectionRange * Target.DetectionRange;
+        }
+
+        protected override bool IsPlayerOutsideLoseRange()
+        {
+            if (!HasPlayer())
+                return true;
+
+            float detectionBottom = transform.position.y - verticalDetectionMargin;
+            float detectionTop = transform.position.y + navMeshAgent.height + verticalDetectionMargin;
+
+            if (Target.Player.position.y < detectionBottom || Target.Player.position.y > detectionTop)
+                return true;
+
+            Vector3 difference = Target.Player.position - transform.position;
+            difference.y = 0f;
+
+            return difference.sqrMagnitude >= Target.LosePlayerRange * Target.LosePlayerRange;
         }
 
         /*
