@@ -10,19 +10,19 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6b3d386ba5cd94485973aee1479b272e, type: 3}
-  m_Name: PlayerStencilWrite
+  m_Name: WorldStencilWrite
   m_EditorClassIdentifier: 
   m_Active: 1
   settings:
-    passTag: PlayerStencilWrite
+    passTag: WorldStencilWrite
     Event: 300
     filterSettings:
       RenderQueueType: 0
       LayerMask:
         serializedVersion: 2
-        m_Bits: 64
+        m_Bits: 128
       PassNames: []
-    overrideMaterial: {fileID: 2100000, guid: 6e8c96d9cd7c71a438d573ca314bda49, type: 2}
+    overrideMaterial: {fileID: 2100000, guid: eb761d6d2028e8548b563896bd2aaeb0, type: 2}
     overrideMaterialPassIndex: 0
     overrideShader: {fileID: 0}
     overrideShaderPassIndex: 0

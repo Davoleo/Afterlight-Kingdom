@@ -1,11 +1,12 @@
-Shader "Custom/PlayerStencilWrite"
+Shader "Custom/WallStencilWrite"
 {
-    // Assigned as the Material override on the "PlayerStencilWrite" Render
-    // Objects feature (Event: After Rendering Opaques, Layer Mask: Player).
-    // Draws nothing (ColorMask 0) — its only job is to stamp stencil = 1
-    // wherever the player's real frontmost pixels already are, using the
-    // default depth test so self-occluded fragments (e.g. torso behind an
-    // arm) correctly do NOT get stamped.
+    // Assigned as the Material override on the "WallStencilWrite" Render
+    // Objects feature (Event: After Rendering Opaques, Layer Mask: Wall).
+    // Draws nothing (ColorMask 0) — its only job is to stamp stencil = 2
+    // wherever a wall's own frontmost (visible) pixels already are.
+    // Replaces the old PlayerStencilWrite approach: tagging walls instead
+    // of the player means self-occlusion (arm over torso, etc.) is
+    // excluded for free, since player geometry is never tagged "wall".
     SubShader
     {
         Tags
@@ -26,7 +27,7 @@ Shader "Custom/PlayerStencilWrite"
 
             Stencil
             {
-                Ref 1
+                Ref 2
                 Comp Always
                 Pass Replace
             }
