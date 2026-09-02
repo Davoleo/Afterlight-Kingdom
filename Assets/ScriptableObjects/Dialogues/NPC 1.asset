@@ -14,8 +14,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: 
   lines:
-  - POOOORCODDIOOOO
-  - che notizia dio stramazzato per terra!
-  - "WOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO PORCODIO Ohhhhh\t"
-  - dio arzillo
-  summaryLine: FINE!
+  - Oh, Hello there. Are you trying to reach the castle?
+  - As you know, this land doesn't have a King anymore, the throne is vacant.
+  - The High guard of the realm can't decide a heir, and the world is slowly collapsing
+    on itself
+  - Please, if you are willing to conquer the throne, be aware of the challenges
+    the High Guard has placed all around this path.
+  - Every corner you cross, can hide a real threat. I've left a bow for the wanderers
+    like you that are trying reach the castle. Feel free to take it!
+  - 'OH... One last thing: Have you noticed those strange coins in the area? I heard
+    voices that speak about an altar in the castle.'
+  - Apparently, if you have a rich offer to leave, the Gods will strengthen your
+    body... I don't know if I believe in this things, but I also saw magicians around
+    here... Who knows!
+  summaryLine: Have you taken some coins with you? And don't forget to take my bow...
+    Please do your best to save this realm.

@@ -367191,14 +367191,6 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 4044405145123717958, guid: 0168c03a71ae08550bd6b6e259fdc2ff, type: 3}
-      propertyPath: m_SizeDelta.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4044405145123717958, guid: 0168c03a71ae08550bd6b6e259fdc2ff, type: 3}
-      propertyPath: m_SizeDelta.y
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 5694193430329758640, guid: 0168c03a71ae08550bd6b6e259fdc2ff, type: 3}
       propertyPath: m_Name
       value: NPC
