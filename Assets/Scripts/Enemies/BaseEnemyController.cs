@@ -316,8 +316,8 @@ namespace Enemies
         protected bool HasPlayer() => target.HasPlayer();
         protected bool IsPlayerDead() => target.IsPlayerDead();
         protected float GetDistanceFromPlayer() => target.DistanceFrom(transform.position);
-        protected virtual bool IsPlayerInsideDetection() => target.IsInsideDetection(transform.position);
-        protected virtual bool IsPlayerOutsideLoseRange() => target.IsOutsideLoseRange(transform.position);
+        protected bool IsPlayerInsideDetection() => target.IsInsideDetection(transform.position);
+        protected bool IsPlayerOutsideLoseRange() => target.IsOutsideLoseRange(transform.position);
         protected Vector3 GetPlayerDirection() => target.DirectionFrom(transform.position);
         protected Vector3 GetPlayerAimPosition(float verticalOffset = 1f) => target.AimPosition(verticalOffset);
 
