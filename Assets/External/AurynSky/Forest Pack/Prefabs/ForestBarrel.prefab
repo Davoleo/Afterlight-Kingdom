@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 23478623189597220}
   - component: {fileID: 4010339169249139658}
   - component: {fileID: 1179343573311972483}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: ForestBarrel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
