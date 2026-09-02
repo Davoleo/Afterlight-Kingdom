@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace VisualEffects
+namespace Shaders
 {
     [RequireComponent(typeof(Light))]
     public class TorchLightFlicker : MonoBehaviour

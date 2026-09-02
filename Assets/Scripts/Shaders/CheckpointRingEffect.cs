@@ -1,7 +1,7 @@
 using System.Collections;
 using UnityEngine;
 
-namespace VisualEffects
+namespace Shaders
 {
     [RequireComponent(typeof(Renderer))]
     public class CheckpointRingEffect : MonoBehaviour

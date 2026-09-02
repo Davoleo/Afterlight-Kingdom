@@ -1,11 +1,10 @@
-﻿using System;
-using Core;
+﻿using Core;
 using Gameplay;
 using HUD;
 using Player;
+using Shaders;
 using Sound;
 using UnityEngine;
-using VisualEffects;
 
 namespace Triggers
 {
