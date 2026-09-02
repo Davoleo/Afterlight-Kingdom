@@ -14,26 +14,29 @@ namespace UI
         [SerializeField] private TextMeshProUGUI bgmLabel;
 
         [SerializeField] private Toggle fullscreenToggle;
-        [SerializeField] private GameSettings settings;
+        [SerializeField] private Toggle rotationInverter;
         
         private bool _isInitializing; // prevent Toggles from calling OnAnyChange()
+        private GameSettings _settings;
         
         private void Start()
         {
             _isInitializing = true;
-    
-            settings.Load();
 
-            Debug.Log("SFX" + settings.sfxVolume + " BGM" + settings.bgmVolume);
+            
+            _settings = GameSettings.Load();
 
-            var volSfx = settings.sfxVolume * 100;
+            Debug.Log("SFX" + _settings.sfxVolume + " BGM" + _settings.bgmVolume);
+
+            var volSfx = _settings.sfxVolume * 100;
             sfxVolumeSlider.value = volSfx;
             sfxLabel.text = $"SFX: {volSfx}%";
-            var volBGM = settings.bgmVolume * 100;
+            var volBGM = _settings.bgmVolume * 100;
             bgmVolumeSlider.value = volBGM;
             bgmLabel.text = $"BGM: {volBGM}%";
 
-            fullscreenToggle.isOn = settings.fullscreen;
+            fullscreenToggle.isOn = _settings.fullscreen;
+            rotationInverter.isOn = _settings.invertRotation;
     
             _isInitializing = false;
         }
@@ -43,18 +46,15 @@ namespace UI
             if (_isInitializing) return;
 
             bgmLabel.text = $"BGM: {bgmVolumeSlider.value}%";
-            settings.bgmVolume = bgmVolumeSlider.value / 100f;
+            _settings.bgmVolume = bgmVolumeSlider.value / 100f;
             sfxLabel.text = $"SFX: {sfxVolumeSlider.value}%";
-            settings.sfxVolume = sfxVolumeSlider.value / 100f;
+            _settings.sfxVolume = sfxVolumeSlider.value / 100f;
 
-            settings.fullscreen = fullscreenToggle.isOn;
-            settings.Apply();
+            _settings.fullscreen = fullscreenToggle.isOn;
+            _settings.invertRotation = rotationInverter.isOn;
+            _settings.Apply();
         }
         
-        public void SaveChanges()
-        {
-            settings.Apply();
-            settings.Save();
-        }
+        public void SaveChanges() => GameSettings.Save();
     }
 }

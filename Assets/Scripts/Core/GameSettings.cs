@@ -1,38 +1,65 @@
+using System;
+using System.IO;
+using Player;
 using Sound;
 using UnityEngine;
 
 namespace Core
 {
-    [CreateAssetMenu(fileName = "GameSettings", menuName = "Game/Settings")]
-    public class GameSettings : ScriptableObject
+    [Serializable]
+    public class GameSettings
     {
-        private const string BgmVolumeId = "BGMVolume";
-        private const string SfxVolumeId = "SFXVolume";
-        private const string FullScreenId = "FullScreen";
+        private static string SettingsPath => Path.Combine(Application.persistentDataPath, "settings.json");
+        public static GameSettings Load()
+        {
+            if (!File.Exists(SettingsPath))
+            {
+                Instance = new GameSettings();
+                return Instance;
+            }
 
-        [Range(0f, 1f)] public float bgmVolume = 0.4f;
-        [Range(0f, 1f)] public float sfxVolume = 0.8f;
+            try
+            {
+                Instance = JsonUtility.FromJson<GameSettings>(File.ReadAllText(SettingsPath));
+                //file read returned null -> reset settings;
+                Instance ??= new GameSettings();
+            }
+            catch (Exception e)
+            {
+                Debug.Log($"Failed to load settings.json: {e}");
+                Instance = new GameSettings();
+            }
+
+            return Instance;
+        }
+
+        public static void Save()
+        {
+            if (Instance == null)
+                return;
+
+            try
+            {
+                File.WriteAllText(SettingsPath, JsonUtility.ToJson(Instance, true));
+            }
+            catch (Exception e)
+            {
+                Debug.LogError($"Failed to save settings.json: {e}");
+            }
+        }
+
+        public static GameSettings Instance { get; private set; }
+
+        public float bgmVolume = 0.4f;
+        public float sfxVolume = 0.8f;
         public bool fullscreen = true;
+        public bool invertRotation;
 
         public void Apply()
         {
             AudioManager.Instance?.SetVolumes(bgmVolume, sfxVolume);
             Screen.fullScreen = fullscreen;
-        }
-
-        public void Save()
-        {
-            PlayerPrefs.SetFloat(BgmVolumeId, bgmVolume);
-            PlayerPrefs.SetFloat(SfxVolumeId, sfxVolume);
-            PlayerPrefs.SetInt(FullScreenId, fullscreen ? 1 : 0);
-            PlayerPrefs.Save();
-        }
-        
-        public void Load()
-        {
-            bgmVolume = PlayerPrefs.GetFloat(BgmVolumeId, 1f);
-            sfxVolume = PlayerPrefs.GetFloat(SfxVolumeId, 1f);
-            fullscreen = PlayerPrefs.GetInt(FullScreenId, 1) == 1;
+            PlayerInputHandler.InvertCameraControls = invertRotation;
         }
     }
 }

@@ -28,6 +28,8 @@ namespace Player
     
         private Transform _cameraTransform;
 
+        public static bool InvertCameraControls = false;
+
         private void Start()
         {
             characterController = gameObject.GetComponent<PlayerCharacterController>();
@@ -89,9 +91,13 @@ namespace Player
                 DrawInput = shootAction.action.ReadValue<float>() > 0,
             };
 
+            //optionally invert Q/E triggers to control camera depending on user preferences
+            var rotateLeft = InvertCameraControls ? PlayerTrigger.RotateCameraRight : PlayerTrigger.RotateCameraLeft;
+            var rotateRight = InvertCameraControls ? PlayerTrigger.RotateCameraLeft : PlayerTrigger.RotateCameraRight;
+
             PlayerTrigger triggers = PlayerTrigger.None;
-            triggers |= rotateLeftAction.action.triggered ? PlayerTrigger.RotateCameraLeft : 0;
-            triggers |= rotateRightAction.action.triggered ? PlayerTrigger.RotateCameraRight : 0;
+            triggers |= rotateLeftAction.action.triggered ? rotateLeft : 0;
+            triggers |= rotateRightAction.action.triggered ? rotateRight : 0;
             triggers |= jumpAction.action.triggered ? PlayerTrigger.Jump : 0;
             triggers |= dashAction.action.triggered ? PlayerTrigger.Dash : 0;
             triggers |= interactAction.action.triggered ? PlayerTrigger.Interact : 0;

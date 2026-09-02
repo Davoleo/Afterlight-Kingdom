@@ -14,7 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: 
   technical: 
-  narrative: The bridge collapsed. It looks like I can't jump over the ledge... Maybe
-    I can use my bow in some way
+  narrative: "The bridge collapsed. \nIt looks like I can't jump over the ledge...
+    \nMaybe I can use my bow in some way"
+  dismissMode: 0
   duration: 6
   ephemeral: 0
