@@ -13,5 +13,12 @@ MonoBehaviour:
   m_Name: NPC 2
   m_EditorClassIdentifier: 
   id: 
-  lines: []
-  summaryLine: 
+  lines:
+  - Oh... Hello Wonderer! Are you trying to reach the castle too?
+  - Apparently, this big gate is the entrance, but it's closed.
+  - I've discovered there are three levers to be pulled in order to open it. But
+    i'm so tired of this journey. I don't think i will be able to continue.
+  - 'Another thing: have you noticed that big chest in front on the path to my left?
+    I think it hides something powerfull...'
+  summaryLine: Well... I think my journey ends here, good luck to you! Maybe you
+    will be able to pull those levers
