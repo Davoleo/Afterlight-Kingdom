@@ -19,8 +19,6 @@ namespace Triggers
 
         public AudioClip switchClip;
 
-        public bool WasActivated() => flicked;
-
         private void Start()
         {
 

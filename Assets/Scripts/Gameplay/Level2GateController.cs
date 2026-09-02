@@ -28,6 +28,11 @@ namespace Gameplay
             AudioManager.Instance.PlaySfx(gateOpenAudio);
         }
 
+        private void Update()
+        {
+            Debug.Log(_animator);
+        }
+
         private void OnLeverStatusChange(bool active)
         {
             // gate should be already open levers are now dead switches
