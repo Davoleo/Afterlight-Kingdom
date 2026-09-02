@@ -23,7 +23,6 @@ namespace UI
         {
             _isInitializing = true;
 
-            
             _settings = GameSettings.Load();
 
             Debug.Log("SFX" + _settings.sfxVolume + " BGM" + _settings.bgmVolume);
@@ -37,7 +36,8 @@ namespace UI
 
             fullscreenToggle.isOn = _settings.fullscreen;
             rotationInverter.isOn = _settings.invertRotation;
-    
+
+            _settings.Apply();
             _isInitializing = false;
         }
 
