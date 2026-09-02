@@ -8,7 +8,7 @@ namespace HUD.Assist
         OnAction,
     }
 
-    [CreateAssetMenu(fileName = "NewHintFeature", menuName = "Kingdom-Afterlight/Assist Data")]
+    [CreateAssetMenu(fileName = "NewHintFeature", menuName = "Afterlight-Kingdom/Assist Data")]
     public class FeatureAssistData : ScriptableObject
     {
         [Tooltip("Needed to persist completion in a save file; unused otherwise.")] [SerializeField]

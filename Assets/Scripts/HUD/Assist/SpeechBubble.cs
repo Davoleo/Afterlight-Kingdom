@@ -15,13 +15,17 @@ namespace HUD.Assist
             _prompt = GetComponent<FadingPrompt>();
         }
 
+        private void Start()
+        {
+            if (targetCamera == null) targetCamera = Camera.main;
+        }
+
         private void LateUpdate()
         {
-            Camera cam = targetCamera ?? Camera.main;
-            if (cam is null) return;
-
+            if (!targetCamera) return; // If no MainCamera is found
+            
             //billboard
-            transform.rotation = cam.transform.rotation;
+            transform.rotation = targetCamera.transform.rotation;
         }
 
         public void Show(string text, float duration) => _prompt.Show(text, duration);
