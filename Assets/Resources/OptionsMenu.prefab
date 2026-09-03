@@ -970,7 +970,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 2980018597036394078}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
+  m_Script: {fileID: 11500000, guid: 99717c65fa860b9ab84698fe219f62bc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   m_Navigation:
@@ -1005,8 +1005,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: Controllers.OptionsController, Assembly-CSharp
+      - m_Target: {fileID: 8301565411485192437}
+        m_TargetAssemblyTypeName: UI.OptionsController, Assembly-CSharp
         m_MethodName: SaveChanges
         m_Mode: 1
         m_Arguments:
@@ -1961,7 +1961,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 5389267699982120664}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
+  m_Script: {fileID: 11500000, guid: 99717c65fa860b9ab84698fe219f62bc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   m_Navigation:

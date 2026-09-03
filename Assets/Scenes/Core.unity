@@ -2959,7 +2959,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
+  m_Script: {fileID: 11500000, guid: 99717c65fa860b9ab84698fe219f62bc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &1617732655 stripped
@@ -3233,14 +3233,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a1ed2fb0c70d4c7799205423b94c3a5f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  moveAction: {fileID: -1680190386980627800, guid: 052faaac586de48259a63d0c4782560b, type: 3}
-  rotateLeftAction: {fileID: 8917293988593085363, guid: 052faaac586de48259a63d0c4782560b, type: 3}
-  rotateRightAction: {fileID: -4900404479571499014, guid: 052faaac586de48259a63d0c4782560b, type: 3}
-  jumpAction: {fileID: -2099379676528639254, guid: 052faaac586de48259a63d0c4782560b, type: 3}
-  dashAction: {fileID: -7471211009204490832, guid: 052faaac586de48259a63d0c4782560b, type: 3}
-  shootAction: {fileID: 1413696727114423886, guid: 052faaac586de48259a63d0c4782560b, type: 3}
-  climbAction: {fileID: -1131278960122823562, guid: 052faaac586de48259a63d0c4782560b, type: 3}
-  interactAction: {fileID: 1781555164194001046, guid: 052faaac586de48259a63d0c4782560b, type: 3}
 --- !u!1001 &1757447156
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -3908,14 +3900,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a1ed2fb0c70d4c7799205423b94c3a5f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  moveAction: {fileID: -1680190386980627800, guid: 052faaac586de48259a63d0c4782560b, type: 3}
-  rotateLeftAction: {fileID: 8917293988593085363, guid: 052faaac586de48259a63d0c4782560b, type: 3}
-  rotateRightAction: {fileID: -4900404479571499014, guid: 052faaac586de48259a63d0c4782560b, type: 3}
-  jumpAction: {fileID: -2099379676528639254, guid: 052faaac586de48259a63d0c4782560b, type: 3}
-  dashAction: {fileID: -7471211009204490832, guid: 052faaac586de48259a63d0c4782560b, type: 3}
-  shootAction: {fileID: 1413696727114423886, guid: 052faaac586de48259a63d0c4782560b, type: 3}
-  climbAction: {fileID: -1131278960122823562, guid: 052faaac586de48259a63d0c4782560b, type: 3}
-  interactAction: {fileID: 1781555164194001046, guid: 052faaac586de48259a63d0c4782560b, type: 3}
 --- !u!224 &1971367906 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 4641871204004409760, guid: 35a7d06b8faec62b68f6ebbcb1b76e0a, type: 3}
@@ -3929,7 +3913,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
+  m_Script: {fileID: 11500000, guid: 99717c65fa860b9ab84698fe219f62bc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &1977091955
@@ -4174,7 +4158,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 2091719643}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
+  m_Script: {fileID: 11500000, guid: 99717c65fa860b9ab84698fe219f62bc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   m_Navigation:
@@ -5322,10 +5306,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: RestartFromCheckPointButton
       objectReference: {fileID: 0}
-    - target: {fileID: 7539046888093614276, guid: 35a7d06b8faec62b68f6ebbcb1b76e0a, type: 3}
-      propertyPath: m_SpriteState.m_SelectedSprite
-      value: 
-      objectReference: {fileID: 21300000, guid: 521429e32931cee3c98da9254a875cf7, type: 3}
     - target: {fileID: 7539046888093614276, guid: 35a7d06b8faec62b68f6ebbcb1b76e0a, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
