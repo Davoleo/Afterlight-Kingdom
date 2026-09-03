@@ -20,9 +20,6 @@ namespace Triggers
         [SerializeField] private float animationDuration = 0.6f;
         [SerializeField] private float scaleMult = 2.5f;
 
-        [Header("Chest Opening")]
-        [SerializeField] private bool openAutomaticallyOnPlayerEnter = true;
-
         [Header("Animation")]
         [SerializeField] private Animator chestAnimator;
         [SerializeField] private string openTriggerName = "OpenChest";

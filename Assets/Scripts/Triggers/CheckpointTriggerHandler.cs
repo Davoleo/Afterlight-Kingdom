@@ -22,7 +22,6 @@ namespace Triggers
         private CheckpointManager _cpManager;
         private CheckPointHUD _checkPointHUD;
 
-        private const float MaxCooldown = 2f;
         private float _cooldown;
 
         private void Start()
@@ -33,13 +32,13 @@ namespace Triggers
             _cpManager = _gm.GetComponent<CheckpointManager>();
             //TODO: Maybe FindFirstObjectByType is not the best solution
             _checkPointHUD = FindFirstObjectByType<CheckPointHUD>();
-            _cooldown = MaxCooldown;
+            _cooldown = activationCooldown;
             GameStateManager.Respawned += OnPlayerRespawn;
         }
 
         private void OnPlayerRespawn()
         {
-            _cooldown = MaxCooldown;
+            _cooldown = activationCooldown;
         }
 
         private void Update() => _cooldown = Mathf.Max(_cooldown-Time.deltaTime, 0f);
@@ -78,7 +77,7 @@ namespace Triggers
         private void OnTriggerStay(Collider other)
         {
             if (!other.CompareTag("Player")) return;
-            _cooldown = MaxCooldown;
+            _cooldown = activationCooldown;
         }
     }
 }
