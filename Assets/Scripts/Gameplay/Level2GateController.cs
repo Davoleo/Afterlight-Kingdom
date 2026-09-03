@@ -22,6 +22,8 @@ namespace Gameplay
         private void Start()
         {
             var save = SaveManager.Load();
+            if (save == null)
+                return;
             _leversFlicked = save.leverStates.Count(data => data.flicked);
             _animator = GetComponent<Animator>();
             LeverManager.LeverStateChanged += OnLeverStatusChange;

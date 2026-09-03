@@ -35,7 +35,7 @@ namespace HUD.Assist
             I = this;
 
             var save = SaveManager.Load();
-            if (save.disabledHints == null || save.seenHints == null)
+            if (save == null)
                 return;
             _disabledHints.AddRange(save.disabledHints);
             _seenHints.AddRange(save.seenHints);

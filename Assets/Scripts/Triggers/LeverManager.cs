@@ -28,7 +28,7 @@ namespace Triggers
         {
             _leverAnimator = GetComponent<Animator>();
             var save = SaveManager.Load();
-            if (save.leverStates == null)
+            if (save == null)
                 return;
             foreach (var data in save.leverStates)
             {
