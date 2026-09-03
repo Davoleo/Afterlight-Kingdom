@@ -1,3 +1,4 @@
+using System;
 using Core;
 using Gameplay;
 using Player;
@@ -8,6 +9,8 @@ namespace UI
 {
     public class MenuActions : MonoBehaviour
     {
+        [SerializeField] private GameObject mainPanel;
+        private GameObject _optionsPanel;
         private CheckpointManager _cpManager;
         private MenuManager _menuManager;
         private HealthManager _healthManager;
@@ -21,7 +24,15 @@ namespace UI
             var player = GameObject.FindGameObjectWithTag("Player");
             _healthManager = player.GetComponent<HealthManager>();
         }
-        
+
+        private void Update()
+        {
+            if (!_optionsPanel)
+            {
+                mainPanel.SetActive(true);
+            }
+        }
+
         public void RestartFromCheckpoint()
         {
             _cpManager.Respawn();
@@ -35,11 +46,12 @@ namespace UI
         public void OpenOptions()
         {
             var previous = EventSystem.current ? EventSystem.current.currentSelectedGameObject : null;
-            OptionsMenu.Open(onClosed: () =>
+            _optionsPanel = OptionsMenu.Open(onClosed: () =>
             {
                 if (previous && EventSystem.current)
                     EventSystem.current.SetSelectedGameObject(previous);
             });
+            mainPanel.SetActive(false);
         }
 
         public void ReturnToMenu()

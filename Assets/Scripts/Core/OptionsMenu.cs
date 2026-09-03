@@ -17,20 +17,21 @@ namespace Core
         // reports false if the instance was torn down by a scene change.
         public static bool IsOpen => _instance != null;
 
-        public static void Open(Action onClosed = null)
+        public static GameObject Open(Action onClosed = null)
         {
-            if (IsOpen) return;
+            if (IsOpen) return _instance;
 
             var prefab = Resources.Load<GameObject>(PrefabName);
             if (prefab == null)
             {
                 Debug.LogError($"OptionsMenu: no prefab found at Resources/{PrefabName}.");
-                return;
+                return null;
             }
 
             _onClosed = onClosed;
             _instance = UnityEngine.Object.Instantiate(prefab);
             _instance.name = PrefabName;
+            return _instance;
         }
 
         public static void Close()
