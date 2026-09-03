@@ -8,6 +8,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: -4482086021934236849, guid: 8f1579a65a8028a41a44069b430792b8, type: 3}
+      propertyPath: canInteractForever
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 238240900397903898, guid: 8f1579a65a8028a41a44069b430792b8, type: 3}
       propertyPath: m_Name
       value: HJD_FP_Lever_01
@@ -52,6 +56,22 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 8210676397197484015, guid: 8f1579a65a8028a41a44069b430792b8, type: 3}
+      propertyPath: interactSpeech.Array.size
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 8210676397197484015, guid: 8f1579a65a8028a41a44069b430792b8, type: 3}
+      propertyPath: 'interactSpeech.Array.data[0]'
+      value: 
+      objectReference: {fileID: 11400000, guid: 224f9e6a577be332b8c0c39f5b382304, type: 2}
+    - target: {fileID: 8210676397197484015, guid: 8f1579a65a8028a41a44069b430792b8, type: 3}
+      propertyPath: 'interactSpeech.Array.data[1]'
+      value: 
+      objectReference: {fileID: 11400000, guid: bd9703e45cbf1a145a92630cc0661413, type: 2}
+    - target: {fileID: 8210676397197484015, guid: 8f1579a65a8028a41a44069b430792b8, type: 3}
+      propertyPath: 'interactSpeech.Array.data[2]'
+      value: 
+      objectReference: {fileID: 11400000, guid: 07d0a9126557b0c41a8bb51374f03e1d, type: 2}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

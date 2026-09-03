@@ -1,4 +1,5 @@
 ﻿using System;
+using HUD.Assist;
 using Player;
 using Sound;
 using UnityEngine;
@@ -11,12 +12,14 @@ namespace Triggers
 
         private bool _playerInRange;
         private bool flicked;
+        private static int _current;
 
         private PlayerCharacterController _player;
         private Animator _leverAnimator;
 
         public static event Action<bool> LeverStateChanged;
 
+        public FeatureAssistData[] interactSpeech;
         public AudioClip switchClip;
 
         private void Start()
@@ -30,6 +33,7 @@ namespace Triggers
 
             LeverStateChanged?.Invoke(flicked);
             AudioManager.Instance.PlaySfx(switchClip);
+            TutorialAssistManager.I.ShowAssist(interactSpeech[_current++]);
             
             _leverAnimator.SetBool(FlickedHash, flicked);
         }
