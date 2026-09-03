@@ -15,5 +15,6 @@ MonoBehaviour:
   id: 
   technical: Press {Dash} to dash horizontally for a certain amount of space.
   narrative: I can use the potion I've just found here.
-  duration: 4
+  dismissMode: 0
+  duration: 6
   ephemeral: 0
