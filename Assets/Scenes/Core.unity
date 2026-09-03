@@ -2576,6 +2576,10 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2946734253697254725, guid: 00c59968ddb67d35bb59f7b6ee678f50, type: 3}
+      propertyPath: m_SpriteState.m_SelectedSprite
+      value: 
+      objectReference: {fileID: 21300000, guid: 521429e32931cee3c98da9254a875cf7, type: 3}
+    - target: {fileID: 2946734253697254725, guid: 00c59968ddb67d35bb59f7b6ee678f50, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 1007707250}
@@ -3341,6 +3345,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: RestartFromCheckPointButton
       objectReference: {fileID: 0}
+    - target: {fileID: 7539046888093614276, guid: 35a7d06b8faec62b68f6ebbcb1b76e0a, type: 3}
+      propertyPath: m_SpriteState.m_SelectedSprite
+      value: 
+      objectReference: {fileID: 21300000, guid: 521429e32931cee3c98da9254a875cf7, type: 3}
     - target: {fileID: 7539046888093614276, guid: 35a7d06b8faec62b68f6ebbcb1b76e0a, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
@@ -4188,7 +4196,7 @@ MonoBehaviour:
   m_SpriteState:
     m_HighlightedSprite: {fileID: 21300000, guid: 521429e32931cee3c98da9254a875cf7, type: 3}
     m_PressedSprite: {fileID: 21300000, guid: 52d021922028c85f584c3864b04f1cde, type: 3}
-    m_SelectedSprite: {fileID: 0}
+    m_SelectedSprite: {fileID: 21300000, guid: 521429e32931cee3c98da9254a875cf7, type: 3}
     m_DisabledSprite: {fileID: 0}
   m_AnimationTriggers:
     m_NormalTrigger: Normal
@@ -4481,6 +4489,10 @@ PrefabInstance:
       value: ReturnToMenuButton
       objectReference: {fileID: 0}
     - target: {fileID: 2982642230827405309, guid: 909f682a6f77be5cb819ebba3774ed20, type: 3}
+      propertyPath: m_SpriteState.m_SelectedSprite
+      value: 
+      objectReference: {fileID: 21300000, guid: 521429e32931cee3c98da9254a875cf7, type: 3}
+    - target: {fileID: 2982642230827405309, guid: 909f682a6f77be5cb819ebba3774ed20, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 1007707250}
@@ -4597,6 +4609,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: ReturnToMenuButton
       objectReference: {fileID: 0}
+    - target: {fileID: 2982642230827405309, guid: 909f682a6f77be5cb819ebba3774ed20, type: 3}
+      propertyPath: m_SpriteState.m_SelectedSprite
+      value: 
+      objectReference: {fileID: 21300000, guid: 521429e32931cee3c98da9254a875cf7, type: 3}
     - target: {fileID: 2982642230827405309, guid: 909f682a6f77be5cb819ebba3774ed20, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
@@ -4723,7 +4739,7 @@ PrefabInstance:
       value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 2542728589957442695, guid: 6725f11bb9e0ba4d783b8acbdb1c66e1, type: 3}
-      propertyPath: 'm_Materials.Array.data[1]'
+      propertyPath: m_Materials.Array.data[1]
       value: 
       objectReference: {fileID: 2100000, guid: d3583d6b0f1675c4db3cfab62062ddda, type: 2}
     - target: {fileID: 2729919358070443188, guid: 6725f11bb9e0ba4d783b8acbdb1c66e1, type: 3}
@@ -5003,7 +5019,7 @@ PrefabInstance:
       value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 8190099649744168408, guid: 6725f11bb9e0ba4d783b8acbdb1c66e1, type: 3}
-      propertyPath: 'm_Materials.Array.data[1]'
+      propertyPath: m_Materials.Array.data[1]
       value: 
       objectReference: {fileID: 2100000, guid: d3583d6b0f1675c4db3cfab62062ddda, type: 2}
     - target: {fileID: 8241502049495792556, guid: 6725f11bb9e0ba4d783b8acbdb1c66e1, type: 3}
@@ -5035,7 +5051,7 @@ PrefabInstance:
       value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 9106672909570668111, guid: 6725f11bb9e0ba4d783b8acbdb1c66e1, type: 3}
-      propertyPath: 'm_Materials.Array.data[1]'
+      propertyPath: m_Materials.Array.data[1]
       value: 
       objectReference: {fileID: 2100000, guid: d3583d6b0f1675c4db3cfab62062ddda, type: 2}
     - target: {fileID: 9106672909570668111, guid: 6725f11bb9e0ba4d783b8acbdb1c66e1, type: 3}
@@ -5067,7 +5083,7 @@ PrefabInstance:
       value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 9164724744748680659, guid: 6725f11bb9e0ba4d783b8acbdb1c66e1, type: 3}
-      propertyPath: 'm_Materials.Array.data[1]'
+      propertyPath: m_Materials.Array.data[1]
       value: 
       objectReference: {fileID: 2100000, guid: d3583d6b0f1675c4db3cfab62062ddda, type: 2}
     m_RemovedComponents: []
@@ -5177,6 +5193,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 2946734253697254725, guid: 00c59968ddb67d35bb59f7b6ee678f50, type: 3}
+      propertyPath: m_SpriteState.m_SelectedSprite
+      value: 
+      objectReference: {fileID: 21300000, guid: 521429e32931cee3c98da9254a875cf7, type: 3}
     - target: {fileID: 2946734253697254725, guid: 00c59968ddb67d35bb59f7b6ee678f50, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
@@ -5290,6 +5310,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: RestartFromCheckPointButton
       objectReference: {fileID: 0}
+    - target: {fileID: 7539046888093614276, guid: 35a7d06b8faec62b68f6ebbcb1b76e0a, type: 3}
+      propertyPath: m_SpriteState.m_SelectedSprite
+      value: 
+      objectReference: {fileID: 21300000, guid: 521429e32931cee3c98da9254a875cf7, type: 3}
     - target: {fileID: 7539046888093614276, guid: 35a7d06b8faec62b68f6ebbcb1b76e0a, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
