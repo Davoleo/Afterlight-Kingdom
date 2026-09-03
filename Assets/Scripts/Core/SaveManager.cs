@@ -44,6 +44,7 @@ namespace Core
                 return;
             }
 
+            var previousSave = Load();
             var data = new SaveData
             {
                 levelName = activeSceneName,
@@ -60,7 +61,7 @@ namespace Core
 
                 unlockedAbilities = new List<AbilityType>(abilityManager.UnlockedAbilities ?? new HashSet<AbilityType>()),
 
-                enemyStates = EnemySaveManager.GetEnemyStates()
+                enemyStates = EnemySaveManager.MergeEnemyStates(previousSave?.enemyStates)
             };
 
             File.WriteAllText(SavePath, JsonUtility.ToJson(data));

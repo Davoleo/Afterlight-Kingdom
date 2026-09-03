@@ -27,7 +27,7 @@ namespace Enemies
         private Collider[] enemyColliders;
 
         private Coroutine hitAnimationCoroutine;
-
+        private Coroutine deathCoroutine;
         public int CurrentHealth => currentHealth;
         public bool IsDead => currentHealth <= 0;
 
@@ -135,7 +135,7 @@ namespace Enemies
             animator.SetBool("IsDead", true);
 
 
-            StartCoroutine(DeathRoutine());
+            deathCoroutine = StartCoroutine(DeathRoutine());
         }
 
         // Removes all arrows stuck in the enemy.
@@ -158,6 +158,7 @@ namespace Enemies
 
             yield return new WaitForSeconds(deathAnimationDuration);
 
+            deathCoroutine = null;
             gameObject.SetActive(false);
         }
 
@@ -175,6 +176,12 @@ namespace Enemies
 
         public void ResetEnemy()
         {
+            if (deathCoroutine != null)
+            {
+                StopCoroutine(deathCoroutine);
+                deathCoroutine = null;
+            }
+
             currentHealth = maxHealth;
 
             if (hitAnimationCoroutine != null)
@@ -186,6 +193,8 @@ namespace Enemies
 
             animator.SetBool("IsHit", false);
             animator.SetBool("IsDead", false);
+            animator.Rebind();
+            animator.Update(0f);
 
             // Re-enable colliders when the enemy is reset/respawned.
             SetCollidersEnabled(true);

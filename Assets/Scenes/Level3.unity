@@ -49795,6 +49795,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3996788696878199830, guid: a3427acae3a374b55955da936f3a1a99, type: 3}
+      propertyPath: enemyId
+      value: Level3_Enemy_007
+      objectReference: {fileID: 0}
     - target: {fileID: 6595118272833061148, guid: a3427acae3a374b55955da936f3a1a99, type: 3}
       propertyPath: m_Name
       value: MeleeEnemy
@@ -93866,6 +93870,10 @@ PrefabInstance:
     - target: {fileID: 2585181518579417893, guid: 97d6a27fc167743fdbe026ebc4c88591, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7022476504449931981, guid: 97d6a27fc167743fdbe026ebc4c88591, type: 3}
+      propertyPath: enemyId
+      value: Level3_Enemy_008
       objectReference: {fileID: 0}
     - target: {fileID: 8757712320787616610, guid: 97d6a27fc167743fdbe026ebc4c88591, type: 3}
       propertyPath: m_Name

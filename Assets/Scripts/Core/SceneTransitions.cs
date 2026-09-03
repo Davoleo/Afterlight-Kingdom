@@ -154,6 +154,11 @@ namespace Core
             var gm = GameObject.FindGameObjectWithTag("GameManager");
             var playerController = GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerCharacterController>();
             var cameraController = GameObject.FindWithTag("MainCamera").GetComponentInParent<PlayerCameraController>();
+            if (SaveManager.HasSave)
+            {
+                SaveData save = SaveManager.Load();
+                EnemySaveManager.RestoreEnemyStates(save.enemyStates, target.name);
+            }
 
             playerController.motor.SetPosition(spawnPos);
             cameraController.SetRotationY(spawnRot);
