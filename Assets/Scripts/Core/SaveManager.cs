@@ -1,6 +1,8 @@
 using System.Collections.Generic;
 using System.IO;
 using Gameplay;
+using HUD.Assist;
+using Triggers;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -28,8 +30,10 @@ namespace Core
             var collManager = gm.GetComponent<CollectiblesManager>();
             var doorManager = gm.GetComponent<DoorManager>();
             var abilityManager = gm.GetComponent<AbilityManager>();
-            //var playerController = GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerCharacterController>();
-                    
+            var tutorialAssistData = gm.GetComponent<TutorialAssistManager>().SqueezeOutRawIds();
+            var leverData = LeverManager.Persistence.SqueezeIntoData();
+
+
             string activeSceneName = SceneManager.GetActiveScene().name;
             if (activeSceneName == "Core")
             {
@@ -61,7 +65,12 @@ namespace Core
 
                 unlockedAbilities = new List<AbilityType>(abilityManager.UnlockedAbilities ?? new HashSet<AbilityType>()),
 
-                enemyStates = EnemySaveManager.MergeEnemyStates(previousSave?.enemyStates)
+                enemyStates = EnemySaveManager.MergeEnemyStates(previousSave?.enemyStates),
+
+                leverStates = leverData,
+
+                disabledHints = tutorialAssistData.Item1,
+                seenHints = tutorialAssistData.Item2
             };
 
             File.WriteAllText(SavePath, JsonUtility.ToJson(data));
