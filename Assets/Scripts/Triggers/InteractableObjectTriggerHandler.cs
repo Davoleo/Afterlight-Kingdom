@@ -1,7 +1,5 @@
-using System;
 using HUD.Assist;
 using Player;
-using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -21,7 +19,7 @@ namespace Triggers
 
         private void Start()
         {
-            _popup = GameObject.FindWithTag($"InteractPopup");
+            _popup = GameObject.FindWithTag("InteractPopup");
             _popupFading = _popup.GetComponentInChildren<FadingPrompt>();
             _controller = GameObject.FindWithTag("Player").GetComponent<PlayerCharacterController>();
         }
