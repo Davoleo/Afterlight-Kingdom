@@ -9,10 +9,10 @@ namespace Player
     /// </summary>
     public struct PlayerInputs
     {
-        public Vector2 MoveInput;
+        public float MoveInput;
         public Vector3 CameraForward;   // pre-flattened to the horizontal plane
         public Vector3 CameraRight;     // pre-flattened to the horizontal plane
-        public Vector2 ClimbInput;
+        public float ClimbInput;
         public bool DrawInput;
     }
 

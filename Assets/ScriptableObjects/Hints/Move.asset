@@ -13,7 +13,8 @@ MonoBehaviour:
   m_Name: Move
   m_EditorClassIdentifier: 
   id: 
-  technical: Press A/D to move the character
+  technical: Use {Move} to move the character
   narrative: Alright, first steps in this realm.
+  dismissMode: 0
   duration: 4
   ephemeral: 1

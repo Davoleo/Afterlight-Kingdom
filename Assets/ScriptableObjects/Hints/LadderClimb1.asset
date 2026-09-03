@@ -13,10 +13,10 @@ MonoBehaviour:
   m_Name: LadderClimb1
   m_EditorClassIdentifier: 
   id: 
-  technical: 'Press {Up} and {Down} to climb the ladder.
+  technical: 'Use {Climb} to climb the ladder.
 
-    Move away from the
-    ladder to drop down.
+    Move away from the ladder to
+    drop down.
 
     Press {Jump} to jump away from the ladder.'
   narrative: 

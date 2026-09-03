@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using Core;
 using TMPro;
 using UnityEngine;
 
@@ -8,10 +9,11 @@ namespace HUD.Assist
     public class FadingPrompt : MonoBehaviour
     {
         private TMP_Text _label;
+        private CanvasGroup _canvasGroup;
+
         [SerializeField] private float fadeIn = 0.2f;
         [SerializeField] private float fadeOut = 0.2f;
 
-        private CanvasGroup _canvasGroup;
         private Coroutine _activeRoutine;
 
         private void Awake()
@@ -19,6 +21,11 @@ namespace HUD.Assist
             _label = GetComponentInChildren<TMP_Text>(true);
             _canvasGroup = GetComponent<CanvasGroup>();
             _canvasGroup.alpha = 0f;
+        }
+
+        private string Translate(string raw)
+        {
+            return raw.Contains('{') ? InputUtils.ReplaceInputIdentifiers(raw) : raw;
         }
 
         public void Show(string text, float holdDuration)
@@ -29,6 +36,8 @@ namespace HUD.Assist
                 Hide();
                 return;
             }
+
+            text = Translate(text);
 
             if (_activeRoutine is not null) StopCoroutine(_activeRoutine);
             _activeRoutine = StartCoroutine(ShowRoutine(text, holdDuration));
@@ -42,6 +51,8 @@ namespace HUD.Assist
                 Hide();
                 return;
             }
+
+            text = Translate(text);
 
             if (_activeRoutine is not null) StopCoroutine(_activeRoutine);
             _label.text = text;

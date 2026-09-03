@@ -275,11 +275,10 @@ namespace Player
 
         public Vector3 ComputeMoveDirection()
         {
-            if (PlayerInputs.MoveInput.sqrMagnitude < 0.01f)
+            if (Mathf.Abs(PlayerInputs.MoveInput) < 0.01f)
                 return Vector3.zero;
 
-            return (PlayerInputs.CameraForward * PlayerInputs.MoveInput.y
-                    + PlayerInputs.CameraRight * PlayerInputs.MoveInput.x).normalized;
+            return PlayerInputs.CameraRight * PlayerInputs.MoveInput;
         }
 
         public void SnapPlayerLocation(float t)

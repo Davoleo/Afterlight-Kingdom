@@ -20,7 +20,7 @@ namespace Player.State
             }
 
             // Partial air control: player can steer but not instantly change direction.
-            if (Ctx.PlayerInputs.MoveInput.sqrMagnitude > 0.01f)
+            if (Mathf.Abs(Ctx.PlayerInputs.MoveInput) > 0.01f)
             {
                 Vector3 targetHorizontal = Ctx.ComputeMoveDirection() * _maxAirMoveSpeed;
                 Vector3 velocityDiff     = Vector3.ProjectOnPlane(targetHorizontal - vel, _gravity.normalized);
