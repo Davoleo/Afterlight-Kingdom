@@ -1,4 +1,5 @@
-﻿using Sound;
+﻿using System;
+using Sound;
 using Triggers;
 using UnityEngine;
 using UnityEngine.Playables;
@@ -24,7 +25,17 @@ namespace Gameplay
         private void OpenGate()
         {
             if (_graph.IsValid()) _graph.Destroy();
-            AnimationPlayableUtilities.PlayClip(_animator, gateOpenClip, out _graph);
+
+            try
+            {
+                AnimationPlayableUtilities.PlayClip(_animator, gateOpenClip, out _graph);
+            }
+            catch (Exception e)
+            {
+                Debug.LogError($"Gate Opening error: {e}");
+                gameObject.SetActive(false);
+            }
+
             AudioManager.Instance.PlaySfx(gateOpenAudio);
         }
 
