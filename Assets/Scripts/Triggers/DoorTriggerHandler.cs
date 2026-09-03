@@ -35,7 +35,7 @@ namespace Triggers
             
             if (!_collectiblesManager.UseKey()) return;
 
-            if (!TutorialAssistManager.I.IsAssistDisabled(doorUnlockingHint))
+            if (doorUnlockingHint is not null && !TutorialAssistManager.I.IsAssistDisabled(doorUnlockingHint))
             {
                 TutorialAssistManager.I.DisableFeatureAssist(doorUnlockingHint);
             }
