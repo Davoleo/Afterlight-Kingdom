@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Gameplay;
+using Triggers;
 
 namespace Core
 {
@@ -29,5 +30,11 @@ namespace Core
         public List<EnemySaveData> enemyStates = new();
 
         public List<AbilityType> unlockedAbilities;
+
+        public List<LeverManager.Persistence> leverStates;
+
+        public List<string> leverState;
+        public List<string> disabledHints;
+        public List<string> seenHints;
     }
 }

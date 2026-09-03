@@ -30,7 +30,7 @@ namespace Gameplay
             return openedDoorIds != null && openedDoorIds.Contains(id);
         }
 
-        // Called explicitly by CoreLoader once the level has actually finished loading and
+        // Called explicitly by SceneTransitions once the level has actually finished loading and
         // become the active scene - same reasoning as CollectiblesManager.RestoreFromSave:
         // the level's Door objects don't exist yet while this GameObject is still booting inside Core.
         public void RestoreFromSave(SaveData save)

@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a361eb3134cc4e53accffdd93cd2dbc7, type: 3}
   m_Name: RotateCamera
   m_EditorClassIdentifier: 
-  id: 
+  id: rotate
   technical: Press {RotateCameraLeft} or {RotateCameraRight} to rotate the camera
   narrative: Where do I go?
   dismissMode: 1

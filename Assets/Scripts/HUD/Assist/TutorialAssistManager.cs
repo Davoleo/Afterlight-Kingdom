@@ -1,4 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using Core;
+using Unity.VisualScripting;
 using UnityEngine;
 
 namespace HUD.Assist
@@ -13,8 +17,8 @@ namespace HUD.Assist
         [Tooltip("Player's Speech Bubble instance")] [SerializeField]
         private SpeechBubble playerSpeechBubble;
 
-        private readonly HashSet<FeatureAssistData> _seenHints = new();
-        private readonly HashSet<FeatureAssistData> _disabledHints = new();
+        private readonly HashSet<string> _seenHints = new();
+        private readonly HashSet<string> _disabledHints = new();
 
         private void Awake()
         {
@@ -29,6 +33,10 @@ namespace HUD.Assist
             }
 
             I = this;
+
+            var save = SaveManager.Load();
+            _disabledHints.AddRange(save.disabledHints);
+            _seenHints.AddRange(save.seenHints);
         }
 
         private void OnDestroy()
@@ -37,7 +45,7 @@ namespace HUD.Assist
                 I = null;
         }
 
-        public bool IsAssistDisabled(FeatureAssistData feature) => _disabledHints.Contains(feature);
+        public bool IsAssistDisabled(FeatureAssistData feature) => _disabledHints.Contains(feature.Id);
 
         /// <summary>
         /// Marks a certain feature as completed disabling the assist tutorial trigger for it.
@@ -48,7 +56,7 @@ namespace HUD.Assist
             if (IsAssistDisabled(feature))
                 return;
 
-            _disabledHints.Add(feature);
+            _disabledHints.Add(feature.Id);
             if (feature.DismissMode == AssistDismissMode.OnAction)
             {
                 technicalOverlay.Hide();
@@ -56,7 +64,7 @@ namespace HUD.Assist
             }
         }
 
-        public bool HasBeenSeen(FeatureAssistData feature) => _seenHints.Contains(feature);
+        public bool HasBeenSeen(FeatureAssistData feature) => _seenHints.Contains(feature.Id);
 
         public void ShowAssist(FeatureAssistData feature)
         {
@@ -72,7 +80,7 @@ namespace HUD.Assist
 
         private void Display(FeatureAssistData feature)
         {
-            _seenHints.Add(feature);
+            _seenHints.Add(feature.Id);
 
             if (feature.DismissMode == AssistDismissMode.Timer)
             {
@@ -86,5 +94,6 @@ namespace HUD.Assist
             }
         }
 
+        public Tuple<List<string>, List<string>> SqueezeOutRawIds() => new(_disabledHints.ToList(), _seenHints.ToList());
     }
 }
