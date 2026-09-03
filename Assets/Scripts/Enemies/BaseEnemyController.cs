@@ -162,7 +162,7 @@ namespace Enemies
         private void CompleteGridStep()
         {
             if (!hasGridStep) return;
-            
+
             currentGridCell = gridStepCell;
             hasGridStep = false;
             gridStepCenter = Vector3.zero;
@@ -179,9 +179,11 @@ namespace Enemies
 
             Vector2Int targetCell = gridNavigation.WorldToCell(destination);
 
+            if (targetCell == currentGridCell) return Vector3.zero;
+
             pathBuffer.Clear();
 
-            if (!gridNavigation.TryFindPath(currentGridCell, targetCell, destination, pathBuffer, out Vector3 nextCenter)) return Vector3.zero;
+            if (!gridNavigation.TryFindPath(currentGridCell, targetCell, pathBuffer)) return Vector3.zero;
             if (pathBuffer.Count < 2) return Vector3.zero;
 
             Vector2Int nextCell = pathBuffer[1];
@@ -192,6 +194,8 @@ namespace Enemies
                 Debug.LogError($"{name}: A* ha restituito uno step non adiacente {currentGridCell} -> {nextCell}.", this);
                 return Vector3.zero;
             }
+
+            if (!gridNavigation.TryGetCellCenter(nextCell, out Vector3 nextCenter)) return Vector3.zero;
 
             gridStepCell = nextCell;
             gridStepCenter = nextCenter;
@@ -254,6 +258,7 @@ namespace Enemies
             ResetToSpawn();
             hasResetAfterPlayerDeath = true;
         }
+
         protected void ResetToSpawn()
         {
             currentGridCell = spawnGridCell;
@@ -272,6 +277,7 @@ namespace Enemies
             OnResetToSpawn();
             SetInitialState();
         }
+
         protected bool TrySampleNavMeshPosition(Vector3 desiredPosition, out Vector3 sampledPosition)
         {
             return TrySampleNavMeshPosition(desiredPosition, navMeshSampleRadius, out sampledPosition);
