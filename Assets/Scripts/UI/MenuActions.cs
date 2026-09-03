@@ -2,6 +2,7 @@ using Core;
 using Gameplay;
 using Player;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 namespace UI
 {
@@ -26,6 +27,19 @@ namespace UI
             _cpManager.Respawn();
             _healthManager.ResetAfterRespawn();
             _menuManager.CloseAllMenus(); // resumes play (sets GameState back to Playing)
+        }
+
+        // Opens the shared options UI over the current menu and restores button focus
+        // when it closes. Used by the main menu; the in-game pause menu routes through
+        // MenuManager.OpenOptions instead so it can hide/restore the pause panel.
+        public void OpenOptions()
+        {
+            var previous = EventSystem.current ? EventSystem.current.currentSelectedGameObject : null;
+            OptionsMenu.Open(onClosed: () =>
+            {
+                if (previous && EventSystem.current)
+                    EventSystem.current.SetSelectedGameObject(previous);
+            });
         }
 
         public void ReturnToMenu()
