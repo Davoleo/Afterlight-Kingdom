@@ -206537,8 +206537,8 @@ MonoBehaviour:
   m_OverrideTileSize: 0
   m_TileSize: 256
   m_OverrideVoxelSize: 0
-  m_VoxelSize: 0.033333335
-  m_MinRegionArea: 2
+  m_VoxelSize: 0.04
+  m_MinRegionArea: 0
   m_NavMeshData: {fileID: 23800000, guid: 4c48ca3e8d98c4bf1a5588c77b8fbb9c, type: 2}
   m_BuildHeightMesh: 0
 --- !u!4 &967076663
@@ -250961,6 +250961,22 @@ PrefabInstance:
     - target: {fileID: 2585181518579417893, guid: 97d6a27fc167743fdbe026ebc4c88591, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3327297795530109280, guid: 97d6a27fc167743fdbe026ebc4c88591, type: 3}
+      propertyPath: target.detectionRange
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 3327297795530109280, guid: 97d6a27fc167743fdbe026ebc4c88591, type: 3}
+      propertyPath: target.losePlayerRange
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 3327297795530109280, guid: 97d6a27fc167743fdbe026ebc4c88591, type: 3}
+      propertyPath: desiredShootingDistance
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 3327297795530109280, guid: 97d6a27fc167743fdbe026ebc4c88591, type: 3}
+      propertyPath: minimumShootingDistance
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 8757712320787616610, guid: 97d6a27fc167743fdbe026ebc4c88591, type: 3}
       propertyPath: m_Name
@@ -296396,6 +296412,14 @@ PrefabInstance:
     - target: {fileID: 2585181518579417893, guid: 97d6a27fc167743fdbe026ebc4c88591, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3327297795530109280, guid: 97d6a27fc167743fdbe026ebc4c88591, type: 3}
+      propertyPath: desiredShootingDistance
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 3327297795530109280, guid: 97d6a27fc167743fdbe026ebc4c88591, type: 3}
+      propertyPath: minimumShootingDistance
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 8757712320787616610, guid: 97d6a27fc167743fdbe026ebc4c88591, type: 3}
       propertyPath: m_Name
@@ -453962,7 +453986,7 @@ Transform:
   m_GameObject: {fileID: 2129388864}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 4, y: 5.5, z: -60}
+  m_LocalPosition: {x: 4, y: 22.77, z: -60}
   m_LocalScale: {x: 1, y: 1, z: 2}
   m_ConstrainProportionsScale: 0
   m_Children: []

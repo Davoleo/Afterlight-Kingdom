@@ -112,7 +112,7 @@ MonoBehaviour:
   startsActive: 1
   patrolSpeed: 2
   rotationSpeed: 12
-  gridCenterTolerance: 0.02
+  gridCenterTolerance: 0.1
   gridResolveSearchRadius: 3
   gridMaxExpandedNodes: 2048
   navMeshSampleRadius: 2
