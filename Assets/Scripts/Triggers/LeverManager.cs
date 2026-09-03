@@ -28,10 +28,15 @@ namespace Triggers
         {
             _leverAnimator = GetComponent<Animator>();
             var save = SaveManager.Load();
-            foreach (var data in save.leverStates.Where(data => data.position == transform.position))
+            if (save.leverStates == null)
+                return;
+            foreach (var data in save.leverStates)
             {
-                flicked = data.flicked;
-                _leverAnimator.SetBool(FlickedHash, flicked);
+                if (data.position == transform.position)
+                {
+                    flicked = data.flicked;
+                    _leverAnimator.SetBool(FlickedHash, flicked);
+                }
             }
         }
 
