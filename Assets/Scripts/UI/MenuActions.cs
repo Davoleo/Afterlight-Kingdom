@@ -36,10 +36,13 @@ namespace UI
 
         public void RestartFromCheckpoint()
         {
+            var save = SaveManager.Load();
+            if (SaveManager.HasSave) SaveManager.RestoreEverything(gameObject, save, false);
+            else Continue();
+
             _cpManager.Respawn();
             EnemyProjectile.RemoveAllProjectiles();
             //in this method we're currently in-game, so gameObject refers to the GameManager
-            SaveManager.RestoreEverything(gameObject, SaveManager.Load(), false);
             _healthManager.ResetAfterRespawn();
             _menuManager.CloseAllMenus(); // resumes play (sets GameState back to Playing
         }

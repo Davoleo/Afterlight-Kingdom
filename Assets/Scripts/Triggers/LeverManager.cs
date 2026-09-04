@@ -21,6 +21,7 @@ namespace Triggers
 
         public static event Action<bool> LeverStateChanged;
 
+        private static int count;
         public FeatureAssistData[] interactSpeech;
         public AudioClip switchClip;
 
@@ -45,10 +46,10 @@ namespace Triggers
 
             LeverStateChanged?.Invoke(flicked);
             AudioManager.Instance.PlaySfx(switchClip);
-            var first = interactSpeech.First(hint => !TutorialAssistManager.I.IsAssistDisabled(hint));
-            TutorialAssistManager.I.ShowAssist(first);
-            TutorialAssistManager.I.DisableFeatureAssist(first);
-
+            var interact = interactSpeech[count];
+            TutorialAssistManager.I.ShowAssist(interact);
+            TutorialAssistManager.I.DisableFeatureAssist(interact);
+            count = flicked ? Mathf.Min(count + 1, 3) : Mathf.Max(count - 1, 0);
             
             _leverAnimator.SetBool(FlickedHash, flicked);
         }

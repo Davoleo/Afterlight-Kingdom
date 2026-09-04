@@ -32,8 +32,11 @@ namespace Core
 
             gm.GetComponent<CollectiblesManager>().RestoreFromSave(data, refreshGameObjects: fromMainMenu);
             gm.GetComponent<DoorManager>().RestoreFromSave(data);
+
             var am = gm.GetComponent<AbilityManager>();
             am.UnlockedAbilities = data.unlockedAbilities.ToHashSet();
+            am.RefreshAbilityState();
+
             gm.GetComponent<TutorialAssistManager>().RestoreFromSave(data);
             LeverManager.Persistence.InflateData(data.leverStates);
 

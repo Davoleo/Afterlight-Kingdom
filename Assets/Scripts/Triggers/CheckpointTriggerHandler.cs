@@ -33,7 +33,6 @@ namespace Triggers
             _cpManager = _gm.GetComponent<CheckpointManager>();
             //TODO: Maybe FindFirstObjectByType is not the best solution
             _checkPointHUD = FindFirstObjectByType<CheckPointHUD>();
-            _cooldown = activationCooldown;
             GameStateManager.Respawned += OnPlayerRespawn;
         }
 

@@ -50,7 +50,7 @@ namespace Gameplay
         /// Applies the current ability set to the bow, instead of polling every frame in Update()
         /// for something that only ever changes right here or once at boot.
         /// </summary>
-        private void RefreshAbilityState()
+        public void RefreshAbilityState()
         {
             bool hasBow = HasAbility(AbilityType.Bow);
 

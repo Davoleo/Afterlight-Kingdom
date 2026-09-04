@@ -123,8 +123,7 @@ namespace Core
             // the loading screen, rather than visibly ticking after it fades.
             SaveData save = SaveManager.HasSave ? SaveManager.Load() : null;
 
-            if (save is not null) SaveManager.RestoreEverything(gm, save, true);
-            else SaveManager.Save(gm);
+            if (save != null) SaveManager.RestoreEverything(gm, save, true);
 
             gm.GetComponent<CheckpointManager>().Respawn(save);
 
@@ -167,6 +166,9 @@ namespace Core
             SaveManager.Save(gm);
 
             yield return SceneManager.UnloadSceneAsync(previousLevelName);
+
+            var collectiblesMan = gm.GetComponent<CollectiblesManager>();
+            collectiblesMan.RefreshCollectibleReferences();
 
             GameStateManager.SetState(GameState.Playing);
             yield return LoadingScreen.Instance.Hide();

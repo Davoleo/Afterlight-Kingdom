@@ -38,9 +38,10 @@ namespace Gameplay
             _sfx[CollectibleType.Key] = Resources.Load<AudioClip>("Sound/key");
         }
 
-        private void OnLevelLoad(SceneNames _)
+        private void OnLevelLoad(SceneNames scene)
         {
-            RefreshCollectibleReferences();
+            if (scene == SceneNames.Level1)
+                RefreshCollectibleReferences();
         }
 
         public AudioClip GetPickupSound(CollectibleType type) => _sfx[type];
@@ -113,16 +114,11 @@ namespace Gameplay
             Keys = save.keys;
             CollectedIds = save.collectedIds != null ? new List<string>(save.collectedIds) : new List<string>();
 
-            if (refreshGameObjects)
-            {
-                Debug.Log("initialized.");
-                RefreshCollectibleReferences();
-            }
-
+            if (refreshGameObjects) RefreshCollectibleReferences();
             RestoreCollectedState();
         }
 
-        private void RefreshCollectibleReferences()
+        public void RefreshCollectibleReferences()
         {
             Collectibles.Coins = new List<GameObject>(GameObject.FindGameObjectsWithTag("Coins"));
             Collectibles.Keys = new List<GameObject>(GameObject.FindGameObjectsWithTag("Keys"));
@@ -137,6 +133,9 @@ namespace Gameplay
         //Despawn/respawn collectibles
         private void RestoreMatching(List<GameObject> objects)
         {
+            if (objects == null)
+                return;
+
             foreach (GameObject go in objects)
             {
                 CollectibleTriggerHandler handler = go.GetComponent<CollectibleTriggerHandler>();
