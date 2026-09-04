@@ -135,7 +135,7 @@ MonoBehaviour:
   navMeshAgent: {fileID: 5341172184793211625}
   target:
     player: {fileID: 0}
-    detectionRange: 10
+    detectionRange: 6
     losePlayerRange: 10
   patrol:
     leftPoint: {fileID: 0}
@@ -144,7 +144,7 @@ MonoBehaviour:
   startsActive: 1
   patrolSpeed: 2
   rotationSpeed: 12
-  gridCenterTolerance: 0.02
+  gridCenterTolerance: 0.1
   gridResolveSearchRadius: 3
   gridMaxExpandedNodes: 2048
   navMeshSampleRadius: 2
@@ -152,7 +152,7 @@ MonoBehaviour:
   chargeHitPoint: {fileID: 0}
   explosionPrefab: {fileID: 7276292554753924425, guid: 28959f423afe7dd4b9eb496bb760a138, type: 3}
   chargeSpeed: 9
-  chargeWindup: 0.45
+  chargeWindup: 0.8
   chargeHitRadius: 0.6
   chargeDamage: 2
   maxChargeHeightDifference: 0.8
@@ -166,6 +166,8 @@ MonoBehaviour:
   obstacleCheckHeight: 2
   obstacleCheckDepth: 1
   obstacleCheckForwardOffset: 0.2
+  stuckMovementThreshold: 0.02
+  stuckDuration: 0.25
 --- !u!114 &920895049743002643
 MonoBehaviour:
   m_ObjectHideFlags: 0
