@@ -121,14 +121,14 @@ namespace Core
 
             // Restore first so the collectibles/doors HUD settles while still covered by
             // the loading screen, rather than visibly ticking after it fades.
-            if (SaveManager.HasSave)
+            SaveData save = SaveManager.HasSave ? SaveManager.Load() : null;
+
+            if (save is not null)
             {
-                SaveData save = SaveManager.Load();
-                gm.GetComponent<CollectiblesManager>().RestoreFromSave(save);
-                gm.GetComponent<DoorManager>().RestoreFromSave(save);
+                SaveManager.RestoreEverything(gm, save, true);
             }
 
-            gm.GetComponent<CheckpointManager>().Respawn();
+            gm.GetComponent<CheckpointManager>().Respawn(save);
 
             GameStateManager.SetState(GameState.Playing);
         }

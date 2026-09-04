@@ -37,6 +37,11 @@ namespace Triggers
             _alreadyInteracted = true;
         }
 
+        public void ResetInteraction()
+        {
+            _alreadyInteracted = false;
+        }
+
         private void OnTriggerEnter(Collider other)
         {
             if (!other.CompareTag("Player")) return;

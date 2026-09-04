@@ -1,13 +1,16 @@
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using Core;
 using Triggers;
+using Unity.VisualScripting;
 using UnityEngine;
 
 namespace Gameplay
 {
     public class DoorManager : MonoBehaviour
     {
-        public List<GameObject> doors;
+        public DoorTriggerHandler[] doors;
 
         public List<string> openedDoorIds = new();
 
@@ -25,10 +28,13 @@ namespace Gameplay
             return true;
         }
 
-        public bool IsOpened(string id)
-        {
-            return openedDoorIds != null && openedDoorIds.Contains(id);
-        }
+        public bool IsOpened(string id) => openedDoorIds.Contains(id);
+
+        // private void Update()
+        // {
+        //     Debug.Log(openedDoorIds.ToSeparatedString(", "));
+        //     Debug.Log(doors.Select(door => door.transform.position).ToSeparatedString(", "));
+        // }
 
         // Called explicitly by SceneTransitions once the level has actually finished loading and
         // become the active scene - same reasoning as CollectiblesManager.RestoreFromSave:
@@ -43,15 +49,14 @@ namespace Gameplay
 
         private void RefreshDoorReferences()
         {
-            doors = new List<GameObject>(GameObject.FindGameObjectsWithTag("Doors"));
+            doors = FindObjectsByType<DoorTriggerHandler>(FindObjectsInactive.Include, FindObjectsSortMode.None);
         }
 
         private void RestoreOpenedState()
         {
-            foreach (GameObject go in doors)
+            foreach (var door in doors)
             {
-                DoorTriggerHandler handler = go.GetComponent<DoorTriggerHandler>();
-                go.SetActive(!IsOpened(handler.Id));
+                door.gameObject.SetActive(!IsOpened(door.Id));
             }
         }
     }
