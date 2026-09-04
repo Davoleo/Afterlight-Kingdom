@@ -151,7 +151,7 @@ MonoBehaviour:
   animator: {fileID: 7781569561208867701}
   chargeHitPoint: {fileID: 0}
   explosionPrefab: {fileID: 7276292554753924425, guid: 28959f423afe7dd4b9eb496bb760a138, type: 3}
-  chargeSpeed: 1
+  chargeSpeed: 8
   chargeWindup: 0.8
   chargeHitRadius: 0.6
   chargeDamage: 2
