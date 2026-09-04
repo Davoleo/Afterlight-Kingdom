@@ -123,10 +123,8 @@ namespace Core
             // the loading screen, rather than visibly ticking after it fades.
             SaveData save = SaveManager.HasSave ? SaveManager.Load() : null;
 
-            if (save is not null)
-            {
-                SaveManager.RestoreEverything(gm, save, true);
-            }
+            if (save is not null) SaveManager.RestoreEverything(gm, save, true);
+            else SaveManager.Save(gm);
 
             gm.GetComponent<CheckpointManager>().Respawn(save);
 

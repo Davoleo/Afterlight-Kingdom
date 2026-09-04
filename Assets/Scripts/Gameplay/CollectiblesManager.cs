@@ -32,9 +32,14 @@ namespace Gameplay
 
         private void Start()
         {
+            GameSession.LevelChanged += OnLevelLoad;
             CollectedIds ??= new List<string>();
             _sfx[CollectibleType.Coin] = Resources.Load<AudioClip>("Sound/coin_pickup");
             _sfx[CollectibleType.Key] = Resources.Load<AudioClip>("Sound/key");
+        }
+
+        private void OnLevelLoad(SceneNames _)
+        {
             RefreshCollectibleReferences();
         }
 
@@ -108,7 +113,12 @@ namespace Gameplay
             Keys = save.keys;
             CollectedIds = save.collectedIds != null ? new List<string>(save.collectedIds) : new List<string>();
 
-            if (refreshGameObjects) RefreshCollectibleReferences();
+            if (refreshGameObjects)
+            {
+                Debug.Log("initialized.");
+                RefreshCollectibleReferences();
+            }
+
             RestoreCollectedState();
         }
 

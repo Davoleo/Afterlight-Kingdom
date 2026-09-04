@@ -68,9 +68,12 @@ namespace Triggers
         {
             Debug.Log($"Open chest refresh {abilityToUnlock.ToString()}: {_abilityManager.HasAbility(abilityToUnlock)}");
             Opened = _abilityManager.HasAbility(abilityToUnlock);
-            chestAnimator.ResetTrigger(openTriggerName);
-            chestAnimator.Rebind();
-            chestAnimator.Update(0);
+            if (chestAnimator)
+            {
+                chestAnimator.ResetTrigger(openTriggerName);
+                chestAnimator.Rebind();
+                chestAnimator.Update(0);
+            }
             _interactableRef.ResetInteraction();
         }
 
