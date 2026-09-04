@@ -63,14 +63,12 @@ namespace Enemies
 
             enemyHealth = GetComponent<EnemyHealth>();
 
-            if (enemyHealth != null)
-                enemyHealth.Died += HandleDeath;
+            enemyHealth.Died += HandleDeath;
         }
 
         private void OnDestroy()
         {
-            if (enemyHealth != null)
-                enemyHealth.Died -= HandleDeath;
+            enemyHealth.Died -= HandleDeath;
         }
 
         protected override void Update()
@@ -217,8 +215,6 @@ namespace Enemies
         // Moves the kamikaze directly along the fixed cardinal charge direction. This bypasses grid pathfinding so the charge cannot turn or adapt its path.
         private void MoveChargeStraight(float deltaTime)
         {
-            if (navMeshAgent == null || !navMeshAgent.enabled || !navMeshAgent.isOnNavMesh) return;
-
             navMeshAgent.Move(chargeDirection * chargeSpeed * deltaTime);
         }
 
@@ -251,11 +247,10 @@ namespace Enemies
             ChangeState(EnemyState.Patrolling);
 
             // Remove the current NavMesh destination so the enemy does not continue moving during the Hit animation.
-            if (navMeshAgent.enabled && navMeshAgent.isOnNavMesh)
-            {
-                navMeshAgent.isStopped = true;
-                navMeshAgent.ResetPath();
-            }
+
+            navMeshAgent.isStopped = true;
+            navMeshAgent.ResetPath();
+            
 
             // Disable all normal movement/charge animation parameters while Hit has priority.
             animator.SetBool("IsPatrolling", false);
@@ -277,7 +272,7 @@ namespace Enemies
                 animator.SetBool("IsPreparingCharge", false);
                 animator.SetBool("IsCharging", false);
 
-                if (navMeshAgent != null && navMeshAgent.enabled && navMeshAgent.isOnNavMesh) navMeshAgent.isStopped = true;
+                navMeshAgent.isStopped = true;
 
                 return true;
             }
@@ -301,8 +296,7 @@ namespace Enemies
             {
                 wasHitAnimationActive = false;
 
-                if (navMeshAgent != null && navMeshAgent.enabled && navMeshAgent.isOnNavMesh)
-                    navMeshAgent.isStopped = false;
+                navMeshAgent.isStopped = false;
             }
 
             return false;
@@ -324,7 +318,6 @@ namespace Enemies
 
             foreach (Collider obstacle in obstacles)
             {
-                if (obstacle == null) continue;
                 if (IsOwnCollider(obstacle)) continue;
                 if (Target.IsPlayerCollider(obstacle)) continue;
 
@@ -358,17 +351,13 @@ namespace Enemies
             LookDirection = Vector3.zero;
             chargeDirection = Vector3.zero;
 
-            if (navMeshAgent != null && navMeshAgent.enabled && navMeshAgent.isOnNavMesh)
-                navMeshAgent.isStopped = true;
-
-            if (enemyHealth != null)
-                enemyHealth.TakeDamage(enemyHealth.CurrentHealth);
+            navMeshAgent.isStopped = true;
+            enemyHealth.TakeDamage(enemyHealth.CurrentHealth);
         }
 
         private void HandleDeath()
         {
-            if (explosionPrefab != null)
-                Instantiate(explosionPrefab, transform.position, Quaternion.identity);
+            Instantiate(explosionPrefab, transform.position, Quaternion.identity);
 
             gameObject.SetActive(false);
         }
@@ -402,8 +391,6 @@ namespace Enemies
 
             foreach (RaycastHit hit in hits)
             {
-                if (hit.collider == null)
-                    continue;
                 if (IsOwnCollider(hit.collider))
                     continue;
                 if (Target.IsPlayerCollider(hit.collider))
@@ -461,8 +448,6 @@ namespace Enemies
 
         private void UpdateAnimation()
         {
-            if (animator == null) return;
-
             // Hit and Death have priority over the normal state animations.
             if (animator.GetBool("IsHit") || animator.GetBool("IsDead"))
             {
