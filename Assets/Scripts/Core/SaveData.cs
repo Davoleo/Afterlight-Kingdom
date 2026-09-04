@@ -33,7 +33,6 @@ namespace Core
 
         public List<LeverManager.Persistence> leverStates;
 
-        public List<string> leverState;
         public List<string> disabledHints;
         public List<string> seenHints;
     }

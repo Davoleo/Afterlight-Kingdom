@@ -1,4 +1,3 @@
-using System;
 using Core;
 using Gameplay;
 using Player;
@@ -27,7 +26,7 @@ namespace UI
 
         private void Update()
         {
-            if (!_optionsPanel)
+            if (mainPanel && !_optionsPanel)
             {
                 mainPanel.SetActive(true);
             }

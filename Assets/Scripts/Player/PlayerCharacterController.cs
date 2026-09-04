@@ -59,6 +59,7 @@ namespace Player
 
         [NonSerialized]
         public GameObject CurrentGroundObject;
+        private Vector3 _currentGroundNormal;
         [NonSerialized]
         public Vector3 DigitalCharacterForward;
 
@@ -287,10 +288,17 @@ namespace Player
             var rX = CurrentGroundObject.transform.position.x;
             var rZ = CurrentGroundObject.transform.position.z;
 
+            Debug.Log($"snapping x: {pos.x} to {rX}");
+            Debug.Log($"snapping x: {pos.z} to {rZ}");
+
             var lerpX = Mathf.Lerp(pos.x, rX, t);
             var lerpZ = Mathf.Lerp(pos.z, rZ, t);
 
-            motor.SetPosition(new Vector3(lerpX, pos.y, lerpZ));
+            var newPos = new Vector3(lerpX, pos.y, lerpZ);
+
+            //motor.RestrictVectorToPlane(ref newPos, _currentGroundNormal);
+            Debug.Log("snapping pos: " + newPos);
+            motor.SetPosition(newPos, false);
         }
 
         public bool IsColliderValidForCollisions(Collider coll)
@@ -316,6 +324,7 @@ namespace Player
             ref HitStabilityReport hitStabilityReport)
         {
             CurrentGroundObject = hitCollider.gameObject;
+            _currentGroundNormal = hitNormal;
         }
 
         public void OnMovementHit(
