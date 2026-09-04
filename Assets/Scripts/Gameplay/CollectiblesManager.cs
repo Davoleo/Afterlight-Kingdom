@@ -101,13 +101,13 @@ namespace Gameplay
         // Called explicitly by CoreLoader once the level has actually finished loading and
         // become the active scene - same reasoning as CheckpointManager.Respawn(): the level's
         // Coin/Key objects don't exist yet while this GameObject is still booting inside Core.
-        public void RestoreFromSave(SaveData save)
+        public void RestoreFromSave(SaveData save, bool refreshGameObjects = true)
         {
             Coins = save.coins;
             Keys = save.keys;
             CollectedIds = save.collectedIds != null ? new List<string>(save.collectedIds) : new List<string>();
 
-            RefreshCollectibleReferences();
+            if (refreshGameObjects) RefreshCollectibleReferences();
             RestoreCollectedState();
         }
 

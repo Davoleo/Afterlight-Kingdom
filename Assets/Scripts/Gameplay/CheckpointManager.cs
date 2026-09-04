@@ -1,10 +1,11 @@
 ﻿ using Core;
-using Player;
+ using JetBrains.Annotations;
+ using Player;
 using UnityEngine;
 
 namespace Gameplay
 {
-    public struct Checkpoint
+    public class Checkpoint
     {
         public Checkpoint(Vector3 position, float rotation)
         {
@@ -35,16 +36,13 @@ namespace Gameplay
             // finished loading - it needs the level's colliders/geometry to exist first.
         }
 
-        public void Respawn()
+        public void Respawn([CanBeNull] SaveData data = null)
         {
-            if (SaveManager.HasSave)
+            if (data is not null)
             {
                 SaveData save = SaveManager.Load();
-
-                LastCheckPoint = new Checkpoint(new Vector3(save.checkpointX, save.checkpointY, save.checkpointZ), save.cameraRotation);
-
-                //restore enemies
-                EnemySaveManager.RestoreEnemyStates(save.enemyStates);
+                LastCheckPoint = new Checkpoint(new Vector3(save.checkpointX, save.checkpointY, save.checkpointZ),
+                    save.cameraRotation);
             }
 
             _playerController.StopExternalKnockback();

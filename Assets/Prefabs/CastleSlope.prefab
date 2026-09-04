@@ -26,7 +26,7 @@ Transform:
   m_GameObject: {fileID: 8428321754585998355}
   serializedVersion: 2
   m_LocalRotation: {x: 0.38268322, y: -0, z: -0, w: 0.9238797}
-  m_LocalPosition: {x: 1.0051295, y: 0.68084, z: -0.020959392}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -51,8 +51,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 1.0062981, y: 0.7019489, z: 1.3807745}
-  m_Center: {x: -1.0045478, y: -0.46677363, z: 0.14574437}
+  m_Size: {x: 1.0062981, y: 0.26444778, z: 1.3857783}
+  m_Center: {x: -0.000000072513316, y: 0.21875411, z: -0.35084385}
 --- !u!1001 &2863987496773635577
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -115,10 +115,31 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: -8679921383154817045, guid: 03f461012dc2346459842e598def99aa, type: 3}
       insertIndex: -1
       addedObject: {fileID: 2633834678366475607}
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 03f461012dc2346459842e598def99aa, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 4355342032963305578}
   m_SourcePrefab: {fileID: 100100000, guid: 03f461012dc2346459842e598def99aa, type: 3}
 --- !u!4 &2320572106521651730 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 03f461012dc2346459842e598def99aa, type: 3}
   m_PrefabInstance: {fileID: 2863987496773635577}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &3134369712802590888 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: 03f461012dc2346459842e598def99aa, type: 3}
+  m_PrefabInstance: {fileID: 2863987496773635577}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &4355342032963305578
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3134369712802590888}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3fbc628d70ba4c11ab18c6306dd63f45, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  material: 2

@@ -44,12 +44,10 @@ namespace Enemies
         private bool isRecoveringAttack;
         private float attackRecoveryEndTime;
         private Vector3 attackPosition;
-        private bool hasLockedAttackPosition;
 
         private bool wasHit;
         private float hitStopEndTime;
         private Vector3 hitPosition;
-        private bool hasLockedHitPosition;
 
         protected override void Start()
         {
@@ -97,9 +95,6 @@ namespace Enemies
             if (currentState != EnemyState.Attacking)
                 return;
 
-            if (!hasLockedAttackPosition)
-                return;
-
             // Keep the enemy locked even after the Animator update.
             KeepAttackPosition();
         }
@@ -124,12 +119,10 @@ namespace Enemies
             lastAttackTime = Time.time;
             attackRecoveryEndTime = 0f;
 
-            hasLockedAttackPosition = false;
             attackPosition = Vector3.zero;
 
             wasHit = false;
             hitStopEndTime = 0f;
-            hasLockedHitPosition = false;
             hitPosition = Vector3.zero;
             stateBeforeHit = EnemyState.Sleeping;
 
@@ -144,12 +137,10 @@ namespace Enemies
         {
             return currentState == EnemyState.Chasing ? chaseSpeed : patrolSpeed;
         }
+
         //cilindric detection range, with normal radius and +- 1 block detection
         protected override bool IsPlayerInsideDetection()
         {
-            if (!HasPlayer())
-                return false;
-
             float detectionBottom = transform.position.y - verticalDetectionMargin;
             float detectionTop = transform.position.y + navMeshAgent.height + verticalDetectionMargin;
 
@@ -164,9 +155,6 @@ namespace Enemies
 
         protected override bool IsPlayerOutsideLoseRange()
         {
-            if (!HasPlayer())
-                return true;
-
             float detectionBottom = transform.position.y - verticalDetectionMargin;
             float detectionTop = transform.position.y + navMeshAgent.height + verticalDetectionMargin;
 
@@ -198,11 +186,9 @@ namespace Enemies
 
                 hitStopEndTime = Time.time + HitStopDuration;
                 hitPosition = transform.position;
-                hasLockedHitPosition = true;
 
                 isPreparingAttack = false;
                 isRecoveringAttack = false;
-                hasLockedAttackPosition = false;
 
                 MovementDirection = Vector3.zero;
                 LookDirection = Vector3.zero;
@@ -227,8 +213,6 @@ namespace Enemies
              */
             if (Time.time < hitStopEndTime || isHit)
                 return true;
-
-            hasLockedHitPosition = false;
 
             if (stateBeforeHit == EnemyState.Sleeping)
             {
@@ -274,8 +258,7 @@ namespace Enemies
 
             if (distanceFromPlayer <= attackRange)
             {
-                if (currentState != EnemyState.Attacking)
-                    ChangeState(EnemyState.Attacking);
+                ChangeState(EnemyState.Attacking);
 
                 TryAttack();
                 return;
@@ -324,30 +307,21 @@ namespace Enemies
 
             // Lock the exact position where the attack starts.
             attackPosition = transform.position;
-            hasLockedAttackPosition = true;
 
             StopMovementImmediately();
 
-            if (attackDirection.sqrMagnitude > 0.01f)
-                transform.rotation = Quaternion.LookRotation(attackDirection, Vector3.up);
+            transform.rotation = Quaternion.LookRotation(attackDirection, Vector3.up);
 
             isPreparingAttack = true;
             attackStartTime = Time.time;
 
-            if (animator != null)
-                animator.SetTrigger("Attack");
+            animator.SetTrigger("Attack");
         }
 
         private void UpdateAttack()
         {
             if (!isPreparingAttack)
                 return;
-
-            if (currentState != EnemyState.Attacking)
-            {
-                isPreparingAttack = false;
-                return;
-            }
 
             if (Time.time < attackStartTime + attackWindup)
                 return;
@@ -367,7 +341,7 @@ namespace Enemies
 
         private void PerformAttack()
         {
-            Vector3 hitPosition = attackPoint != null ? attackPoint.position : transform.position + transform.forward * attackRange * 0.5f + Vector3.up * navMeshAgent.height * 0.5f;
+            Vector3 hitPosition = attackPoint.position;
 
             Collider[] hitColliders = Physics.OverlapSphere(hitPosition, attackRadius, Physics.AllLayers, QueryTriggerInteraction.Collide);
 
@@ -407,15 +381,6 @@ namespace Enemies
             MovementDirection = Vector3.zero;
             LookDirection = Vector3.zero;
 
-            if (!hasLockedHitPosition)
-                return;
-
-            if (navMeshAgent == null || !navMeshAgent.enabled || !navMeshAgent.isOnNavMesh)
-            {
-                transform.position = hitPosition;
-                return;
-            }
-
             navMeshAgent.isStopped = true;
             navMeshAgent.velocity = Vector3.zero;
 
@@ -430,15 +395,6 @@ namespace Enemies
         private void KeepAttackPosition()
         {
             MovementDirection = Vector3.zero;
-
-            if (!hasLockedAttackPosition)
-                return;
-
-            if (navMeshAgent == null || !navMeshAgent.enabled || !navMeshAgent.isOnNavMesh)
-            {
-                transform.position = attackPosition;
-                return;
-            }
 
             navMeshAgent.isStopped = true;
             navMeshAgent.velocity = Vector3.zero;
@@ -455,17 +411,15 @@ namespace Enemies
             if (newState == EnemyState.Attacking)
             {
                 attackPosition = transform.position;
-                hasLockedAttackPosition = true;
 
                 StopMovementImmediately();
             }
 
             if (currentState == EnemyState.Attacking && newState != EnemyState.Attacking)
             {
-                hasLockedAttackPosition = false;
                 isRecoveringAttack = false;
 
-                if (newState != EnemyState.Hit && navMeshAgent.enabled && navMeshAgent.isOnNavMesh)
+                if (newState != EnemyState.Hit)
                 {
                     navMeshAgent.velocity = Vector3.zero;
                     navMeshAgent.isStopped = false;
@@ -477,11 +431,8 @@ namespace Enemies
 
             if (currentState == EnemyState.Hit && newState != EnemyState.Hit)
             {
-                if (navMeshAgent.enabled && navMeshAgent.isOnNavMesh)
-                {
-                    navMeshAgent.velocity = Vector3.zero;
-                    navMeshAgent.isStopped = false;
-                }
+                navMeshAgent.velocity = Vector3.zero;
+                navMeshAgent.isStopped = false;
             }
 
             currentState = newState;
@@ -509,14 +460,10 @@ namespace Enemies
 
                 case EnemyState.Attacking:
                     // No movement or continuous rotation during attack.
-                    MovementDirection = Vector3.zero;
-                    LookDirection = Vector3.zero;
                     break;
 
                 case EnemyState.Hit:
                     // No movement while the Hit state is active.
-                    MovementDirection = Vector3.zero;
-                    LookDirection = Vector3.zero;
                     break;
             }
         }

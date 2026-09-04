@@ -1,4 +1,5 @@
 using System.Collections;
+using Core;
 using Gameplay;
 using Player;
 using Sound;
@@ -28,6 +29,8 @@ namespace Triggers
         [FormerlySerializedAs("chestOpenSfx")] [Header("SFX")] [SerializeField] private AudioClip sfx;
 
         private bool _playerInside;
+        private AbilityManager _abilityManager;
+        private InteractableObject _interactableRef;
 
         protected bool Opened;
         protected PlayerCharacterController CharacterController;
@@ -35,18 +38,21 @@ namespace Triggers
 
         private void Awake()
         {
+            GameStateManager.Respawned += RefreshOpenState;
             if (!chestAnimator) chestAnimator = GetComponent<Animator>();
         }
 
         private void Start()
         {
             var gameManager = GameObject.FindGameObjectWithTag("GameManager");
-            var abilityManager = gameManager.GetComponent<AbilityManager>();
+            _abilityManager = gameManager.GetComponent<AbilityManager>();
             Collectibles = gameManager.GetComponent<CollectiblesManager>();
 
             CharacterController = GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerCharacterController>();
 
-            if (abilityManager.HasAbility(abilityToUnlock))
+            _interactableRef = GetComponent<InteractableObject>();
+
+            if (_abilityManager.HasAbility(abilityToUnlock))
                 Opened = true;
         }
 
@@ -56,6 +62,16 @@ namespace Triggers
         {
             if (chestAnimator)
                 chestAnimator.SetTrigger(openTriggerName);
+        }
+
+        private void RefreshOpenState()
+        {
+            Debug.Log($"Open chest refresh {abilityToUnlock.ToString()}: {_abilityManager.HasAbility(abilityToUnlock)}");
+            Opened = _abilityManager.HasAbility(abilityToUnlock);
+            chestAnimator.ResetTrigger(openTriggerName);
+            chestAnimator.Rebind();
+            chestAnimator.Update(0);
+            _interactableRef.ResetInteraction();
         }
 
         public void OpenChest()

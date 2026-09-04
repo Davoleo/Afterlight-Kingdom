@@ -13,12 +13,14 @@ namespace UI
         private CheckpointManager _cpManager;
         private MenuManager _menuManager;
         private HealthManager _healthManager;
+        private CollectiblesManager _collectiblesManager;
         
         private void Start()
         {
             if (!gameObject.CompareTag("GameManager")) return;
             _cpManager = gameObject.GetComponent<CheckpointManager>();
             _menuManager = gameObject.GetComponent<MenuManager>();
+            _collectiblesManager = gameObject.GetComponent<CollectiblesManager>();
 
             var player = GameObject.FindGameObjectWithTag("Player");
             _healthManager = player.GetComponent<HealthManager>();
@@ -35,8 +37,10 @@ namespace UI
         public void RestartFromCheckpoint()
         {
             _cpManager.Respawn();
+            //in this method we're currently in-game, so gameObject refers to the GameManager
+            SaveManager.RestoreEverything(gameObject, SaveManager.Load(), false);
             _healthManager.ResetAfterRespawn();
-            _menuManager.CloseAllMenus(); // resumes play (sets GameState back to Playing)
+            _menuManager.CloseAllMenus(); // resumes play (sets GameState back to Playing
         }
 
         // Opens the shared options UI over the current menu and restores button focus

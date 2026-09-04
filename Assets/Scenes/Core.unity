@@ -1818,6 +1818,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cacefd901211f401ca48edbc3f7ce2b4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  mainPanel: {fileID: 0}
 --- !u!114 &1007707251
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1850,7 +1851,7 @@ MonoBehaviour:
   bow: {fileID: 374858701}
   quiver: {fileID: 1864766332}
   theLastHeart: {fileID: 978030153}
-  dashLocked: {fileID: 11400000, guid: 342c57d39b96a2448b13fefd6b07ccf7, type: 2}
+  dashLockedHint: {fileID: 11400000, guid: 342c57d39b96a2448b13fefd6b07ccf7, type: 2}
 --- !u!114 &1007707254
 MonoBehaviour:
   m_ObjectHideFlags: 0

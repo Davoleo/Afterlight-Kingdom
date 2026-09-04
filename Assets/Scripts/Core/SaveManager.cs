@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using Gameplay;
 using HUD.Assist;
 using Triggers;
@@ -22,6 +23,22 @@ namespace Core
         public static void Delete()
         {
             if (HasSave) File.Delete(SavePath);
+        }
+
+        public static void RestoreEverything(GameObject gm, SaveData data, bool fromMainMenu)
+        {
+            // var cpManager = gm.GetComponent<CheckpointManager>();
+            // cpManager.SetCheckpoint(new Vector3(data.checkpointX, data.checkpointY, data.checkpointZ), data.cameraRotation);
+
+            gm.GetComponent<CollectiblesManager>().RestoreFromSave(data, refreshGameObjects: fromMainMenu);
+            gm.GetComponent<DoorManager>().RestoreFromSave(data);
+            var am = gm.GetComponent<AbilityManager>();
+            am.UnlockedAbilities = data.unlockedAbilities.ToHashSet();
+            gm.GetComponent<TutorialAssistManager>().RestoreFromSave(data);
+            LeverManager.Persistence.InflateData(data.leverStates);
+
+            //restore enemies
+            EnemySaveManager.RestoreEnemyStates(data.enemyStates);
         }
 
         public static void Save(GameObject gm)

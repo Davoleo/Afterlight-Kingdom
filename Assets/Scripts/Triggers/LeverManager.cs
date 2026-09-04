@@ -34,8 +34,7 @@ namespace Triggers
             {
                 if (data.position == transform.position)
                 {
-                    flicked = data.flicked;
-                    _leverAnimator.SetBool(FlickedHash, flicked);
+                    SetState(data.flicked);
                 }
             }
         }
@@ -51,6 +50,12 @@ namespace Triggers
             TutorialAssistManager.I.DisableFeatureAssist(first);
 
             
+            _leverAnimator.SetBool(FlickedHash, flicked);
+        }
+
+        private void SetState(bool state)
+        {
+            flicked = state;
             _leverAnimator.SetBool(FlickedHash, flicked);
         }
 
@@ -77,6 +82,17 @@ namespace Triggers
                 foreach (var lever in levers) LeverStates.Add(new Persistence(lever.flicked, lever.transform.position));
 
                 return LeverStates;
+            }
+
+            public static void InflateData(List<Persistence> leverData)
+            {
+                var levers = FindObjectsByType<LeverManager>(FindObjectsSortMode.None);
+                for (var i = 0; i < levers.Length; i++)
+                {
+                    var lever = levers[i];
+                    if (lever.transform.position == leverData[i].position)
+                        lever.SetState(leverData[i].flicked);
+                }
             }
         }
     }

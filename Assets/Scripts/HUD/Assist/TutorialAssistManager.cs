@@ -35,10 +35,7 @@ namespace HUD.Assist
             I = this;
 
             var save = SaveManager.Load();
-            if (save == null)
-                return;
-            _disabledHints.AddRange(save.disabledHints);
-            _seenHints.AddRange(save.seenHints);
+            RestoreFromSave(save);
         }
 
         private void OnDestroy()
@@ -97,5 +94,15 @@ namespace HUD.Assist
         }
 
         public Tuple<List<string>, List<string>> SqueezeOutRawIds() => new(_disabledHints.ToList(), _seenHints.ToList());
+
+        public void RestoreFromSave(SaveData save)
+        {
+            if (save == null)
+                return;
+            _disabledHints.Clear();
+            _seenHints.Clear();
+            _disabledHints.AddRange(save.disabledHints);
+            _seenHints.AddRange(save.seenHints);
+        }
     }
 }

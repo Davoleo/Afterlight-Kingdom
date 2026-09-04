@@ -20,7 +20,7 @@ namespace Enemies
         [SerializeField] private float chargeSpeed = 9f;
 
         [Header("Charge")]
-        [SerializeField] private float chargeWindup = 0.45f;
+        [SerializeField] private float chargeWindup = 1.5f;
 
         [SerializeField] private float chargeHitRadius = 1.1f;
         [SerializeField] private int chargeDamage = 2;
@@ -50,6 +50,9 @@ namespace Enemies
         private Vector3 lastChargePosition;
         private float stuckTime;
 
+        private bool isBackstepping;
+        private Vector3 chargeBackstepTarget;
+
         // Used to interrupt the current action only once
         // when the Hit animation starts.
         private bool wasHitAnimationActive;
@@ -63,14 +66,12 @@ namespace Enemies
 
             enemyHealth = GetComponent<EnemyHealth>();
 
-            if (enemyHealth != null)
-                enemyHealth.Died += HandleDeath;
+            enemyHealth.Died += HandleDeath;
         }
 
         private void OnDestroy()
         {
-            if (enemyHealth != null)
-                enemyHealth.Died -= HandleDeath;
+            enemyHealth.Died -= HandleDeath;
         }
 
         protected override void Update()
@@ -105,6 +106,7 @@ namespace Enemies
         protected override void OnResetToSpawn()
         {
             chargeDirection = Vector3.zero;
+            isBackstepping = false;
             wasHitAnimationActive = false;
         }
 
@@ -148,9 +150,11 @@ namespace Enemies
                 case EnemyState.PreparingCharge:
                     if (IsPlayerOutsideLoseRange() || !IsPlayerAtChargeHeight())
                     {
+                        isBackstepping = false;
                         ChangeState(EnemyState.Patrolling);
                         return;
                     }
+                    UpdateChargeBackstep();
 
                     if (Time.time >= stateStartTime + chargeWindup) StartCharge();
 
@@ -176,14 +180,29 @@ namespace Enemies
 
             MovementDirection = Vector3.zero;
             LookDirection = chargeDirection;
+            isBackstepping = true;
+            chargeBackstepTarget = transform.position - chargeDirection;
 
             ChangeState(EnemyState.PreparingCharge);
+        }
+        private void UpdateChargeBackstep()
+        {
+            if (!isBackstepping) return;
+
+            float backstepSpeed = 2f / chargeWindup;
+            Vector3 nextPosition = Vector3.MoveTowards(transform.position, chargeBackstepTarget, backstepSpeed * Time.deltaTime);
+
+            navMeshAgent.Move(nextPosition - transform.position);
+
+            if ((transform.position - chargeBackstepTarget).sqrMagnitude <= 0.0001f)
+                isBackstepping = false;
         }
 
         private void StartCharge()
         {
             if (!IsPlayerAtChargeHeight())
             {
+                isBackstepping = false;
                 ChangeState(EnemyState.Patrolling);
                 return;
             }
@@ -193,6 +212,7 @@ namespace Enemies
 
             if (chargeDirection.sqrMagnitude < 0.01f)
             {
+                isBackstepping = false;
                 ChangeState(EnemyState.Patrolling);
                 return;
             }
@@ -202,6 +222,7 @@ namespace Enemies
                 KillSelf();
                 return;
             }
+            isBackstepping = false;
 
             // During the charge the movement direction is always the original cardinal direction and is never recalculated by the pathfinding.
             MovementDirection = chargeDirection;
@@ -217,8 +238,6 @@ namespace Enemies
         // Moves the kamikaze directly along the fixed cardinal charge direction. This bypasses grid pathfinding so the charge cannot turn or adapt its path.
         private void MoveChargeStraight(float deltaTime)
         {
-            if (navMeshAgent == null || !navMeshAgent.enabled || !navMeshAgent.isOnNavMesh) return;
-
             navMeshAgent.Move(chargeDirection * chargeSpeed * deltaTime);
         }
 
@@ -246,16 +265,16 @@ namespace Enemies
 
             chargeDirection = Vector3.zero;
             stuckTime = 0f;
+            isBackstepping = false;
 
             // After the Hit animation the enemy restarts from its normal patrol logic.
             ChangeState(EnemyState.Patrolling);
 
             // Remove the current NavMesh destination so the enemy does not continue moving during the Hit animation.
-            if (navMeshAgent.enabled && navMeshAgent.isOnNavMesh)
-            {
-                navMeshAgent.isStopped = true;
-                navMeshAgent.ResetPath();
-            }
+
+            navMeshAgent.isStopped = true;
+            navMeshAgent.ResetPath();
+
 
             // Disable all normal movement/charge animation parameters while Hit has priority.
             animator.SetBool("IsPatrolling", false);
@@ -277,7 +296,7 @@ namespace Enemies
                 animator.SetBool("IsPreparingCharge", false);
                 animator.SetBool("IsCharging", false);
 
-                if (navMeshAgent != null && navMeshAgent.enabled && navMeshAgent.isOnNavMesh) navMeshAgent.isStopped = true;
+                navMeshAgent.isStopped = true;
 
                 return true;
             }
@@ -301,8 +320,7 @@ namespace Enemies
             {
                 wasHitAnimationActive = false;
 
-                if (navMeshAgent != null && navMeshAgent.enabled && navMeshAgent.isOnNavMesh)
-                    navMeshAgent.isStopped = false;
+                navMeshAgent.isStopped = false;
             }
 
             return false;
@@ -324,7 +342,6 @@ namespace Enemies
 
             foreach (Collider obstacle in obstacles)
             {
-                if (obstacle == null) continue;
                 if (IsOwnCollider(obstacle)) continue;
                 if (Target.IsPlayerCollider(obstacle)) continue;
 
@@ -358,18 +375,13 @@ namespace Enemies
             LookDirection = Vector3.zero;
             chargeDirection = Vector3.zero;
 
-            if (navMeshAgent != null && navMeshAgent.enabled && navMeshAgent.isOnNavMesh)
-                navMeshAgent.isStopped = true;
-
-            if (enemyHealth != null)
-                enemyHealth.TakeDamage(enemyHealth.CurrentHealth);
+            navMeshAgent.isStopped = true;
+            enemyHealth.TakeDamage(enemyHealth.CurrentHealth);
         }
 
         private void HandleDeath()
         {
-            if (explosionPrefab != null)
-                Instantiate(explosionPrefab, transform.position, Quaternion.identity);
-
+            Instantiate(explosionPrefab, transform.position, Quaternion.identity);
             gameObject.SetActive(false);
         }
 
@@ -402,8 +414,6 @@ namespace Enemies
 
             foreach (RaycastHit hit in hits)
             {
-                if (hit.collider == null)
-                    continue;
                 if (IsOwnCollider(hit.collider))
                     continue;
                 if (Target.IsPlayerCollider(hit.collider))
@@ -461,8 +471,6 @@ namespace Enemies
 
         private void UpdateAnimation()
         {
-            if (animator == null) return;
-
             // Hit and Death have priority over the normal state animations.
             if (animator.GetBool("IsHit") || animator.GetBool("IsDead"))
             {

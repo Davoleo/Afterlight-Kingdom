@@ -37,7 +37,6 @@ namespace Enemies
 
         protected Vector3 SpawnPosition { get; private set; }
         protected EnemyTarget Target => target;
-        public Animator EnemyAnimator => animator;
 
         private EnemyGridNavigation gridNavigation;
 
@@ -46,7 +45,6 @@ namespace Enemies
 
         private Vector2Int gridStepCell;
         private Vector3 gridStepCenter;
-        private Vector3 spawnGridCenter;
 
         private bool hasGridStep;
         private bool hasResetAfterPlayerDeath;
@@ -94,7 +92,6 @@ namespace Enemies
 
             currentGridCell = cell;
             spawnGridCell = cell;
-            spawnGridCenter = center;
 
             hasGridStep = false;
             gridStepCell = cell;
@@ -114,7 +111,7 @@ namespace Enemies
 
         private void MoveCharacterOnGrid(float deltaTime)
         {
-            if (!IsNavMeshAgentReady() || !hasGridStep || MovementDirection.sqrMagnitude < 0.01f) return;
+            if (!hasGridStep || MovementDirection.sqrMagnitude < 0.01f) return;
 
             Vector3 direction = GetCurrentGridStepDirection();
 
@@ -219,19 +216,6 @@ namespace Enemies
                    Mathf.Abs(transform.position.z - center.z) <= gridCenterTolerance;
         }
 
-        protected Vector2Int GetCurrentGridCell() => currentGridCell;
-
-        protected Vector2Int GetGridCell(Vector3 worldPosition)
-        {
-            return gridNavigation != null ? gridNavigation.WorldToCell(worldPosition) : Vector2Int.zero;
-        }
-
-        protected bool TryGetGridCellCenter(Vector2Int cell, out Vector3 center)
-        {
-            center = Vector3.zero;
-            return gridNavigation != null && gridNavigation.TryGetCellCenter(cell, out center);
-        }
-
         private void RotateTowardsLookDirection(float deltaTime)
         {
             Vector3 direction = LookDirection;
@@ -245,7 +229,7 @@ namespace Enemies
 
         private void HandlePlayerDeathReset()
         {
-            if (target == null || !target.HasPlayer()) return;
+            if (!target.HasPlayer()) return;
 
             if (!target.IsPlayerDead())
             {
@@ -287,7 +271,7 @@ namespace Enemies
         {
             sampledPosition = desiredPosition;
 
-            int areaMask = navMeshAgent != null ? navMeshAgent.areaMask : NavMesh.AllAreas;
+            int areaMask = navMeshAgent.areaMask;
 
             if (!NavMesh.SamplePosition(desiredPosition, out NavMeshHit hit, sampleRadius, areaMask)) return false;
 
@@ -301,11 +285,6 @@ namespace Enemies
             if (!TrySampleNavMeshPosition(desiredPosition, out Vector3 sampledPosition)) return false;
 
             return navMeshAgent.Warp(sampledPosition);
-        }
-
-        private bool IsNavMeshAgentReady()
-        {
-            return navMeshAgent != null && navMeshAgent.enabled && navMeshAgent.isOnNavMesh;
         }
 
         protected bool HasPlayer() => target.HasPlayer();

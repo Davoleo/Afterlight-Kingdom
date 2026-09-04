@@ -9,7 +9,7 @@ EditorBuildSettings:
     path: Assets/Scenes/MainMenu.unity
     guid: d337faf37b1314c5daa1872c29c8f5ee
   - enabled: 0
-    path: Assets/Scenes/MainScene.unity
+    path: Assets/External/Stylized Explosives/Scene/SampleScene.unity
     guid: 99c9720ab356a0642a771bea13969a05
   - enabled: 1
     path: Assets/Scenes/Core.unity

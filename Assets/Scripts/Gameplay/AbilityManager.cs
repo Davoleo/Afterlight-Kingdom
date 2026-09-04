@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using Core;
 using HUD.Assist;
 using Player;
+using Triggers;
 using UnityEngine;
 
 namespace Gameplay
@@ -13,7 +14,7 @@ namespace Gameplay
         [SerializeField] public GameObject quiver;
         [SerializeField] public GameObject theLastHeart;
 
-        [SerializeField] public FeatureAssistData dashLocked;
+        [SerializeField] public FeatureAssistData dashLockedHint;
         
         public ISet<AbilityType> UnlockedAbilities = new HashSet<AbilityType>();
         private HealthManager _healthManager;
@@ -68,9 +69,8 @@ namespace Gameplay
 
             if (HasAbility(AbilityType.Dash))
             {
-                TutorialAssistManager.I.DisableFeatureAssist(dashLocked);
+                TutorialAssistManager.I.DisableFeatureAssist(dashLockedHint);
             }
-
         }
     }
 }

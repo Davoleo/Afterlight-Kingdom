@@ -84,6 +84,9 @@ namespace Sound
         /// <param name="volumeMult">volume of playback</param>
         public void PlayRandomSfx(AudioClip[] pool, float volumeMult = 1f)
         {
+            if (pool.Length == 0)
+                return;
+
             int randomIndex = Random.Range(0, pool.Length);
             globalSfxSource.PlayOneShot(pool[randomIndex], volumeMult);
         }

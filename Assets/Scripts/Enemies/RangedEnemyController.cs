@@ -86,8 +86,7 @@ namespace Enemies
 
             originalForward = transform.forward;
             originalForward.y = 0f;
-
-            if (originalForward.sqrMagnitude > 0.01f) originalForward.Normalize();
+            originalForward.Normalize();
 
             SetCastSphereCollider(false);
 
@@ -197,7 +196,7 @@ namespace Enemies
             {
                 isPreparingShot = false;
 
-                if (currentState != EnemyState.Advancing) ChangeState(EnemyState.Advancing);
+                ChangeState(EnemyState.Advancing);
 
                 return;
             }
@@ -207,7 +206,9 @@ namespace Enemies
 
         private void EnterShootingState()
         {
-            if (currentState != EnemyState.Shooting) ChangeState(EnemyState.Shooting);
+            if (!IsCenteredOnGrid()) return;
+
+            ChangeState(EnemyState.Shooting);
             TryShoot();
         }
 
@@ -244,12 +245,6 @@ namespace Enemies
         {
             if (!isPreparingShot) return;
 
-            if (currentState != EnemyState.Shooting)
-            {
-                isPreparingShot = false;
-                return;
-            }
-
             if (Time.time < shotStartTime + shootWindup) return;
 
             isPreparingShot = false;
@@ -258,6 +253,7 @@ namespace Enemies
             Shoot();
             ChangeState(EnemyState.PostShot);
         }
+
         private bool HasClearShot()
         {
             Vector3 targetPosition = Target.Player.position + Vector3.up * playerChestAimOffset;
@@ -268,17 +264,16 @@ namespace Enemies
             float shootDistance = shootDirection.magnitude;
             shootDirection.Normalize();
 
-            return !Physics.SphereCast( shootPoint.position, shotClearanceRadius, shootDirection, out _, shootDistance, environmentLayer, QueryTriggerInteraction.Ignore);
+            return !Physics.SphereCast(shootPoint.position, shotClearanceRadius, shootDirection, out _, shootDistance, environmentLayer, QueryTriggerInteraction.Ignore);
         }
 
         private void Shoot()
         {
             // Check again in case the path became blocked during the cast animation.
             if (!HasClearShot()) return;
+
             Vector3 targetPosition = Target.Player.position + Vector3.up * playerChestAimOffset;
             Vector3 shootDirection = targetPosition - shootPoint.position;
-
-            if (shootDirection.sqrMagnitude < 0.01f) return;
 
             shootDirection.Normalize();
 
@@ -290,26 +285,17 @@ namespace Enemies
             projectile.transform.SetParent(null);
 
             EnemyProjectile enemyProjectile = projectile.GetComponent<EnemyProjectile>();
-
-            if (enemyProjectile == null)
-            {
-                Destroy(projectile);
-                return;
-            }
-
             enemyProjectile.Launch(shootDirection);
         }
 
         private void SetCastSphereCollider(bool enabled)
         {
-            if (castSphereCollider == null) return;
-
             castSphereCollider.enabled = enabled;
         }
 
         private void UpdateCastSphereCollider()
         {
-            if (castSphereCollider == null || !castSphereCollider.enabled) return;
+            if (!castSphereCollider.enabled) return;
             if (Time.time < castSphereDisableTime) return;
 
             SetCastSphereCollider(false);
@@ -324,13 +310,6 @@ namespace Enemies
         {
             Vector3 playerDirection = GetPlayerDirection();
             playerDirection.y = 0f;
-
-            if (playerDirection.sqrMagnitude < 0.01f)
-            {
-                hasRetreatDestination = false;
-                return false;
-            }
-
             playerDirection.Normalize();
 
             Vector3 desiredRetreatPosition = transform.position - playerDirection * retreatDistance;
@@ -400,8 +379,6 @@ namespace Enemies
 
         private float GetHorizontalDistanceFromPlayer()
         {
-            if (!HasPlayer()) return Mathf.Infinity;
-
             Vector3 difference = Target.Player.position - transform.position;
             difference.y = 0f;
 
@@ -430,14 +407,11 @@ namespace Enemies
         {
             base.OnDrawGizmosSelected();
 
-            if (shootPoint != null)
-            {
-                Gizmos.color = Color.magenta;
-                Gizmos.DrawWireSphere(shootPoint.position, 0.2f);
+            Gizmos.color = Color.magenta;
+            Gizmos.DrawWireSphere(shootPoint.position, 0.2f);
 
-                Gizmos.color = Color.red;
-                Gizmos.DrawLine(shootPoint.position, shootPoint.position + shootPoint.forward * 1.5f);
-            }
+            Gizmos.color = Color.red;
+            Gizmos.DrawLine(shootPoint.position, shootPoint.position + shootPoint.forward * 1.5f);
 
             Gizmos.color = Color.blue;
             Gizmos.DrawWireSphere(transform.position, minimumShootingDistance);
