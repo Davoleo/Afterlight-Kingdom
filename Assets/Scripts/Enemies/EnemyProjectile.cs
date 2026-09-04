@@ -141,6 +141,16 @@ namespace Enemies
             if (destroyOnEnvironmentHit)
                 Destroy(gameObject);
         }
+        public static void RemoveAllProjectiles()
+        {
+            EnemyProjectile[] projectiles = FindObjectsByType<EnemyProjectile>(FindObjectsSortMode.None);
+
+            foreach (EnemyProjectile projectile in projectiles)
+            {
+                projectile.gameObject.SetActive(false);
+                Destroy(projectile.gameObject);
+            }
+        }
 
         private bool IsInLayerMask(int layer, LayerMask layerMask)
         {

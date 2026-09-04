@@ -3,7 +3,7 @@ using Gameplay;
 using Player;
 using UnityEngine;
 using UnityEngine.EventSystems;
-
+using Enemies;
 namespace UI
 {
     public class MenuActions : MonoBehaviour
@@ -37,6 +37,7 @@ namespace UI
         public void RestartFromCheckpoint()
         {
             _cpManager.Respawn();
+            EnemyProjectile.RemoveAllProjectiles();
             //in this method we're currently in-game, so gameObject refers to the GameManager
             SaveManager.RestoreEverything(gameObject, SaveManager.Load(), false);
             _healthManager.ResetAfterRespawn();
