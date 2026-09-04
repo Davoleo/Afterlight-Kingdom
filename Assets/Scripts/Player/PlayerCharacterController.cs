@@ -288,16 +288,11 @@ namespace Player
             var rX = CurrentGroundObject.transform.position.x;
             var rZ = CurrentGroundObject.transform.position.z;
 
-            Debug.Log($"snapping x: {pos.x} to {rX}");
-            Debug.Log($"snapping x: {pos.z} to {rZ}");
-
             var lerpX = Mathf.Lerp(pos.x, rX, t);
             var lerpZ = Mathf.Lerp(pos.z, rZ, t);
 
             var newPos = new Vector3(lerpX, pos.y, lerpZ);
 
-            //motor.RestrictVectorToPlane(ref newPos, _currentGroundNormal);
-            Debug.Log("snapping pos: " + newPos);
             motor.SetPosition(newPos, false);
         }
 
