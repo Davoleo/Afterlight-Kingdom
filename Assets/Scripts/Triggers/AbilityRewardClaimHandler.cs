@@ -1,4 +1,5 @@
 using Gameplay;
+using Sound;
 using UnityEngine;
 
 namespace Triggers
@@ -12,9 +13,10 @@ namespace Triggers
         [Header("Rotation")]
         [SerializeField] private bool rotate = true;
         [SerializeField] private float rotationSpeed = 120f;
-        
+
+        private AudioClip _sfx;
         private AbilityManager _abilityManager;
-        
+
         private void Start()
         {
             var gameManager = GameObject.FindGameObjectWithTag("GameManager");
@@ -22,6 +24,8 @@ namespace Triggers
             
             if (_abilityManager.HasAbility(abilityToUnlock))
                 gameObject.SetActive(false);
+
+            _sfx = Resources.Load<AudioClip>("Sound/powerup");
         }
 
         private void Update()
@@ -33,6 +37,7 @@ namespace Triggers
         public void ClaimReward()
         {
             _abilityManager.UnlockAbility(abilityToUnlock);
+            AudioManager.Instance.PlaySfx(_sfx);
             gameObject.SetActive(false);
         }
     }

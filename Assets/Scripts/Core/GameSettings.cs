@@ -50,6 +50,11 @@ namespace Core
 
         public static GameSettings Instance { get; private set; }
 
+        // Applies saved preferences (audio levels, fullscreen, input) once at game
+        // start, so they take effect without the options screen ever being opened.
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
+        private static void ApplyOnStartup() => Load().Apply();
+
         public float bgmVolume = 0.4f;
         public float sfxVolume = 0.8f;
         public bool fullscreen = true;

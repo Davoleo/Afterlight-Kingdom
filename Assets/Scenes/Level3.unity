@@ -961,6 +961,10 @@ PrefabInstance:
       propertyPath: m_Layer
       value: 7
       objectReference: {fileID: 0}
+    - target: {fileID: 7022476504449931981, guid: 97d6a27fc167743fdbe026ebc4c88591, type: 3}
+      propertyPath: enemyId
+      value: Level3_Enemy_002
+      objectReference: {fileID: 0}
     - target: {fileID: 7117590319232646007, guid: 97d6a27fc167743fdbe026ebc4c88591, type: 3}
       propertyPath: m_Layer
       value: 7
@@ -996,10 +1000,6 @@ PrefabInstance:
     - target: {fileID: 8757712320787616610, guid: 97d6a27fc167743fdbe026ebc4c88591, type: 3}
       propertyPath: m_Name
       value: RangedEnemy
-      objectReference: {fileID: 0}
-    - target: {fileID: 8757712320787616610, guid: 97d6a27fc167743fdbe026ebc4c88591, type: 3}
-      propertyPath: m_Layer
-      value: 7
       objectReference: {fileID: 0}
     - target: {fileID: 8820982119305377766, guid: 97d6a27fc167743fdbe026ebc4c88591, type: 3}
       propertyPath: m_Layer
@@ -6512,17 +6512,13 @@ PrefabInstance:
       propertyPath: m_Layer
       value: 7
       objectReference: {fileID: 0}
-    - target: {fileID: 3879775019955718632, guid: a3427acae3a374b55955da936f3a1a99, type: 3}
-      propertyPath: m_Layer
-      value: 7
+    - target: {fileID: 3996788696878199830, guid: a3427acae3a374b55955da936f3a1a99, type: 3}
+      propertyPath: enemyId
+      value: Level3_Enemy_003
       objectReference: {fileID: 0}
     - target: {fileID: 6595118272833061148, guid: a3427acae3a374b55955da936f3a1a99, type: 3}
       propertyPath: m_Name
       value: MeleeEnemy
-      objectReference: {fileID: 0}
-    - target: {fileID: 6935543438647689131, guid: a3427acae3a374b55955da936f3a1a99, type: 3}
-      propertyPath: m_Layer
-      value: 7
       objectReference: {fileID: 0}
     - target: {fileID: 7280609922699634148, guid: a3427acae3a374b55955da936f3a1a99, type: 3}
       propertyPath: m_Layer
@@ -137771,6 +137767,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 6101925492573927054, guid: c465768a3521e3f438e175d24c76d382, type: 3}
+      propertyPath: sfx
+      value: 
+      objectReference: {fileID: 8300000, guid: 7dfa16df5a2ba634f907e33179f5deac, type: 3}
     - target: {fileID: 6101925492573927054, guid: c465768a3521e3f438e175d24c76d382, type: 3}
       propertyPath: coinCost
       value: 1

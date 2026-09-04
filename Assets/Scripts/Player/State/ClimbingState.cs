@@ -23,7 +23,7 @@ namespace Player.State
 
         public override void UpdateVelocity(ref Vector3 vel, float dt)
         {
-            var climbInput = Ctx.PlayerInputs.ClimbInput.y;
+            var climbInput = Ctx.PlayerInputs.ClimbInput;
             var moveVector = Ctx.ComputeMoveDirection();
 
             if (CommandUtils.IsUp(Ctx.triggers, PlayerTrigger.Jump))

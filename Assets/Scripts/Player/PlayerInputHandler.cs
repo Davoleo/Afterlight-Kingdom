@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Core;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -15,6 +16,8 @@ namespace Player
     {
         private PlayerCharacterController characterController;
 
+        private Transform _cameraTransform;
+
         [Header("Input Actions")]
         [SerializeField] private InputActionReference moveAction;
         [SerializeField] private InputActionReference rotateLeftAction;
@@ -23,15 +26,22 @@ namespace Player
         [SerializeField] private InputActionReference dashAction;
         [SerializeField] private InputActionReference shootAction;
         [SerializeField] private InputActionReference climbAction;
-        // TODO improve input system so that it can be used with other objects (other than player)
-        public InputActionReference interactAction;
-    
-        private Transform _cameraTransform;
+        [SerializeField] private InputActionReference interactAction;
+        public static readonly Dictionary<string, InputActionReference> IdentifierActionMap = new();
 
         public static bool InvertCameraControls = false;
 
         private void Start()
         {
+            IdentifierActionMap["{Move}"] = moveAction;
+            IdentifierActionMap["{RotateCameraLeft}"] = rotateLeftAction;
+            IdentifierActionMap["{RotateCameraRight}"] = rotateRightAction;
+            IdentifierActionMap["{Jump}"] = jumpAction;
+            IdentifierActionMap["{Dash}"] = dashAction;
+            IdentifierActionMap["{Shoot}"] = shootAction;
+            IdentifierActionMap["{Climb}"] = climbAction;
+            IdentifierActionMap["{Interact}"] = interactAction;
+
             characterController = gameObject.GetComponent<PlayerCharacterController>();
             _cameraTransform = GameObject.Find("PlayerCamera").transform; 
         }
@@ -83,12 +93,12 @@ namespace Player
 
             PlayerInputs moveInputs = new PlayerInputs
             {
-                MoveInput = moveAction.action.ReadValue<Vector2>(),
+                MoveInput = moveAction.action.ReadValue<float>(),
                 CameraForward = camForward,
                 CameraRight = camRight,
-                ClimbInput = climbAction.action.ReadValue<Vector2>(),
+                ClimbInput = climbAction.action.ReadValue<float>(),
                 // Draw/Shoot Action is of type double, trigger won't handle the holding of the button 
-                DrawInput = shootAction.action.ReadValue<float>() > 0,
+                DrawInput = shootAction.action.ReadValue<float>() > 0
             };
 
             //optionally invert Q/E triggers to control camera depending on user preferences

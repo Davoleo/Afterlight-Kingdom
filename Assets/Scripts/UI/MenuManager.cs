@@ -34,9 +34,31 @@ namespace UI
 
         private void OnPausePressed(InputAction.CallbackContext _)
         {
+            // While the options UI is up, the pause key backs out of it instead.
+            if (OptionsMenu.IsOpen)
+            {
+                OptionsMenu.Close();
+                return;
+            }
+
             // Can't pause while loading, and can't open pause if the player is dead
             if (GameStateManager.Current == GameState.Paused) HidePauseMenu();
             else if (GameStateManager.Current == GameState.Playing) ShowPauseMenu();
+        }
+
+        // Wired to the pause menu's Options button. Hands off to the shared options UI
+        // and brings the pause menu back when it closes; the game stays paused throughout.
+        public void OpenOptions()
+        {
+            pausePanel.SetActive(false);
+            OptionsMenu.Open(onClosed: OnOptionsClosed);
+        }
+
+        private void OnOptionsClosed()
+        {
+            if (GameStateManager.Current != GameState.Paused) return;
+            pausePanel.SetActive(true);
+            if (pauseFirstSelected) pauseFirstSelected.Select();
         }
 
         public void ShowDeathScreen()
@@ -49,6 +71,7 @@ namespace UI
 
         public void CloseAllMenus()
         {
+            OptionsMenu.Close();
             deathPanel.SetActive(false);
             pausePanel.SetActive(false);
             GameStateManager.SetState(GameState.Playing);

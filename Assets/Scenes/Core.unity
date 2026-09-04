@@ -275,8 +275,8 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4291356147
-  m_fontColor: {r: 0.9529412, g: 0.8980392, b: 0.78431374, a: 1}
+    rgba: 4294967295
+  m_fontColor: {r: 1, g: 1, b: 1, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -1520,7 +1520,7 @@ MonoBehaviour:
     m_Top: 0
     m_Bottom: 0
   m_ChildAlignment: 4
-  m_Spacing: 5
+  m_Spacing: 20
   m_ChildForceExpandWidth: 0
   m_ChildForceExpandHeight: 0
   m_ChildControlWidth: 0
@@ -2062,7 +2062,7 @@ MonoBehaviour:
     m_Top: 0
     m_Bottom: 0
   m_ChildAlignment: 7
-  m_Spacing: 5
+  m_Spacing: 20
   m_ChildForceExpandWidth: 0
   m_ChildForceExpandHeight: 0
   m_ChildControlWidth: 0
@@ -2576,6 +2576,10 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2946734253697254725, guid: 00c59968ddb67d35bb59f7b6ee678f50, type: 3}
+      propertyPath: m_SpriteState.m_SelectedSprite
+      value: 
+      objectReference: {fileID: 21300000, guid: 521429e32931cee3c98da9254a875cf7, type: 3}
+    - target: {fileID: 2946734253697254725, guid: 00c59968ddb67d35bb59f7b6ee678f50, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 1007707250}
@@ -2587,9 +2591,37 @@ PrefabInstance:
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
       value: UI.MenuActions, Assembly-CSharp
       objectReference: {fileID: 0}
+    - target: {fileID: 3206653160904271057, guid: 00c59968ddb67d35bb59f7b6ee678f50, type: 3}
+      propertyPath: m_Color.b
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3206653160904271057, guid: 00c59968ddb67d35bb59f7b6ee678f50, type: 3}
+      propertyPath: m_Color.g
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3206653160904271057, guid: 00c59968ddb67d35bb59f7b6ee678f50, type: 3}
+      propertyPath: m_Color.r
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 4254000196719440507, guid: 00c59968ddb67d35bb59f7b6ee678f50, type: 3}
       propertyPath: m_Name
       value: QuitButton
+      objectReference: {fileID: 0}
+    - target: {fileID: 6323625778435323003, guid: 00c59968ddb67d35bb59f7b6ee678f50, type: 3}
+      propertyPath: m_fontColor.b
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6323625778435323003, guid: 00c59968ddb67d35bb59f7b6ee678f50, type: 3}
+      propertyPath: m_fontColor.g
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6323625778435323003, guid: 00c59968ddb67d35bb59f7b6ee678f50, type: 3}
+      propertyPath: m_fontColor.r
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6323625778435323003, guid: 00c59968ddb67d35bb59f7b6ee678f50, type: 3}
+      propertyPath: m_fontColor32.rgba
+      value: 4294967295
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -2955,7 +2987,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
+  m_Script: {fileID: 11500000, guid: 99717c65fa860b9ab84698fe219f62bc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &1617732655 stripped
@@ -3083,6 +3115,7 @@ GameObject:
   - component: {fileID: 1725570311}
   - component: {fileID: 1725570310}
   - component: {fileID: 1725570309}
+  - component: {fileID: 1725570313}
   - component: {fileID: 1725570308}
   - component: {fileID: 1725570307}
   m_Layer: 5
@@ -3109,7 +3142,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0}
   m_AnchorMax: {x: 0.5, y: 0}
-  m_AnchoredPosition: {x: 0, y: 171.8}
+  m_AnchoredPosition: {x: 0, y: 191.8}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1725570307
@@ -3216,6 +3249,18 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1725570305}
   m_CullTransparentMesh: 1
+--- !u!114 &1725570313
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1725570305}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a1ed2fb0c70d4c7799205423b94c3a5f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &1757447156
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -3224,6 +3269,34 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 873150022}
     m_Modifications:
+    - target: {fileID: 3228127032982632806, guid: 35a7d06b8faec62b68f6ebbcb1b76e0a, type: 3}
+      propertyPath: m_Color.b
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3228127032982632806, guid: 35a7d06b8faec62b68f6ebbcb1b76e0a, type: 3}
+      propertyPath: m_Color.g
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3228127032982632806, guid: 35a7d06b8faec62b68f6ebbcb1b76e0a, type: 3}
+      propertyPath: m_Color.r
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3679170243381558618, guid: 35a7d06b8faec62b68f6ebbcb1b76e0a, type: 3}
+      propertyPath: m_fontColor.b
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3679170243381558618, guid: 35a7d06b8faec62b68f6ebbcb1b76e0a, type: 3}
+      propertyPath: m_fontColor.g
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3679170243381558618, guid: 35a7d06b8faec62b68f6ebbcb1b76e0a, type: 3}
+      propertyPath: m_fontColor.r
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3679170243381558618, guid: 35a7d06b8faec62b68f6ebbcb1b76e0a, type: 3}
+      propertyPath: m_fontColor32.rgba
+      value: 4294967295
+      objectReference: {fileID: 0}
     - target: {fileID: 4641871204004409760, guid: 35a7d06b8faec62b68f6ebbcb1b76e0a, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
@@ -3320,6 +3393,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: RestartFromCheckPointButton
       objectReference: {fileID: 0}
+    - target: {fileID: 7539046888093614276, guid: 35a7d06b8faec62b68f6ebbcb1b76e0a, type: 3}
+      propertyPath: m_SpriteState.m_SelectedSprite
+      value: 
+      objectReference: {fileID: 21300000, guid: 521429e32931cee3c98da9254a875cf7, type: 3}
     - target: {fileID: 7539046888093614276, guid: 35a7d06b8faec62b68f6ebbcb1b76e0a, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
@@ -3596,6 +3673,7 @@ GameObject:
   - component: {fileID: 1958398382}
   - component: {fileID: 1958398372}
   - component: {fileID: 1958398371}
+  - component: {fileID: 1958398386}
   - component: {fileID: 1958398385}
   - component: {fileID: 1958398384}
   m_Layer: 5
@@ -3866,6 +3944,18 @@ MonoBehaviour:
   m_ChildScaleWidth: 0
   m_ChildScaleHeight: 0
   m_ReverseArrangement: 0
+--- !u!114 &1958398386
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1958398367}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a1ed2fb0c70d4c7799205423b94c3a5f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!224 &1971367906 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 4641871204004409760, guid: 35a7d06b8faec62b68f6ebbcb1b76e0a, type: 3}
@@ -3879,7 +3969,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
+  m_Script: {fileID: 11500000, guid: 99717c65fa860b9ab84698fe219f62bc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &1977091955
@@ -4124,7 +4214,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 2091719643}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
+  m_Script: {fileID: 11500000, guid: 99717c65fa860b9ab84698fe219f62bc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   m_Navigation:
@@ -4146,7 +4236,7 @@ MonoBehaviour:
   m_SpriteState:
     m_HighlightedSprite: {fileID: 21300000, guid: 521429e32931cee3c98da9254a875cf7, type: 3}
     m_PressedSprite: {fileID: 21300000, guid: 52d021922028c85f584c3864b04f1cde, type: 3}
-    m_SelectedSprite: {fileID: 0}
+    m_SelectedSprite: {fileID: 21300000, guid: 521429e32931cee3c98da9254a875cf7, type: 3}
     m_DisabledSprite: {fileID: 0}
   m_AnimationTriggers:
     m_NormalTrigger: Normal
@@ -4158,7 +4248,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 2091719646}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1007707251}
+        m_TargetAssemblyTypeName: UI.MenuManager, Assembly-CSharp
+        m_MethodName: OpenOptions
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &2091719646
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4342,6 +4444,22 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 873150022}
     m_Modifications:
+    - target: {fileID: 1110534980242274752, guid: 909f682a6f77be5cb819ebba3774ed20, type: 3}
+      propertyPath: m_fontColor.b
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1110534980242274752, guid: 909f682a6f77be5cb819ebba3774ed20, type: 3}
+      propertyPath: m_fontColor.g
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1110534980242274752, guid: 909f682a6f77be5cb819ebba3774ed20, type: 3}
+      propertyPath: m_fontColor.r
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1110534980242274752, guid: 909f682a6f77be5cb819ebba3774ed20, type: 3}
+      propertyPath: m_fontColor32.rgba
+      value: 4294967295
+      objectReference: {fileID: 0}
     - target: {fileID: 1949215993041961014, guid: 909f682a6f77be5cb819ebba3774ed20, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
@@ -4439,6 +4557,10 @@ PrefabInstance:
       value: ReturnToMenuButton
       objectReference: {fileID: 0}
     - target: {fileID: 2982642230827405309, guid: 909f682a6f77be5cb819ebba3774ed20, type: 3}
+      propertyPath: m_SpriteState.m_SelectedSprite
+      value: 
+      objectReference: {fileID: 21300000, guid: 521429e32931cee3c98da9254a875cf7, type: 3}
+    - target: {fileID: 2982642230827405309, guid: 909f682a6f77be5cb819ebba3774ed20, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 1007707250}
@@ -4449,6 +4571,18 @@ PrefabInstance:
     - target: {fileID: 2982642230827405309, guid: 909f682a6f77be5cb819ebba3774ed20, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
       value: UI.MenuActions, Assembly-CSharp
+      objectReference: {fileID: 0}
+    - target: {fileID: 7879208781642344521, guid: 909f682a6f77be5cb819ebba3774ed20, type: 3}
+      propertyPath: m_Color.b
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7879208781642344521, guid: 909f682a6f77be5cb819ebba3774ed20, type: 3}
+      propertyPath: m_Color.g
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7879208781642344521, guid: 909f682a6f77be5cb819ebba3774ed20, type: 3}
+      propertyPath: m_Color.r
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -4463,6 +4597,22 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1050888793}
     m_Modifications:
+    - target: {fileID: 1110534980242274752, guid: 909f682a6f77be5cb819ebba3774ed20, type: 3}
+      propertyPath: m_fontColor.b
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1110534980242274752, guid: 909f682a6f77be5cb819ebba3774ed20, type: 3}
+      propertyPath: m_fontColor.g
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1110534980242274752, guid: 909f682a6f77be5cb819ebba3774ed20, type: 3}
+      propertyPath: m_fontColor.r
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1110534980242274752, guid: 909f682a6f77be5cb819ebba3774ed20, type: 3}
+      propertyPath: m_fontColor32.rgba
+      value: 4294967295
+      objectReference: {fileID: 0}
     - target: {fileID: 1949215993041961014, guid: 909f682a6f77be5cb819ebba3774ed20, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
@@ -4556,9 +4706,25 @@ PrefabInstance:
       value: ReturnToMenuButton
       objectReference: {fileID: 0}
     - target: {fileID: 2982642230827405309, guid: 909f682a6f77be5cb819ebba3774ed20, type: 3}
+      propertyPath: m_SpriteState.m_SelectedSprite
+      value: 
+      objectReference: {fileID: 21300000, guid: 521429e32931cee3c98da9254a875cf7, type: 3}
+    - target: {fileID: 2982642230827405309, guid: 909f682a6f77be5cb819ebba3774ed20, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 1007707250}
+    - target: {fileID: 7879208781642344521, guid: 909f682a6f77be5cb819ebba3774ed20, type: 3}
+      propertyPath: m_Color.b
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7879208781642344521, guid: 909f682a6f77be5cb819ebba3774ed20, type: 3}
+      propertyPath: m_Color.g
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7879208781642344521, guid: 909f682a6f77be5cb819ebba3774ed20, type: 3}
+      propertyPath: m_Color.r
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -4681,7 +4847,7 @@ PrefabInstance:
       value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 2542728589957442695, guid: 6725f11bb9e0ba4d783b8acbdb1c66e1, type: 3}
-      propertyPath: m_Materials.Array.data[1]
+      propertyPath: 'm_Materials.Array.data[1]'
       value: 
       objectReference: {fileID: 2100000, guid: d3583d6b0f1675c4db3cfab62062ddda, type: 2}
     - target: {fileID: 2729919358070443188, guid: 6725f11bb9e0ba4d783b8acbdb1c66e1, type: 3}
@@ -4961,7 +5127,7 @@ PrefabInstance:
       value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 8190099649744168408, guid: 6725f11bb9e0ba4d783b8acbdb1c66e1, type: 3}
-      propertyPath: m_Materials.Array.data[1]
+      propertyPath: 'm_Materials.Array.data[1]'
       value: 
       objectReference: {fileID: 2100000, guid: d3583d6b0f1675c4db3cfab62062ddda, type: 2}
     - target: {fileID: 8241502049495792556, guid: 6725f11bb9e0ba4d783b8acbdb1c66e1, type: 3}
@@ -4993,7 +5159,7 @@ PrefabInstance:
       value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 9106672909570668111, guid: 6725f11bb9e0ba4d783b8acbdb1c66e1, type: 3}
-      propertyPath: m_Materials.Array.data[1]
+      propertyPath: 'm_Materials.Array.data[1]'
       value: 
       objectReference: {fileID: 2100000, guid: d3583d6b0f1675c4db3cfab62062ddda, type: 2}
     - target: {fileID: 9106672909570668111, guid: 6725f11bb9e0ba4d783b8acbdb1c66e1, type: 3}
@@ -5025,7 +5191,7 @@ PrefabInstance:
       value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 9164724744748680659, guid: 6725f11bb9e0ba4d783b8acbdb1c66e1, type: 3}
-      propertyPath: m_Materials.Array.data[1]
+      propertyPath: 'm_Materials.Array.data[1]'
       value: 
       objectReference: {fileID: 2100000, guid: d3583d6b0f1675c4db3cfab62062ddda, type: 2}
     m_RemovedComponents: []
@@ -5136,12 +5302,44 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2946734253697254725, guid: 00c59968ddb67d35bb59f7b6ee678f50, type: 3}
+      propertyPath: m_SpriteState.m_SelectedSprite
+      value: 
+      objectReference: {fileID: 21300000, guid: 521429e32931cee3c98da9254a875cf7, type: 3}
+    - target: {fileID: 2946734253697254725, guid: 00c59968ddb67d35bb59f7b6ee678f50, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 1007707250}
+    - target: {fileID: 3206653160904271057, guid: 00c59968ddb67d35bb59f7b6ee678f50, type: 3}
+      propertyPath: m_Color.b
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3206653160904271057, guid: 00c59968ddb67d35bb59f7b6ee678f50, type: 3}
+      propertyPath: m_Color.g
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3206653160904271057, guid: 00c59968ddb67d35bb59f7b6ee678f50, type: 3}
+      propertyPath: m_Color.r
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 4254000196719440507, guid: 00c59968ddb67d35bb59f7b6ee678f50, type: 3}
       propertyPath: m_Name
       value: QuitButton
+      objectReference: {fileID: 0}
+    - target: {fileID: 6323625778435323003, guid: 00c59968ddb67d35bb59f7b6ee678f50, type: 3}
+      propertyPath: m_fontColor.b
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6323625778435323003, guid: 00c59968ddb67d35bb59f7b6ee678f50, type: 3}
+      propertyPath: m_fontColor.g
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6323625778435323003, guid: 00c59968ddb67d35bb59f7b6ee678f50, type: 3}
+      propertyPath: m_fontColor.r
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6323625778435323003, guid: 00c59968ddb67d35bb59f7b6ee678f50, type: 3}
+      propertyPath: m_fontColor32.rgba
+      value: 4294967295
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -5156,6 +5354,34 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1050888793}
     m_Modifications:
+    - target: {fileID: 3228127032982632806, guid: 35a7d06b8faec62b68f6ebbcb1b76e0a, type: 3}
+      propertyPath: m_Color.b
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3228127032982632806, guid: 35a7d06b8faec62b68f6ebbcb1b76e0a, type: 3}
+      propertyPath: m_Color.g
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3228127032982632806, guid: 35a7d06b8faec62b68f6ebbcb1b76e0a, type: 3}
+      propertyPath: m_Color.r
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3679170243381558618, guid: 35a7d06b8faec62b68f6ebbcb1b76e0a, type: 3}
+      propertyPath: m_fontColor.b
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3679170243381558618, guid: 35a7d06b8faec62b68f6ebbcb1b76e0a, type: 3}
+      propertyPath: m_fontColor.g
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3679170243381558618, guid: 35a7d06b8faec62b68f6ebbcb1b76e0a, type: 3}
+      propertyPath: m_fontColor.r
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3679170243381558618, guid: 35a7d06b8faec62b68f6ebbcb1b76e0a, type: 3}
+      propertyPath: m_fontColor32.rgba
+      value: 4294967295
+      objectReference: {fileID: 0}
     - target: {fileID: 4641871204004409760, guid: 35a7d06b8faec62b68f6ebbcb1b76e0a, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
@@ -5248,6 +5474,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: RestartFromCheckPointButton
       objectReference: {fileID: 0}
+    - target: {fileID: 7539046888093614276, guid: 35a7d06b8faec62b68f6ebbcb1b76e0a, type: 3}
+      propertyPath: m_SpriteState.m_SelectedSprite
+      value: 
+      objectReference: {fileID: 21300000, guid: 521429e32931cee3c98da9254a875cf7, type: 3}
     - target: {fileID: 7539046888093614276, guid: 35a7d06b8faec62b68f6ebbcb1b76e0a, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 

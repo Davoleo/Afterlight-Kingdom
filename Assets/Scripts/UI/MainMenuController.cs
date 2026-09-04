@@ -8,7 +8,6 @@ namespace UI
     public class MainMenuController : MonoBehaviour
     {
         [SerializeField] private GameObject mainPanel;
-        [SerializeField] private GameObject optionsPanel;
         private GameObject _continueButton;
 
         private void Start()
@@ -18,22 +17,10 @@ namespace UI
             _continueButton.SetActive(SaveManager.HasSave);
         }
 
-        public void OnOptionsPressed() => ShowOptionsPanel();
-        public void OnBackPressed() => ShowMainPanel();
-
         private void ShowMainPanel()
         {
-            mainPanel.SetActive(true); 
-            optionsPanel.SetActive(false);
-            // Select the first button in the panel                                                                                                                      
-            EventSystem.current.SetSelectedGameObject(mainPanel.GetComponentInChildren<Button>().gameObject);
-        }
-
-        private void ShowOptionsPanel()
-        {
-            optionsPanel.SetActive(true);
-            mainPanel.SetActive(false);
-            // Select the first button in the panel                                                                                                                         
+            mainPanel.SetActive(true);
+            // Select the first button in the panel
             EventSystem.current.SetSelectedGameObject(mainPanel.GetComponentInChildren<Button>().gameObject);
         }
     }

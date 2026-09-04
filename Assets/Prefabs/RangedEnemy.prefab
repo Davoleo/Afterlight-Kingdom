@@ -84,7 +84,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 37474b776af7f4ed1bb875de7e57aebe, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxHealth: 3
+  maxHealth: 2
   animator: {fileID: 0}
   hitAnimationDuration: 0.5
   deathAnimationDuration: 1.5
