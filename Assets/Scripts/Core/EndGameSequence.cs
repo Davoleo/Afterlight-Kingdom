@@ -35,6 +35,7 @@ namespace Core
         [SerializeField] private int totalCoins;
         [SerializeField] private CanvasGroup creditsGroup;
         [SerializeField] private CanvasGroup thanksGroup;
+        [SerializeField] private CanvasGroup exitGroup;
         [SerializeField] private float resultsStepDelay = 1f;
 
         [Header("Input")]
@@ -134,9 +135,9 @@ namespace Core
         private Quaternion LookAtSeat(Vector3 fromPosition) =>
             Quaternion.LookRotation(seatPoint.position - fromPosition);
 
-        // Coins appear immediately with the panel; Credits and Thanks for Playing then fade
-        // in one after another on the "B Normal" button containers, each held back by
-        // resultsStepDelay so the reveal reads as a beat rather than a wall of text.
+        // Coins appear immediately with the panel; Credits, Thanks for Playing and the exit
+        // prompt then fade in one after another on the "B Normal" button containers, each
+        // held back by resultsStepDelay so the reveal reads as a beat rather than a wall of text.
         private IEnumerator ShowResults()
         {
             int collected = GameObject.FindGameObjectWithTag("GameManager")
@@ -146,6 +147,7 @@ namespace Core
             resultsText.text = $"Coins collected: {collected} / {totalCoins}";
             creditsGroup.alpha = 0f;
             thanksGroup.alpha = 0f;
+            exitGroup.alpha = 0f;
             resultsPanel.SetActive(true);
 
             yield return new WaitForSecondsRealtime(resultsStepDelay);
@@ -153,6 +155,9 @@ namespace Core
 
             yield return new WaitForSecondsRealtime(resultsStepDelay);
             yield return Fade(thanksGroup, 0f, 1f);
+
+            yield return new WaitForSecondsRealtime(resultsStepDelay);
+            yield return Fade(exitGroup, 0f, 1f);
         }
 
         private IEnumerator WaitForContinue()
