@@ -3323,7 +3323,7 @@ MonoBehaviour:
     brushes:
     - name: ForestGrass01
       settings:
-        brushRadius: 0.61
+        brushRadius: 3.46
         brushSpacing: 0.766
         brushOverlapCheckMode: 0
         brushOverlapDistance: 0.5
