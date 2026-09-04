@@ -72,5 +72,11 @@ namespace Gameplay
                 TutorialAssistManager.I.DisableFeatureAssist(dashLockedHint);
             }
         }
+        
+        public void SheatheBow()
+        {
+            bow.SetActive(false);
+            quiver.SetActive(false);
+        }
     }
 }

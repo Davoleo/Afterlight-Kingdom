@@ -5,6 +5,7 @@ namespace Core
         Loading,
         Playing,
         Paused,
-        Dead
+        Dead,
+        Cutscene
     }
 }
