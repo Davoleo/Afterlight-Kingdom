@@ -57,9 +57,6 @@ namespace Enemies
                 direction.y = 0f;
             }
 
-            if (direction.sqrMagnitude < 0.01f)
-                return Vector3.zero;
-
             return direction.normalized;
         }
 

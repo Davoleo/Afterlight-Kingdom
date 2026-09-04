@@ -46,10 +46,6 @@ namespace Enemies
 
         public void Launch(Vector3 launchDirection)
         {
-            //invalid direction
-            if (launchDirection.sqrMagnitude < 0.01f)
-                return;
-
             direction = launchDirection.normalized;
             launched = true;
             stopped = false;
@@ -73,9 +69,6 @@ namespace Enemies
 
             foreach (Collider overlap in playerOverlaps)
             {
-                if (overlap == null)
-                    continue;
-
                 HitPlayer(overlap);
                 return;
             }
@@ -99,6 +92,7 @@ namespace Enemies
 
             transform.position += direction * distance;
         }
+
         private void UpdateVisualAnimation()
         {
             transform.Rotate(Vector3.forward, rotationSpeed * Time.deltaTime, Space.Self);
@@ -117,9 +111,6 @@ namespace Enemies
 
         private void HandleCollision(Collider other)
         {
-            if (other == null)
-                return;
-
             if (IsInLayerMask(other.gameObject.layer, playerLayer))
             {
                 HitPlayer(other);

@@ -63,17 +63,14 @@ namespace Enemies
                 Die();
                 return;
             }
-            else
-                _sfx.OnEnemyHurt();
+
+            _sfx.OnEnemyHurt();
 
             PlayHitAnimation();
         }
 
         private void PlayHitAnimation()
         {
-            if (animator == null)
-                return;
-
             // If another hit arrives while the previous hit animation
             // is still active, restart its duration.
             if (hitAnimationCoroutine != null)
@@ -95,8 +92,7 @@ namespace Enemies
             // Keep the Hit animation active for the required duration.
             yield return new WaitForSeconds(hitAnimationDuration);
 
-            if (!IsDead && animator != null)
-                animator.SetBool("IsHit", false);
+            animator.SetBool("IsHit", false);
 
             hitAnimationCoroutine = null;
         }
@@ -104,6 +100,7 @@ namespace Enemies
         private void Die()
         {
             _sfx.OnEnemyDeath();
+
             // Stop a possible Hit animation before starting Death.
             if (hitAnimationCoroutine != null)
             {
@@ -116,11 +113,8 @@ namespace Enemies
             enemyController.enabled = false;
 
             // Stop the NavMeshAgent immediately.
-            if (navMeshAgent.enabled && navMeshAgent.isOnNavMesh)
-            {
-                navMeshAgent.isStopped = true;
-                navMeshAgent.ResetPath();
-            }
+            navMeshAgent.isStopped = true;
+            navMeshAgent.ResetPath();
 
             /*
              * Disable all enemy colliders immediately.
@@ -134,7 +128,6 @@ namespace Enemies
 
             animator.SetBool("IsHit", false);
             animator.SetBool("IsDead", true);
-
 
             deathCoroutine = StartCoroutine(DeathRoutine());
             Died?.Invoke();
@@ -169,7 +162,6 @@ namespace Enemies
          */
         private void SetCollidersEnabled(bool enabled)
         {
-
             foreach (Collider enemyCollider in enemyColliders)
             {
                 enemyCollider.enabled = enabled;
@@ -192,7 +184,6 @@ namespace Enemies
                 hitAnimationCoroutine = null;
             }
 
-
             animator.SetBool("IsHit", false);
             animator.SetBool("IsDead", false);
             animator.Rebind();
@@ -203,8 +194,7 @@ namespace Enemies
 
             enemyController.enabled = true;
 
-            if (navMeshAgent.enabled && navMeshAgent.isOnNavMesh)
-                navMeshAgent.isStopped = false;
+            navMeshAgent.isStopped = false;
         }
     }
 }
