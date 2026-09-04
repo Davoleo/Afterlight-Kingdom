@@ -13,6 +13,7 @@ namespace Triggers
         public AudioClip enterSfx;
 
         public float derivedCameraRotation;
+        public Vector3 offset = Vector3.zero;
 
         [SerializeField] private CheckpointRingEffect checkpointRingEffect;
         [SerializeField] private float activationCooldown = 2f;
@@ -63,12 +64,12 @@ namespace Triggers
 
             _healthManager.Heal(HealthManager.MaxHealth);
 
-            Vector3 offsetPos = new Vector3(transform.position.x, transform.position.y + 2f, transform.position.z);
+            Vector3 spawnPos = new Vector3(transform.position.x, transform.position.y + 2f, transform.position.z) + offset;
 
             checkpointRingEffect?.Play();
 
             //set camera position and checkpoint position, then save
-            _cpManager.SetCheckpoint(offsetPos, derivedCameraRotation);
+            _cpManager.SetCheckpoint(spawnPos, derivedCameraRotation);
             SaveManager.Save(_gm);
 
             _checkPointHUD.ShowSavedMessage();
