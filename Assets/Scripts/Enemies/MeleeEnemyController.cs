@@ -129,6 +129,7 @@ namespace Enemies
             // Remove any attack still pending when the player dies.
             animator.ResetTrigger("Attack");
             animator.SetBool("IsMoving", false);
+            animator.SetBool("IsPatrolling", false);
             animator.Play("Idle", 0, 0f);
             animator.Update(0f);
         }
@@ -195,6 +196,7 @@ namespace Enemies
 
                 animator.ResetTrigger("Attack");
                 animator.SetBool("IsMoving", false);
+                animator.SetBool("IsPatrolling", false);
 
                 ChangeState(EnemyState.Hit);
             }
@@ -437,7 +439,7 @@ namespace Enemies
 
             currentState = newState;
         }
-
+        
         private void UpdateMovementDirection()
         {
             MovementDirection = Vector3.zero;
@@ -470,7 +472,9 @@ namespace Enemies
 
         private void UpdateAnimation()
         {
-            bool isMoving = currentState != EnemyState.Attacking && MovementDirection.sqrMagnitude > 0.01f;
+            bool isPatrolling = currentState == EnemyState.Patrolling && MovementDirection.sqrMagnitude > 0.01f;
+            bool isMoving = currentState == EnemyState.Chasing && MovementDirection.sqrMagnitude > 0.01f;
+            animator.SetBool("IsPatrolling", isPatrolling);
             animator.SetBool("IsMoving", isMoving);
         }
 
