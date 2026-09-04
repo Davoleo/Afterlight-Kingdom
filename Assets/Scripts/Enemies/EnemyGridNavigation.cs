@@ -22,21 +22,15 @@ namespace Enemies
 
         private readonly int maxExpandedNodes;
 
-
         private readonly float sampleMaxDistance;
 
         private readonly float maxHorizontalSampleOffset;
 
-
-      
         // valid cells buffer
         private readonly Dictionary<Vector2Int, Vector3> validCenters = new();
 
         // invalid cells buffer
         private readonly HashSet<Vector2Int> invalidCells = new();
-
-
-
 
         // nodes to analyze
         private readonly List<Vector2Int> open = new();
@@ -48,18 +42,15 @@ namespace Enemies
 
         private readonly Dictionary<Vector2Int, int> gScore = new();
 
-
         /// navigation system
         public EnemyGridNavigation(NavMeshAgent agent, int resolveSearchRadius, int maxExpandedNodes, float sampleMaxDistance = 3f, float maxHorizontalSampleOffset = 0.2f)
         {
             this.agent = agent;
-            this.resolveSearchRadius = Mathf.Max(0, resolveSearchRadius);
-            this.maxExpandedNodes = Mathf.Max(128, maxExpandedNodes);
-            this.sampleMaxDistance = Mathf.Max(0.1f, sampleMaxDistance);
-            this.maxHorizontalSampleOffset = Mathf.Max(0.01f, maxHorizontalSampleOffset);
+            this.resolveSearchRadius = resolveSearchRadius;
+            this.maxExpandedNodes = maxExpandedNodes;
+            this.sampleMaxDistance = sampleMaxDistance;
+            this.maxHorizontalSampleOffset = maxHorizontalSampleOffset;
         }
-
-
 
         // real path to grid path conversion
         public Vector2Int WorldToCell(Vector3 position)
@@ -67,10 +58,8 @@ namespace Enemies
             return new Vector2Int(Mathf.RoundToInt(position.x), Mathf.RoundToInt(position.z));
         }
 
-
         public bool TryGetCellCenter(Vector2Int cell, out Vector3 center)
         {
-
             if (validCenters.TryGetValue(cell, out center))
                 return true;
 
@@ -80,13 +69,6 @@ namespace Enemies
                 return false;
             }
 
-            if (agent == null)
-            {
-                center = Vector3.zero;
-                return false;
-            }
-
-        
             Vector3 requestedPosition = new Vector3(cell.x, agent.nextPosition.y, cell.y);
 
             if (!NavMesh.SamplePosition(requestedPosition, out NavMeshHit hit, sampleMaxDistance, agent.areaMask))
@@ -116,7 +98,6 @@ namespace Enemies
             return TryGetCellCenter(cell, out _);
         }
 
-
         // pathfinding increasing manhattan distance
         public bool TryFindNearestWalkableCell(Vector2Int requestedCell, out Vector2Int result)
         {
@@ -125,6 +106,7 @@ namespace Enemies
                 result = requestedCell;
                 return true;
             }
+
             //radial research for a walkable path
             for (int radius = 1; radius <= resolveSearchRadius; radius++)
             {
@@ -160,10 +142,6 @@ namespace Enemies
         //try to move avoiding diagonal movements
         private bool CanMoveBetween(Vector2Int from, Vector2Int to)
         {
-            Vector2Int difference = to - from;
-
-            if (Mathf.Abs(difference.x) + Mathf.Abs(difference.y) != 1)
-                return false;
             if (!TryGetCellCenter(from, out Vector3 fromCenter) || !TryGetCellCenter(to, out Vector3 toCenter))
                 return false;
 
@@ -172,8 +150,6 @@ namespace Enemies
 
             return !blocked;
         }
-
-
 
         // pathfinding using A* to allow enemies to avoid obstacles if possible
         public bool TryFindPath(Vector2Int start, Vector2Int requestedTarget, List<Vector2Int> result)
@@ -248,7 +224,6 @@ namespace Enemies
             return false;
         }
 
-
         //choosing best node to walk in
         private int GetBestNodeIndex(Vector2Int target)
         {
@@ -260,14 +235,14 @@ namespace Enemies
             {
                 Vector2Int cell = open[i];
 
-                int g = gScore.TryGetValue(cell, out int score) ? score : int.MaxValue;
+                int g = gScore[cell];
 
                 //using manhattan distance to avoid diagonals
                 int h = Mathf.Abs(cell.x - target.x) + Mathf.Abs(cell.y - target.y);
 
                 int f = g + h;
 
-                if (f >= bestF && (f != bestF || h >= bestH))
+                if (f > bestF || (f == bestF && h >= bestH))
                     continue;
 
                 bestIndex = i;
@@ -278,13 +253,10 @@ namespace Enemies
             return bestIndex;
         }
 
-
         // build the path with the saved nodes, from target to start
         /// </summary>
         private void ReconstructPath(Vector2Int current, List<Vector2Int> result)
         {
-            result.Clear();
-
             result.Add(current);
 
             while (cameFrom.TryGetValue(current, out Vector2Int previous))
