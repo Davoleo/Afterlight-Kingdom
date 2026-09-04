@@ -10,7 +10,6 @@ namespace Core
     }
     public static class InputUtils
     {
-        private static ControlsType _activeControls;
 
         private static ControlsType GetActiveControls()
         {
@@ -19,14 +18,14 @@ namespace Core
 
             if (gamepad == null)
             {
-                return _activeControls = ControlsType.KeyboardMouse;
+                return ControlsType.KeyboardMouse;
             }
 
-            if (keyboard == null) return _activeControls = ControlsType.Gamepad;
+            if (keyboard == null) return ControlsType.Gamepad;
 
             return gamepad.lastUpdateTime >= keyboard.lastUpdateTime
-                ? _activeControls = ControlsType.Gamepad
-                : _activeControls = ControlsType.KeyboardMouse;
+                ? ControlsType.Gamepad
+                : ControlsType.KeyboardMouse;
         }
 
         public static string ReplaceInputIdentifiers(string raw)

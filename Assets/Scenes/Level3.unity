@@ -137768,6 +137768,10 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6101925492573927054, guid: c465768a3521e3f438e175d24c76d382, type: 3}
+      propertyPath: sfx
+      value: 
+      objectReference: {fileID: 8300000, guid: 7dfa16df5a2ba634f907e33179f5deac, type: 3}
+    - target: {fileID: 6101925492573927054, guid: c465768a3521e3f438e175d24c76d382, type: 3}
       propertyPath: coinCost
       value: 1
       objectReference: {fileID: 0}
