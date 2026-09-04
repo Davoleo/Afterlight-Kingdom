@@ -46,6 +46,7 @@ namespace Enemies
         private float stateStartTime;
 
         private EnemyHealth enemyHealth;
+        private EnemySoundFXs _sfx;
 
         private Vector3 lastChargePosition;
         private float stuckTime;
@@ -250,7 +251,7 @@ namespace Enemies
 
             navMeshAgent.isStopped = true;
             navMeshAgent.ResetPath();
-            
+
 
             // Disable all normal movement/charge animation parameters while Hit has priority.
             animator.SetBool("IsPatrolling", false);
@@ -358,6 +359,7 @@ namespace Enemies
         private void HandleDeath()
         {
             Instantiate(explosionPrefab, transform.position, Quaternion.identity);
+            _sfx.OnEnemyDeath();
 
             gameObject.SetActive(false);
         }
