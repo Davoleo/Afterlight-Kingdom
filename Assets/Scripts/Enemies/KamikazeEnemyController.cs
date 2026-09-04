@@ -20,7 +20,7 @@ namespace Enemies
         [SerializeField] private float chargeSpeed = 9f;
 
         [Header("Charge")]
-        [SerializeField] private float chargeWindup = 0.45f;
+        [SerializeField] private float chargeWindup = 1.5f;
 
         [SerializeField] private float chargeHitRadius = 1.1f;
         [SerializeField] private int chargeDamage = 2;
@@ -46,10 +46,12 @@ namespace Enemies
         private float stateStartTime;
 
         private EnemyHealth enemyHealth;
-        private EnemySoundFXs _sfx;
 
         private Vector3 lastChargePosition;
         private float stuckTime;
+
+        private bool isBackstepping;
+        private Vector3 chargeBackstepTarget;
 
         // Used to interrupt the current action only once
         // when the Hit animation starts.
@@ -104,6 +106,7 @@ namespace Enemies
         protected override void OnResetToSpawn()
         {
             chargeDirection = Vector3.zero;
+            isBackstepping = false;
             wasHitAnimationActive = false;
         }
 
@@ -147,9 +150,11 @@ namespace Enemies
                 case EnemyState.PreparingCharge:
                     if (IsPlayerOutsideLoseRange() || !IsPlayerAtChargeHeight())
                     {
+                        isBackstepping = false;
                         ChangeState(EnemyState.Patrolling);
                         return;
                     }
+                    UpdateChargeBackstep();
 
                     if (Time.time >= stateStartTime + chargeWindup) StartCharge();
 
@@ -175,14 +180,29 @@ namespace Enemies
 
             MovementDirection = Vector3.zero;
             LookDirection = chargeDirection;
+            isBackstepping = true;
+            chargeBackstepTarget = transform.position - chargeDirection;
 
             ChangeState(EnemyState.PreparingCharge);
+        }
+        private void UpdateChargeBackstep()
+        {
+            if (!isBackstepping) return;
+
+            float backstepSpeed = 2f / chargeWindup;
+            Vector3 nextPosition = Vector3.MoveTowards(transform.position, chargeBackstepTarget, backstepSpeed * Time.deltaTime);
+
+            navMeshAgent.Move(nextPosition - transform.position);
+
+            if ((transform.position - chargeBackstepTarget).sqrMagnitude <= 0.0001f)
+                isBackstepping = false;
         }
 
         private void StartCharge()
         {
             if (!IsPlayerAtChargeHeight())
             {
+                isBackstepping = false;
                 ChangeState(EnemyState.Patrolling);
                 return;
             }
@@ -192,6 +212,7 @@ namespace Enemies
 
             if (chargeDirection.sqrMagnitude < 0.01f)
             {
+                isBackstepping = false;
                 ChangeState(EnemyState.Patrolling);
                 return;
             }
@@ -201,6 +222,7 @@ namespace Enemies
                 KillSelf();
                 return;
             }
+            isBackstepping = false;
 
             // During the charge the movement direction is always the original cardinal direction and is never recalculated by the pathfinding.
             MovementDirection = chargeDirection;
@@ -243,6 +265,7 @@ namespace Enemies
 
             chargeDirection = Vector3.zero;
             stuckTime = 0f;
+            isBackstepping = false;
 
             // After the Hit animation the enemy restarts from its normal patrol logic.
             ChangeState(EnemyState.Patrolling);
@@ -359,8 +382,6 @@ namespace Enemies
         private void HandleDeath()
         {
             Instantiate(explosionPrefab, transform.position, Quaternion.identity);
-            _sfx.OnEnemyDeath();
-
             gameObject.SetActive(false);
         }
 
