@@ -1,4 +1,5 @@
 using Gameplay;
+using HUD.Assist;
 using Sound;
 using UnityEngine;
 
@@ -7,6 +8,8 @@ namespace Triggers
     [RequireComponent(typeof(Collider))]
     public class AbilityRewardClaimHandler : MonoBehaviour
     {
+        [SerializeField] private FeatureAssistData dashTutorial;
+        
         [Header("Reward")]
         [SerializeField] private AbilityType abilityToUnlock = AbilityType.Bow;
 
@@ -39,6 +42,11 @@ namespace Triggers
             _abilityManager.UnlockAbility(abilityToUnlock);
             AudioManager.Instance.PlaySfx(_sfx);
             gameObject.SetActive(false);
+
+            if (abilityToUnlock == AbilityType.Dash)
+            {
+                TutorialAssistManager.I.ShowAssist(dashTutorial);
+            }
         }
     }
 }

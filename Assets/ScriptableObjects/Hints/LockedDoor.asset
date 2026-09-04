@@ -17,4 +17,4 @@ MonoBehaviour:
   narrative: This door is closed, maybe the key is somewhere nearby.
   dismissMode: 0
   duration: 6
-  ephemeral: 0
+  ephemeral: 1

@@ -70,6 +70,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 44c278ba17a764604b35de4bd641ba5f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  dashTutorial: {fileID: 11400000, guid: c0f10b22815818543b340c8ce1f232b6, type: 2}
   abilityToUnlock: 0
   rotate: 1
   rotationSpeed: 120
@@ -86,6 +87,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   textToDisplay: Press {Interact} to drink the potion
+  canInteractForever: 0
   onInteract:
     m_PersistentCalls:
       m_Calls:
