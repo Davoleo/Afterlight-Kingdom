@@ -35,6 +35,7 @@ namespace Gameplay
             CollectedIds ??= new List<string>();
             _sfx[CollectibleType.Coin] = Resources.Load<AudioClip>("Sound/coin_pickup");
             _sfx[CollectibleType.Key] = Resources.Load<AudioClip>("Sound/key");
+            RefreshCollectibleReferences();
         }
 
         public AudioClip GetPickupSound(CollectibleType type) => _sfx[type];
