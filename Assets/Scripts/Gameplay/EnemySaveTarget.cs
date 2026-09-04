@@ -13,7 +13,6 @@ namespace Gameplay
 
         private CharacterController _characterController;
         private EnemyHealth _enemyHealth;
-
         // Enemy params to use for respawn
         private Vector3 _spawnPosition; 
         private Quaternion _spawnRotation; 

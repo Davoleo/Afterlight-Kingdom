@@ -30,6 +30,7 @@ namespace Enemies
         private Coroutine deathCoroutine;
         public int CurrentHealth => currentHealth;
         public bool IsDead => currentHealth <= 0;
+        public event System.Action Died;
 
         private void Start()
         {
@@ -136,6 +137,7 @@ namespace Enemies
 
 
             deathCoroutine = StartCoroutine(DeathRoutine());
+            Died?.Invoke();
         }
 
         // Removes all arrows stuck in the enemy.

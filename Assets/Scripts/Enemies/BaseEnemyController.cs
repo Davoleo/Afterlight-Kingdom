@@ -114,7 +114,7 @@ namespace Enemies
 
         private void MoveCharacterOnGrid(float deltaTime)
         {
-            if (!IsNavMeshAgentReady() || !hasGridStep) return;
+            if (!IsNavMeshAgentReady() || !hasGridStep || MovementDirection.sqrMagnitude < 0.01f) return;
 
             Vector3 direction = GetCurrentGridStepDirection();
 
