@@ -38,7 +38,6 @@ namespace UI
         {
             var save = SaveManager.Load();
             if (SaveManager.HasSave) SaveManager.RestoreEverything(gameObject, save, false);
-            else Continue();
 
             _cpManager.Respawn();
             EnemyProjectile.RemoveAllProjectiles();

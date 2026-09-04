@@ -1,5 +1,8 @@
-using UnityEngine;
+#if UNITY_EDITOR
 using UnityEditor;
+#else
+using UnityEngine;
+#endif
 using UnityEngine.SceneManagement;
 
 namespace Core
