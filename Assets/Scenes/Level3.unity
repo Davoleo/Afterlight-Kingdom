@@ -98299,6 +98299,14 @@ PrefabInstance:
       propertyPath: target.losePlayerRange
       value: 12
       objectReference: {fileID: 0}
+    - target: {fileID: 3327297795530109280, guid: 97d6a27fc167743fdbe026ebc4c88591, type: 3}
+      propertyPath: desiredShootingDistance
+      value: 8.13
+      objectReference: {fileID: 0}
+    - target: {fileID: 3327297795530109280, guid: 97d6a27fc167743fdbe026ebc4c88591, type: 3}
+      propertyPath: minimumShootingDistance
+      value: 5.61
+      objectReference: {fileID: 0}
     - target: {fileID: 7022476504449931981, guid: 97d6a27fc167743fdbe026ebc4c88591, type: 3}
       propertyPath: enemyId
       value: Level3_Enemy_008
@@ -129263,6 +129271,14 @@ PrefabInstance:
     - target: {fileID: 3327297795530109280, guid: 97d6a27fc167743fdbe026ebc4c88591, type: 3}
       propertyPath: target.losePlayerRange
       value: 12
+      objectReference: {fileID: 0}
+    - target: {fileID: 3327297795530109280, guid: 97d6a27fc167743fdbe026ebc4c88591, type: 3}
+      propertyPath: desiredShootingDistance
+      value: 9.05
+      objectReference: {fileID: 0}
+    - target: {fileID: 3327297795530109280, guid: 97d6a27fc167743fdbe026ebc4c88591, type: 3}
+      propertyPath: minimumShootingDistance
+      value: 5.43
       objectReference: {fileID: 0}
     - target: {fileID: 8757712320787616610, guid: 97d6a27fc167743fdbe026ebc4c88591, type: 3}
       propertyPath: m_Name
