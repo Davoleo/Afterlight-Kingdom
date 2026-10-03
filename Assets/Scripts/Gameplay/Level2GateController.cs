@@ -19,7 +19,7 @@ namespace Gameplay
 
         private int _leversFlicked;
 
-        private void Start()
+        private void Awake()
         {
             var save = SaveManager.Load();
             if (save != null)

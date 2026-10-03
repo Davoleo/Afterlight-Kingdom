@@ -37,7 +37,7 @@ namespace Triggers
         // incrementato a mano).
         private static int FlickedCount => ActiveLevers.Count(l => l.flicked);
 
-        private void Awake()
+        private void Start()
         {
             _leverAnimator = GetComponent<Animator>();
             ActiveLevers.Add(this);
